@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.879" timestamp="2026-10-23T08:57:04.562794+05:30" hostname="Avyansh-PC"><testcase classname="tests.test_audit_forge_integrity" name="test_forgetting_underscore_id_preserves_other_skill_provenance" time="0.497"><failure message="AssertionError: assert [] == [('095ec040-b...', 'used_by')]&#10;  &#10;  Right contains 2 more items, first extra item: ('095ec040-bcc1-413e-906f-bdf01834394e', 'skill:textxa:1', 'promoted_to')&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/Dell/AppData/Local/Temp/pytest-of-Dell/pytest-76/test_forgetting_underscore_id_0')
+
+    def test_forgetting_underscore_id_preserves_other_skill_provenance(tmp_path):
+        forge = Forge(BrainStore(tmp_path / 'brain'))
+        for identifier in ('text_a', 'textxa'):
+            promote(forge, identifier)
+            forge.invoke(identifier, 'hello', task='task-' + identifier)
+        with forge.store.connect() as db:
+            before = [tuple(r) for r in db.execute('SELECT * FROM graph_edges')
+                      if 'skill:textxa:1' in tuple(r)]
+        assert len(before) == 2
+        assert forge.forget('text_a')['removed_versions'] == 1
+        with forge.store.connect() as db:
+            after = [tuple(r) for r in db.execute('SELECT * FROM graph_edges')
+                     if 'skill:textxa:1' in tuple(r)]
+&gt;       assert after == before
+E       AssertionError: assert [] == [('095ec040-b...', 'used_by')]
+E         
+E         Right contains 2 more items, first extra item: ('095ec040-bcc1-413e-906f-bdf01834394e', 'skill:textxa:1', 'promoted_to')
+E         Use -v to get more diff
+
+tests\test_audit_forge_integrity.py:28: AssertionError</failure></testcase><testcase classname="tests.test_audit_forge_integrity" name="test_concurrent_invocations_count_one_first_use_and_one_reuse" time="0.242"><failure message="assert (2, 0, 0) == (2, 1, 0)&#10;  &#10;  At index 1 diff: 0 != 1&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/Dell/AppData/Local/Temp/pytest-of-Dell/pytest-76/test_concurrent_invocations_co0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x000002E99E799F70&gt;
+
+    def test_concurrent_invocations_count_one_first_use_and_one_reuse(tmp_path, monkeypatch):
+        forge = Forge(BrainStore(tmp_path / 'brain'))
+        promote(forge, 'text.upper')
+        active = forge.active
+        barrier = threading.Barrier(2)
+    
+        def together(*args):
+            row = active(*args)
+            barrier.wait(timeout=5)
+            return row
+    
+        monkeypatch.setattr(forge, 'active', together)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            pending = [pool.submit(forge.invoke, 'text.upper', text) for text in ('one', 'two')]
+            assert [p.result(timeout=10)['text'] for p in pending] == ['ONE', 'TWO']
+        row = forge.list()[0]
+&gt;       assert (row['invoked'], row['reused'], row['failed']) == (2, 1, 0)
+E       assert (2, 0, 0) == (2, 1, 0)
+E         
+E         At index 1 diff: 0 != 1
+E         Use -v to get more diff
+
+tests\test_audit_forge_integrity.py:49: AssertionError</failure></testcase></testsuite></testsuites>

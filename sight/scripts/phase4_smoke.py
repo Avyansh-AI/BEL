@@ -1,5 +1,6 @@
 """Live Windows launcher + HTTP/WS/local tools + restart smoke. No cloud calls."""
 import asyncio
+import argparse
 from contextlib import closing
 from datetime import datetime,timezone
 import hashlib
@@ -17,16 +18,16 @@ import websockets
 ROOT=Path(__file__).resolve().parents[1]
 MODEL='gemma4:e4b-it-qat'
 
-def main():
+def main(evidence_directory=None, thinking=False):
     stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
     data=ROOT.parent/'test-data'/('live-phase4-'+stamp);data.mkdir(parents=True)
-    (data/'local-model.json').write_text(json.dumps({'model':MODEL,'thinking':False}),encoding='utf-8')
+    (data/'local-model.json').write_text(json.dumps({'model':MODEL,'thinking':thinking}),encoding='utf-8')
     with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
     url=f'http://127.0.0.1:{port}';log=(data/'server.log').open('w',encoding='utf-8');process=None
     runtime_hashes={p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest()
                     for folder in ('sight_core','apps') for p in sorted((ROOT/folder).rglob('*'))
                     if p.is_file() and '__pycache__' not in p.parts}
-    evidence={'timestamp_utc':stamp,'model':MODEL,'thinking':False,'cloud_requests':0,'checks':[],'complete':False,'launcher':'Phase-4/Start-SIGHT.ps1','test_data':str(data),'source_hashes':runtime_hashes}
+    evidence={'timestamp_utc':stamp,'model':MODEL,'thinking':thinking,'cloud_requests':0,'checks':[],'complete':False,'launcher':'Start-SIGHT.ps1','test_data':str(data),'source_hashes':runtime_hashes}
     def check(name,passed,detail=None,*,fatal=True):
         evidence['checks'].append({'name':name,'passed':bool(passed),'detail':detail})
         if not passed and fatal:raise AssertionError(name)
@@ -127,9 +128,17 @@ def main():
         evidence['error_type']=type(exc).__name__;raise
     finally:
         stop();log.close();evidence['passed']=evidence['complete'] and all(r['passed'] for r in evidence['checks'])
-        path=ROOT.parent/'evidence'/('live_phase4_'+stamp+'.json');path.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
-        (ROOT/'reports/live_phase4_latest.json').write_text(json.dumps(evidence,indent=2),encoding='utf-8')
+        directory=Path(evidence_directory) if evidence_directory else ROOT.parent/'evidence'
+        directory.mkdir(parents=True,exist_ok=True)
+        path=directory/('live_phase4_'+stamp+'.json');path.write_text(json.dumps(evidence,indent=2),encoding='utf-8')
+        if evidence_directory is None:
+            (ROOT/'reports/live_phase4_latest.json').write_text(json.dumps(evidence,indent=2),encoding='utf-8')
         print(json.dumps({'evidence':str(path),'passed':evidence['passed'],'checks':len(evidence['checks'])}))
     return 0 if evidence['passed'] else 1
 
-if __name__=='__main__':raise SystemExit(main())
+if __name__=='__main__':
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--evidence-directory',type=Path,help='Save a new audit run without replacing historical latest reports')
+    parser.add_argument('--thinking',action='store_true',help='Test thinking mode without changing saved owner settings')
+    args=parser.parse_args()
+    raise SystemExit(main(args.evidence_directory, thinking=args.thinking))

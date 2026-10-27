@@ -1,0 +1,76 @@
+F......F....                                                             [100%]
+================================== FAILURES ===================================
+_____ test_official_runtime_metadata_identity_without_display_name[None] ______
+
+tmp_path = WindowsPath('C:/Users/Dell/AppData/Local/Temp/pytest-of-Dell/pytest-79/test_official_runtime_metadata0')
+changed = None
+
+    @pytest.mark.parametrize('changed', [None, 'digest', 'quantization', 'general.parameter_count',
+                                        'general.architecture', 'gemma4.block_count', 'gemma4.embedding_length', 'renamed_artifact'])
+    def test_official_runtime_metadata_identity_without_display_name(tmp_path, changed):
+        # Captured from the actual restored Ollama 0.40.9 runtime, not invented metadata.
+        captured = json.loads((Path(__file__).parent / 'fixtures/official_gemma_metadata.json').read_text())
+        tag, info = captured['tag'], captured['metadata']
+        if changed == 'digest':tag['digest'] = '0' * 64
+        elif changed == 'quantization':tag['details']['quantization_level'] = 'Q8_0'
+        elif changed == 'renamed_artifact':
+            tag['digest'] = '0' * 64
+            info['model_info']['general.name'] = 'Gemma 4 E4B'
+        elif changed:info['model_info'][changed] = 'wrong identity'
+    
+        def respond(request):
+            if request.url.path == '/api/tags':return httpx.Response(200, json={'models': [tag]})
+            assert request.url.path == '/api/show', 'Metadata checks must not load the weights'
+            return httpx.Response(200, json=info)
+    
+        provider = OllamaProvider(Config(tmp_path, model='gemma4:e4b-it-qat'), transport=httpx.MockTransport(respond))
+        state = asyncio.run(provider.health())
+>       assert state.status == ('ready' if changed is None else 'unsupported_model')
+E       AssertionError: assert 'unsupported_model' == 'ready'
+E         
+E         - ready
+E         + unsupported_model
+
+sight\tests\test_official_gemma.py:35: AssertionError
+_ test_official_runtime_metadata_identity_without_display_name[renamed_artifact] _
+
+tmp_path = WindowsPath('C:/Users/Dell/AppData/Local/Temp/pytest-of-Dell/pytest-79/test_official_runtime_metadata7')
+changed = 'renamed_artifact'
+
+    @pytest.mark.parametrize('changed', [None, 'digest', 'quantization', 'general.parameter_count',
+                                        'general.architecture', 'gemma4.block_count', 'gemma4.embedding_length', 'renamed_artifact'])
+    def test_official_runtime_metadata_identity_without_display_name(tmp_path, changed):
+        # Captured from the actual restored Ollama 0.40.9 runtime, not invented metadata.
+        captured = json.loads((Path(__file__).parent / 'fixtures/official_gemma_metadata.json').read_text())
+        tag, info = captured['tag'], captured['metadata']
+        if changed == 'digest':tag['digest'] = '0' * 64
+        elif changed == 'quantization':tag['details']['quantization_level'] = 'Q8_0'
+        elif changed == 'renamed_artifact':
+            tag['digest'] = '0' * 64
+            info['model_info']['general.name'] = 'Gemma 4 E4B'
+        elif changed:info['model_info'][changed] = 'wrong identity'
+    
+        def respond(request):
+            if request.url.path == '/api/tags':return httpx.Response(200, json={'models': [tag]})
+            assert request.url.path == '/api/show', 'Metadata checks must not load the weights'
+            return httpx.Response(200, json=info)
+    
+        provider = OllamaProvider(Config(tmp_path, model='gemma4:e4b-it-qat'), transport=httpx.MockTransport(respond))
+        state = asyncio.run(provider.health())
+>       assert state.status == ('ready' if changed is None else 'unsupported_model')
+E       AssertionError: assert 'ready' == 'unsupported_model'
+E         
+E         - unsupported_model
+E         + ready
+
+sight\tests\test_official_gemma.py:35: AssertionError
+============================== warnings summary ===============================
+sight\.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\sight\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED sight\tests\test_official_gemma.py::test_official_runtime_metadata_identity_without_display_name[None]
+FAILED sight\tests\test_official_gemma.py::test_official_runtime_metadata_identity_without_display_name[renamed_artifact]
+2 failed, 10 passed, 1 warning in 1.35s

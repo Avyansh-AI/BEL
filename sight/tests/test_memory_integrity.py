@@ -1,6 +1,7 @@
 """Real SQLite failure, crash, concurrency and retrieval regressions."""
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
+from pathlib import Path
 import sqlite3
 import subprocess
 import sys
@@ -60,7 +61,7 @@ store.connect = fault_connection
 MemoryService(store).compact([sys.argv[2]])
 '''
     result = subprocess.run([sys.executable, '-c', code, str(memory.store.root), source['id']],
-                            capture_output=True, text=True, timeout=15)
+                            cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True, timeout=15)
     assert result.returncode == 88, result.stderr
     assert memory.export() == memory.search('quartz') == [source]
     assert memory.store.events() == events

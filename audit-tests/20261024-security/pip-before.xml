@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.505" timestamp="2026-10-24T09:08:20.375735+05:30" hostname="Avyansh-PC"><testcase classname="tests.test_dependency_security" name="test_installer_trust_store_excludes_compromised_emsign_root" time="0.253"><failure message="AssertionError: assert 'emSign ECC Root CA - G3' not in {'AC RAIZ FNMT-RCM SERVIDORES SEGUROS', 'ACCVRAIZ1', 'ANF Secure Server Root CA', 'Actalis Authentication Root CA', 'Amazon Root CA 1', 'Amazon Root CA 2', ...}">def test_installer_trust_store_excludes_compromised_emsign_root():
+        # pip vendors its own CA bundle; updating top-level Certifi does not fix it.
+        from pip._vendor import certifi
+    
+        context = ssl.create_default_context(cafile=certifi.where())
+        names = {value for certificate in context.get_ca_certs()
+                 for rdn in certificate["subject"] for name, value in rdn if name == "commonName"}
+        assert len(names) &gt; 50
+&gt;       assert "emSign ECC Root CA - G3" not in names
+E       AssertionError: assert 'emSign ECC Root CA - G3' not in {'AC RAIZ FNMT-RCM SERVIDORES SEGUROS', 'ACCVRAIZ1', 'ANF Secure Server Root CA', 'Actalis Authentication Root CA', 'Amazon Root CA 1', 'Amazon Root CA 2', ...}
+
+sight\tests\test_dependency_security.py:34: AssertionError</failure></testcase></testsuite></testsuites>

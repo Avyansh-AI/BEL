@@ -111,33 +111,46 @@ class MemoryService:
     def export(self, project_id=None):
         with self.store.connect() as db:
             db.execute('BEGIN')
-            now=self.clock();cache={}
-            ids=[]
-            for table in ('profiles','episodes'):
-                ids += [r[0] for r in db.execute(f'SELECT id FROM {table} WHERE (? IS NULL OR project_id=?) AND (expiry IS NULL OR expiry>?)',(project_id,project_id,now))]
-            return [r for ident in ids if (r:=self._get(db,ident,now,cache))]
+            return self._export(db, project_id, self.clock(), {})
+
+    def _export(self, db, project_id, now, cache):
+        ids=[]
+        for table in ('profiles','episodes'):
+            ids += [r[0] for r in db.execute(f'SELECT id FROM {table} WHERE (? IS NULL OR project_id=?) AND (expiry IS NULL OR expiry>?)',(project_id,project_id,now))]
+        return [r for ident in ids if (r:=self._get(db,ident,now,cache))]
 
     def search(self, query, project_id='default', limit=8, remote=False):
+        with self.store.connect() as db:
+            db.execute('BEGIN')
+            return self._search(db, query, project_id, limit, remote, self.clock(), {})
+
+    def _search(self, db, query, project_id, limit, remote, now, cache):
         words=re.findall(r'\w+',query,flags=re.UNICODE)[:12]
         if not words:return []
         fts=' OR '.join('"'+w.replace('"','""')+'"' for w in words)
-        with self.store.connect() as db:
-            db.execute('BEGIN')
-            now=self.clock();cache={};rows=[]
-            # The limit counts usable results, not expired/private FTS matches.
-            ids=db.execute('SELECT id FROM memory_fts WHERE memory_fts MATCH ? AND project_id=? ORDER BY rank', (fts,project_id))
-            for item in ids:
-                row=self._get(db,item[0],now,cache)
-                if row and (not remote or row['privacy_scope']=='cloud_allowed'):
-                    rows.append(row)
-                    if len(rows)>=max(1,min(limit,50)):break
-            return rows
+        rows=[]
+        # The limit counts usable results, not expired/private FTS matches.
+        ids=db.execute('SELECT id FROM memory_fts WHERE memory_fts MATCH ? AND project_id=? ORDER BY rank', (fts,project_id))
+        for item in ids:
+            row=self._get(db,item[0],now,cache)
+            if row and (not remote or row['privacy_scope']=='cloud_allowed'):
+                rows.append(row)
+                if len(rows)>=max(1,min(limit,50)):break
+        return rows
 
     def preferences(self, project_id='default', remote=False):
         return [r for r in self.export(project_id) if r['store']=='profile' and (not remote or r['privacy_scope']=='cloud_allowed')]
 
     def context(self, query, project_id='default', remote=False, max_bytes=500):
-        rows={r['id']:r for r in self.preferences(project_id,remote)+self.search(query,project_id,remote=remote)}
+        # Preferences, retrieval, lineage and expiry must describe one revision
+        # snapshot even when another request corrects memory during construction.
+        with self.store.connect() as db:
+            db.execute('BEGIN')
+            now=self.clock();cache={}
+            preferences=[r for r in self._export(db,project_id,now,cache)
+                         if r['store']=='profile' and (not remote or r['privacy_scope']=='cloud_allowed')]
+            matches=self._search(db,query,project_id,8,remote,now,cache)
+            rows={r['id']:r for r in preferences+matches}
         chunks=[];citations=[]
         for row in list(rows.values())[:6]:
             chunk=f"[{row['id']}] {row['key']}: {row['content']}\n"
@@ -162,19 +175,25 @@ class MemoryService:
     def delete(self,identifier):
         with self.store.connect() as db:
             db.execute('BEGIN IMMEDIATE')
-            derived=self._remove_derived(db,identifier)
-            count=0
-            for table in ('profiles','episodes'):count+=db.execute(f'DELETE FROM {table} WHERE id=?',(identifier,)).rowcount
-            db.execute('DELETE FROM memory_fts WHERE id=?',(identifier,))
-            db.execute('DELETE FROM graph_edges WHERE source=? OR target=?',(identifier,identifier))
-            self.store.event('memory.deleted',identifier,{'derived_removed':len(derived)},db)
+            return self._delete(db,identifier)
+
+    def _delete(self,db,identifier):
+        derived=self._remove_derived(db,identifier)
+        count=0
+        for table in ('profiles','episodes'):count+=db.execute(f'DELETE FROM {table} WHERE id=?',(identifier,)).rowcount
+        db.execute('DELETE FROM memory_fts WHERE id=?',(identifier,))
+        db.execute('DELETE FROM graph_edges WHERE source=? OR target=?',(identifier,identifier))
+        self.store.event('memory.deleted',identifier,{'derived_removed':len(derived)},db)
         return {'deleted':bool(count),'derived_removed':len(derived)}
 
     def purge_expired(self):
         with self.store.connect() as db:
-            ids=[r[0] for table in ('profiles','episodes') for r in db.execute(f'SELECT id FROM {table} WHERE expiry<=?',(self.clock(),))]
-        for ident in ids:self.delete(ident)
-        with self.store.connect() as db:
+            # Serialize renewal against selection and deletion. A failed/crashed
+            # purge must roll back records, derived summaries, index and events.
+            db.execute('BEGIN IMMEDIATE')
+            now=self.clock()
+            ids=[r[0] for table in ('profiles','episodes') for r in db.execute(f'SELECT id FROM {table} WHERE expiry<=?',(now,))]
+            for ident in ids:self._delete(db,ident)
             # FTS segments retain old terms until merged; optimize after secure deletion.
             db.execute("INSERT INTO memory_fts(memory_fts) VALUES('optimize')")
         return {'purged':len(ids)}

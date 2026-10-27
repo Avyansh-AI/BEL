@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="12" time="1.302" timestamp="2026-10-23T14:48:56.039710+05:30" hostname="Avyansh-PC"><testcase classname="tests.test_official_gemma" name="test_official_runtime_metadata_identity_without_display_name[None]" time="0.012"><failure message="AssertionError: assert 'unsupported_model' == 'ready'&#10;  &#10;  - ready&#10;  + unsupported_model">tmp_path = WindowsPath('C:/Users/Dell/AppData/Local/Temp/pytest-of-Dell/pytest-79/test_official_runtime_metadata0')
+changed = None
+
+    @pytest.mark.parametrize('changed', [None, 'digest', 'quantization', 'general.parameter_count',
+                                        'general.architecture', 'gemma4.block_count', 'gemma4.embedding_length', 'renamed_artifact'])
+    def test_official_runtime_metadata_identity_without_display_name(tmp_path, changed):
+        # Captured from the actual restored Ollama 0.40.9 runtime, not invented metadata.
+        captured = json.loads((Path(__file__).parent / 'fixtures/official_gemma_metadata.json').read_text())
+        tag, info = captured['tag'], captured['metadata']
+        if changed == 'digest':tag['digest'] = '0' * 64
+        elif changed == 'quantization':tag['details']['quantization_level'] = 'Q8_0'
+        elif changed == 'renamed_artifact':
+            tag['digest'] = '0' * 64
+            info['model_info']['general.name'] = 'Gemma 4 E4B'
+        elif changed:info['model_info'][changed] = 'wrong identity'
+    
+        def respond(request):
+            if request.url.path == '/api/tags':return httpx.Response(200, json={'models': [tag]})
+            assert request.url.path == '/api/show', 'Metadata checks must not load the weights'
+            return httpx.Response(200, json=info)
+    
+        provider = OllamaProvider(Config(tmp_path, model='gemma4:e4b-it-qat'), transport=httpx.MockTransport(respond))
+        state = asyncio.run(provider.health())
+&gt;       assert state.status == ('ready' if changed is None else 'unsupported_model')
+E       AssertionError: assert 'unsupported_model' == 'ready'
+E         
+E         - ready
+E         + unsupported_model
+
+sight\tests\test_official_gemma.py:35: AssertionError</failure></testcase><testcase classname="tests.test_official_gemma" name="test_official_runtime_metadata_identity_without_display_name[digest]" time="0.005" /><testcase classname="tests.test_official_gemma" name="test_official_runtime_metadata_identity_without_display_name[quantization]" time="0.004" /><testcase classname="tests.test_official_gemma" name="test_official_runtime_metadata_identity_without_display_name[general.parameter_count]" time="0.004" /><testcase classname="tests.test_official_gemma" name="test_official_runtime_metadata_identity_without_display_name[general.architecture]" time="0.003" /><testcase classname="tests.test_official_gemma" name="test_official_runtime_metadata_identity_without_display_name[gemma4.block_count]" time="0.004" /><testcase classname="tests.test_official_gemma" name="test_official_runtime_metadata_identity_without_display_name[gemma4.embedding_length]" time="0.003" /><testcase classname="tests.test_official_gemma" name="test_official_runtime_metadata_identity_without_display_name[renamed_artifact]" time="0.004"><failure message="AssertionError: assert 'ready' == 'unsupported_model'&#10;  &#10;  - unsupported_model&#10;  + ready">tmp_path = WindowsPath('C:/Users/Dell/AppData/Local/Temp/pytest-of-Dell/pytest-79/test_official_runtime_metadata7')
+changed = 'renamed_artifact'
+
+    @pytest.mark.parametrize('changed', [None, 'digest', 'quantization', 'general.parameter_count',
+                                        'general.architecture', 'gemma4.block_count', 'gemma4.embedding_length', 'renamed_artifact'])
+    def test_official_runtime_metadata_identity_without_display_name(tmp_path, changed):
+        # Captured from the actual restored Ollama 0.40.9 runtime, not invented metadata.
+        captured = json.loads((Path(__file__).parent / 'fixtures/official_gemma_metadata.json').read_text())
+        tag, info = captured['tag'], captured['metadata']
+        if changed == 'digest':tag['digest'] = '0' * 64
+        elif changed == 'quantization':tag['details']['quantization_level'] = 'Q8_0'
+        elif changed == 'renamed_artifact':
+            tag['digest'] = '0' * 64
+            info['model_info']['general.name'] = 'Gemma 4 E4B'
+        elif changed:info['model_info'][changed] = 'wrong identity'
+    
+        def respond(request):
+            if request.url.path == '/api/tags':return httpx.Response(200, json={'models': [tag]})
+            assert request.url.path == '/api/show', 'Metadata checks must not load the weights'
+            return httpx.Response(200, json=info)
+    
+        provider = OllamaProvider(Config(tmp_path, model='gemma4:e4b-it-qat'), transport=httpx.MockTransport(respond))
+        state = asyncio.run(provider.health())
+&gt;       assert state.status == ('ready' if changed is None else 'unsupported_model')
+E       AssertionError: assert 'ready' == 'unsupported_model'
+E         
+E         - unsupported_model
+E         + ready
+
+sight\tests\test_official_gemma.py:35: AssertionError</failure></testcase><testcase classname="tests.test_official_gemma" name="test_official_model_does_not_inherit_derivative_sampling[gemma4:e4b-it-qat-expected0]" time="0.004" /><testcase classname="tests.test_official_gemma" name="test_official_model_does_not_inherit_derivative_sampling[sight-gemma4-e4b:uncensored-expected1]" time="0.004" /><testcase classname="tests.test_official_gemma" name="test_direct_helper_selects_normal_gemma[False]" time="0.602" /><testcase classname="tests.test_official_gemma" name="test_direct_helper_selects_normal_gemma[True]" time="0.456" /></testsuite></testsuites>

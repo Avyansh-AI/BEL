@@ -1,0 +1,10 @@
+{
+  "reviewed_utc": "2026-10-27T09:29:05Z",
+  "evidence": "audit-tests/20261027-browser/final-build/soak-20261026T190205Z-d6951b/result.json",
+  "status": "INCOMPLETE",
+  "last_recorded_elapsed_seconds": 320.11,
+  "last_recorded_cycles": 6,
+  "checks_recorded": 51,
+  "failed_checks_recorded": 0,
+  "observation": "Previous exec session and Python/Ollama processes absent when work resumed after the chat gap. Termination cause was not observed. No one-hour pass and no completed backup/restore are claimed. Original result and telemetry preserved."
+}

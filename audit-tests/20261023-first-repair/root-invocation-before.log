@@ -1,0 +1,120 @@
+........................................................................ [ 22%]
+............F........................................................... [ 45%]
+...................F..F.....F........................................... [ 68%]
+........................................................................ [ 91%]
+..........................                                               [100%]
+================================== FAILURES ===================================
+______________________ test_single_data_directory_owner _______________________
+
+tmp_path = WindowsPath('C:/Users/Dell/AppData/Local/Temp/pytest-of-Dell/pytest-72/test_single_data_directory_own0')
+
+    def test_single_data_directory_owner(tmp_path):
+        from sight_core.cli import single_instance
+        with single_instance(tmp_path):
+            import subprocess,sys
+            result = subprocess.run([sys.executable, "-c", "from sight_core.cli import single_instance;from pathlib import Path;import sys\nwith single_instance(Path(sys.argv[1])):pass", str(tmp_path)], capture_output=True, text=True)
+>           assert result.returncode != 0 and "Another SIGHT server" in result.stderr
+E           assert (1 != 0 and 'Another SIGHT server' in 'Traceback (most recent call last):\n  File "<string>", line 1, in <module>\nModuleNotFoundError: No module named \'sight_core\'\n')
+E            +  where 1 = CompletedProcess(args=['C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\Phase-4\\sight\\.venv\\Scripts\\python.exe', '...ost recent call last):\n  File "<string>", line 1, in <module>\nModuleNotFoundError: No module named \'sight_core\'\n').returncode
+E            +  and   'Traceback (most recent call last):\n  File "<string>", line 1, in <module>\nModuleNotFoundError: No module named \'sight_core\'\n' = CompletedProcess(args=['C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\Phase-4\\sight\\.venv\\Scripts\\python.exe', '...ost recent call last):\n  File "<string>", line 1, in <module>\nModuleNotFoundError: No module named \'sight_core\'\n').stderr
+
+sight\tests\test_concurrency.py:52: AssertionError
+___________________ test_real_task_process_crash_and_resume ___________________
+
+brain = (<sight_core.brain_store.BrainStore object at 0x000001BA4E54BAD0>, <sight_core.memory.MemoryService object at 0x000001BA4DAA9F10>, <sight_core.forge.Forge object at 0x000001BA4E5497F0>)
+
+    def test_real_task_process_crash_and_resume(brain):
+        jobs=engine(brain)
+        row=jobs.submit(Job(idempotency_key='crash-task-key',title='crash',steps=[Step(id='save',op='file.write',name='task.txt',text='exactly once'),Step(id='verify',op='verify.equals',depends_on=['save'],input_from='save',expected='exactly once')],tool_budget=4))
+        code="""import os,sys,asyncio
+    from pathlib import Path
+    from sight_core.brain_store import BrainStore
+    from sight_core.memory import MemoryService
+    from sight_core.forge import Forge
+    from sight_core.jobs import Jobs
+    from sight_core.tools import LocalFiles
+    store=BrainStore(Path(sys.argv[1]));jobs=Jobs(store,MemoryService(store),Forge(store),LocalFiles(store.root/'files'),None)
+    write=jobs.write_once
+    jobs.write_once=lambda *args:write(*args,after_publish=lambda:os._exit(88))
+    asyncio.run(jobs.run(sys.argv[2]))
+    """
+        process=subprocess.run([sys.executable,'-c',code,str(brain[0].root),row['id']],capture_output=True,text=True,timeout=10)
+>       assert process.returncode==88,process.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 3, in <module>
+E         ModuleNotFoundError: No module named 'sight_core'
+E         
+E       assert 1 == 88
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\Phase-4\\sight\\.venv\\Scripts\\python.exe', '...ost recent call last):\n  File "<string>", line 3, in <module>\nModuleNotFoundError: No module named \'sight_core\'\n').returncode
+
+sight\tests\test_learning.py:238: AssertionError
+____________________ test_file_crash_recovery_real_process ____________________
+
+brain = (<sight_core.brain_store.BrainStore object at 0x000001BA4E54B1D0>, <sight_core.memory.MemoryService object at 0x000001BA4E3EE780>, <sight_core.forge.Forge object at 0x000001BA4E54AFF0>)
+
+    def test_file_crash_recovery_real_process(brain):
+        jobs=engine(brain);root=brain[0].root
+        code="""import os,sys
+    from sight_core.brain_store import BrainStore
+    from sight_core.memory import MemoryService
+    from sight_core.forge import Forge
+    from sight_core.jobs import Jobs
+    from sight_core.tools import LocalFiles
+    store=BrainStore(sys.argv[1]);jobs=Jobs(store,MemoryService(store),Forge(store),LocalFiles(store.root/'files'),None)
+    jobs.write_once('crash-job','save','crash.txt','once',after_publish=lambda:os._exit(87))
+    """
+        result=subprocess.run([sys.executable,'-c',code,str(root)],capture_output=True,text=True,timeout=10)
+>       assert result.returncode==87,result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 2, in <module>
+E         ModuleNotFoundError: No module named 'sight_core'
+E         
+E       assert 1 == 87
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\Phase-4\\sight\\.venv\\Scripts\\python.exe', '...ost recent call last):\n  File "<string>", line 2, in <module>\nModuleNotFoundError: No module named \'sight_core\'\n').returncode
+
+sight\tests\test_learning.py:284: AssertionError
+____________ test_process_crash_during_compaction_leaves_no_orphan ____________
+
+memory = <sight_core.memory.MemoryService object at 0x000001BA4EFBBFE0>
+
+    def test_process_crash_during_compaction_leaves_no_orphan(memory):
+        source = memory.put(MemoryInput(key='note', content='quartz'))
+        events = memory.store.events()
+        code = '''import os, sys
+    from contextlib import contextmanager
+    from sight_core.brain_store import BrainStore
+    from sight_core.memory import MemoryService
+    store = BrainStore(sys.argv[1])
+    original = store.connect
+    @contextmanager
+    def fault_connection():
+        with original() as db:
+            db.create_function('crash_now', 0, lambda: os._exit(88))
+            db.execute("CREATE TEMP TRIGGER crash_graph BEFORE INSERT ON graph_edges BEGIN SELECT crash_now(); END")
+            yield db
+    store.connect = fault_connection
+    MemoryService(store).compact([sys.argv[2]])
+    '''
+        result = subprocess.run([sys.executable, '-c', code, str(memory.store.root), source['id']],
+                                capture_output=True, text=True, timeout=15)
+>       assert result.returncode == 88, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<string>", line 3, in <module>
+E         ModuleNotFoundError: No module named 'sight_core'
+E         
+E       assert 1 == 88
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\Phase-4\\sight\\.venv\\Scripts\\python.exe', '...ost recent call last):\n  File "<string>", line 3, in <module>\nModuleNotFoundError: No module named \'sight_core\'\n').returncode
+
+sight\tests\test_memory_integrity.py:64: AssertionError
+============================== warnings summary ===============================
+..\..\Phase-4\sight\.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Dell\Documents\Ai projects\Sight\Phase-4\sight\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED sight\tests\test_concurrency.py::test_single_data_directory_owner - as...
+FAILED sight\tests\test_learning.py::test_real_task_process_crash_and_resume
+FAILED sight\tests\test_learning.py::test_file_crash_recovery_real_process - ...
+FAILED sight\tests\test_memory_integrity.py::test_process_crash_during_compaction_leaves_no_orphan
+4 failed, 310 passed, 1 warning in 95.83s (0:01:35)

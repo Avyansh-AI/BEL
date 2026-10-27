@@ -1,0 +1,22 @@
+{
+  "install_completed_utc": "2026-10-24T09:05:39.174486+00:00",
+  "command": [
+    "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "-NoProfile",
+    "-NonInteractive",
+    "-File",
+    "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\test-data\\security-final-20261024\\install-check.ps1",
+    "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\test-data\\security-final-20261024\\sight\\scripts\\install.ps1",
+    ".cache\\security-wheelhouse",
+    "..\\..\\..\\..\\..\\AppData\\Local\\ms-playwright"
+  ],
+  "install_exit_code": 0,
+  "fresh_venv": true,
+  "fresh_windows_account": false,
+  "package_network_disabled": true,
+  "relative_wheel_and_browser_paths": true,
+  "wheel_count": 42,
+  "runtime_exit_code": 1,
+  "complete": false,
+  "seconds": 86.281
+}

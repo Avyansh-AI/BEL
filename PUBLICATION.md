@@ -1,5 +1,19 @@
 # Published SIGHT build
 
+## 27 October source update
+
+The owner authorized updating the existing GitHub repository on 27 October. GitHub now identifies the former `Avyansh-AI/Sight` URL as **`Avyansh-AI/BEL`**; both URLs resolve to the same SIGHT history. This update retains the SIGHT project name and **PARTIAL** readiness verdict. No release tag or production deployment is included.
+
+The current source contains the memory, Forge, installer, official-model identity, dependency, thinking-profile and browser-diagnostics repairs documented in the [completion audit](sight/docs/PHASE4_COMPLETION_20261024.md) and [latest browser report](sight/docs/BROWSER_DIAGNOSTICS_20261027.md). Current regression results are **379 passed, zero failures/skips**, with **16 unchanged UI comparisons**, **30/30 actual browser captures** and **57/57 live application checks**. The owner's approved local profile uses `gemma4:e4b-it-qat`, thinking enabled, temperature 0.2. The combined browser/Gemma soak passed **487/487 checks over 3,605.031 seconds**, with independent restoration verification. This is the preserved SIGHT baseline; publication is deferred while the newly requested BEL migration is implemented.
+
+Source and reviewable test evidence are included. Owner data, credentials, runtime environments, model weights, raw server logs, test databases and backup payloads are excluded; synthetic backup manifests and verification summaries are included. Historical failed tests remain available and are explained in the reports.
+
+The [27 October publication check](audit-tests/20261027-browser/final-build/publication-check-final.json) checks exact staged bytes, supplied-credential exclusion, original UI/earlier-phase preservation and documentation links. The [current source manifest](publication-tests/20261027-update/final-manifest.json) inventories the staged files, excluding those two self-referential output files. This manifest describes source publication, not a new packaged release.
+
+Use the repository's current source or [download the current branch](https://github.com/Avyansh-AI/BEL/archive/refs/heads/main.zip). The `dist/SIGHT-Phase4-Partial.zip` file and `UPLOAD_MANIFEST.json` below are preserved **22 October artifacts**, not manifests or packages for this updated source. Their original results must not be used to qualify the new build.
+
+## Historical 22 October handoff
+
 This repository contains the latest Phase 4 source handoff. Its release verdict remains **PARTIAL**. Publishing the source does not change the recorded readiness verdict or erase failed/historical tests.
 
 - Selected model: official `gemma4:e4b-it-qat`, thinking initially disabled.

@@ -1,0 +1,923 @@
+{
+  "started_utc": "2026-10-26T13:22:20.054819+00:00",
+  "rounds": 10,
+  "cases": [
+    "original_install",
+    "local_fields",
+    "blocked_content"
+  ],
+  "plan": "Each fixed synthetic case in each round gets one fresh process, 25-second process deadline, no retries. No artificial resource exhaustion or model inference.",
+  "runtime": {
+    "python": "3.12.5 (tags/v3.12.5:ff3bc82, Aug  6 2024, 20:45:27) [MSC v.1940 64 bit (AMD64)]",
+    "playwright": "1.64.0"
+  },
+  "source_hashes": {
+    "browser_diagnostics.py": "20cd19b27b91f2a8d26f2657a25f7418f98e48b73ed60f8c94d5a623d78ba21c",
+    "capability_worker.py": "9153358ea1ae4145c00e18aba87fed95177a9abc56745e0e69963e7558043451"
+  },
+  "attempts": [
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1982.47,
+        "available_commit_mib": 6730.1
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 5.64,
+      "memory_after": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1849.98,
+        "available_commit_mib": 6609.43
+      },
+      "exit_code": 1,
+      "round": 1
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1821.11,
+        "available_commit_mib": 6577.45
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1827.49,
+        "available_commit_mib": 6603.71
+      },
+      "exit_code": 1,
+      "round": 1
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1835.78,
+        "available_commit_mib": 6624.3
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.578,
+      "memory_after": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1836.09,
+        "available_commit_mib": 6611.8
+      },
+      "exit_code": 1,
+      "round": 1
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1784.95,
+        "available_commit_mib": 6603.3
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.656,
+      "memory_after": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1793.28,
+        "available_commit_mib": 6573.49
+      },
+      "exit_code": 1,
+      "round": 2
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1802.29,
+        "available_commit_mib": 6589.94
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.594,
+      "memory_after": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1813.18,
+        "available_commit_mib": 6584.39
+      },
+      "exit_code": 1,
+      "round": 2
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1834.42,
+        "available_commit_mib": 6611.35
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.563,
+      "memory_after": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1799.36,
+        "available_commit_mib": 6591.53
+      },
+      "exit_code": 1,
+      "round": 2
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1792.48,
+        "available_commit_mib": 6587.1
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1786.63,
+        "available_commit_mib": 6550.79
+      },
+      "exit_code": 1,
+      "round": 3
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1782.13,
+        "available_commit_mib": 6526.17
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.64,
+      "memory_after": {
+        "available": true,
+        "load_percent": 89,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1726.3,
+        "available_commit_mib": 6479.24
+      },
+      "exit_code": 1,
+      "round": 3
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 89,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1676.61,
+        "available_commit_mib": 6430.27
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 89,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1686.3,
+        "available_commit_mib": 6424.1
+      },
+      "exit_code": 1,
+      "round": 3
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 89,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1717.38,
+        "available_commit_mib": 6434.34
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.687,
+      "memory_after": {
+        "available": true,
+        "load_percent": 89,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1717.21,
+        "available_commit_mib": 6414.64
+      },
+      "exit_code": 1,
+      "round": 4
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1808.93,
+        "available_commit_mib": 6430.45
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.657,
+      "memory_after": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1818.18,
+        "available_commit_mib": 6360.09
+      },
+      "exit_code": 1,
+      "round": 4
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1794.44,
+        "available_commit_mib": 6352.8
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.594,
+      "memory_after": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1804.13,
+        "available_commit_mib": 6362.6
+      },
+      "exit_code": 1,
+      "round": 4
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1882.96,
+        "available_commit_mib": 6422.89
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.594,
+      "memory_after": {
+        "available": true,
+        "load_percent": 88,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1920.4,
+        "available_commit_mib": 6418.17
+      },
+      "exit_code": 1,
+      "round": 5
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2112.39,
+        "available_commit_mib": 6557.7
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.516,
+      "memory_after": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2094.0,
+        "available_commit_mib": 6552.03
+      },
+      "exit_code": 1,
+      "round": 5
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2081.16,
+        "available_commit_mib": 6558.25
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.578,
+      "memory_after": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2078.34,
+        "available_commit_mib": 6534.38
+      },
+      "exit_code": 1,
+      "round": 5
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1997.18,
+        "available_commit_mib": 6450.68
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.578,
+      "memory_after": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1985.33,
+        "available_commit_mib": 6466.53
+      },
+      "exit_code": 1,
+      "round": 6
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2030.7,
+        "available_commit_mib": 6474.91
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.562,
+      "memory_after": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 1986.63,
+        "available_commit_mib": 6470.32
+      },
+      "exit_code": 1,
+      "round": 6
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2062.28,
+        "available_commit_mib": 6527.82
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.64,
+      "memory_after": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2027.33,
+        "available_commit_mib": 6510.24
+      },
+      "exit_code": 1,
+      "round": 6
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2031.91,
+        "available_commit_mib": 6514.21
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.547,
+      "memory_after": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2050.11,
+        "available_commit_mib": 6534.36
+      },
+      "exit_code": 1,
+      "round": 7
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2059.61,
+        "available_commit_mib": 6528.17
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.562,
+      "memory_after": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2043.64,
+        "available_commit_mib": 6520.79
+      },
+      "exit_code": 1,
+      "round": 7
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2076.73,
+        "available_commit_mib": 6549.64
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.578,
+      "memory_after": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2075.6,
+        "available_commit_mib": 6569.78
+      },
+      "exit_code": 1,
+      "round": 7
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2075.62,
+        "available_commit_mib": 6560.95
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.546,
+      "memory_after": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2123.04,
+        "available_commit_mib": 6614.98
+      },
+      "exit_code": 1,
+      "round": 8
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2094.88,
+        "available_commit_mib": 6608.11
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.594,
+      "memory_after": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2089.2,
+        "available_commit_mib": 6593.37
+      },
+      "exit_code": 1,
+      "round": 8
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2079.97,
+        "available_commit_mib": 6592.86
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.531,
+      "memory_after": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2099.25,
+        "available_commit_mib": 6592.72
+      },
+      "exit_code": 1,
+      "round": 8
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2115.65,
+        "available_commit_mib": 6598.71
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.531,
+      "memory_after": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2105.0,
+        "available_commit_mib": 6606.15
+      },
+      "exit_code": 1,
+      "round": 9
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2115.3,
+        "available_commit_mib": 6600.2
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.515,
+      "memory_after": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2157.95,
+        "available_commit_mib": 6637.99
+      },
+      "exit_code": 1,
+      "round": 9
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2157.54,
+        "available_commit_mib": 6652.5
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.5,
+      "memory_after": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2165.2,
+        "available_commit_mib": 6665.62
+      },
+      "exit_code": 1,
+      "round": 9
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2189.82,
+        "available_commit_mib": 6674.2
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.5,
+      "memory_after": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2182.96,
+        "available_commit_mib": 6670.31
+      },
+      "exit_code": 1,
+      "round": 10
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2157.54,
+        "available_commit_mib": 6659.91
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.485,
+      "memory_after": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2143.96,
+        "available_commit_mib": 6654.31
+      },
+      "exit_code": 1,
+      "round": 10
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2157.7,
+        "available_commit_mib": 6670.45
+      },
+      "capture_calls": 0,
+      "events": [],
+      "passed": false,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "error_code": "browser_failed",
+      "error_type": "Error",
+      "seconds": 0.484,
+      "memory_after": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2151.77,
+        "available_commit_mib": 6672.76
+      },
+      "exit_code": 1,
+      "round": 10
+    }
+  ],
+  "complete": true,
+  "passed_count": 0,
+  "finished_utc": "2026-10-26T13:22:55.938553+00:00"
+}

@@ -234,7 +234,7 @@ write=jobs.write_once
 jobs.write_once=lambda *args:write(*args,after_publish=lambda:os._exit(88))
 asyncio.run(jobs.run(sys.argv[2]))
 """
-    process=subprocess.run([sys.executable,'-c',code,str(brain[0].root),row['id']],capture_output=True,text=True,timeout=10)
+    process=subprocess.run([sys.executable,'-c',code,str(brain[0].root),row['id']],cwd=Path(__file__).resolve().parents[1],capture_output=True,text=True,timeout=10)
     assert process.returncode==88,process.stderr
     inode=(jobs.files.root/'task.txt').stat().st_ino
     assert jobs.get(row['id'])['state']=='running'
@@ -280,7 +280,7 @@ from sight_core.tools import LocalFiles
 store=BrainStore(sys.argv[1]);jobs=Jobs(store,MemoryService(store),Forge(store),LocalFiles(store.root/'files'),None)
 jobs.write_once('crash-job','save','crash.txt','once',after_publish=lambda:os._exit(87))
 """
-    result=subprocess.run([sys.executable,'-c',code,str(root)],capture_output=True,text=True,timeout=10)
+    result=subprocess.run([sys.executable,'-c',code,str(root)],cwd=Path(__file__).resolve().parents[1],capture_output=True,text=True,timeout=10)
     assert result.returncode==87,result.stderr
     inode=(jobs.files.root/'crash.txt').stat().st_ino
     r=jobs.write_once('crash-job','save','crash.txt','once')

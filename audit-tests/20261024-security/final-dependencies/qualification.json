@@ -1,0 +1,22 @@
+{
+  "timestamp_utc": "2026-10-24T09:08:34.085819+00:00",
+  "dependency_installation": "PASS",
+  "fresh_env_matches_scanned_versions": true,
+  "package_count": 38,
+  "osv_scan_complete": true,
+  "osv_advisory_matches": 0,
+  "fresh_pip_check_exit_code": 0,
+  "offline_install_exit_code": 0,
+  "initial_backend_chromium_check_exit_code": 1,
+  "unchanged_runtime_rechecks": [
+    0,
+    0
+  ],
+  "browser_check_verdict": "PARTIAL: initial screenshot capture failure, then two unchanged checks passed; root cause not established",
+  "failure": "Page.captureScreenshot: Unable to capture screenshot",
+  "diagnosis": "Rechecks measured 95% host memory load and 680-695 MiB available RAM. No failure-time telemetry was captured; memory pressure is a possible contributor, not established causation. Recheck browser debug logs show clean exits.",
+  "scope": "Fresh environment on the existing Windows account; actual in-process FastAPI app and offline sandboxed Chromium. No model inference or cloud provider calls.",
+  "original_failure_preserved": true,
+  "fresh_windows_account": false,
+  "source_note": "Installed copy was created before the parent final thinking-profile change; this result qualifies dependency installation and browser/backend construction, not inference sampling."
+}

@@ -1,0 +1,57 @@
+{
+  "started_utc": "2026-10-24T09:07:14.875813+00:00",
+  "scope": "Diagnose original post-install screenshot failure without changing adapter settings, sandbox, timeouts or unrelated processes",
+  "original_failure_preserved": "offline-runtime.log",
+  "source_hashes": {
+    "sight_core/capability_worker.py": "9153358ea1ae4145c00e18aba87fed95177a9abc56745e0e69963e7558043451",
+    "requirements.lock": "af2921572ce23f5e3ee280c989a087e2a49665ac653394248526512dcb969b3a",
+    "requirements-bootstrap.lock": "90df372c95fced73ab032edcb9d18360355d318842574d0d94bc194690e49a93"
+  },
+  "rows": [
+    {
+      "attempt": 1,
+      "exit_code": 0,
+      "seconds": 4.906,
+      "before": {
+        "utc": "2026-10-24T09:07:14.876819+00:00",
+        "host_ram_total_mib": 16068.7,
+        "host_ram_available_mib": 694.89,
+        "host_commit_available_mib": 864.92,
+        "host_memory_load_percent": 95,
+        "gpu_snapshot": "8188, 4406, 0, 55"
+      },
+      "after": {
+        "utc": "2026-10-24T09:07:19.871198+00:00",
+        "host_ram_total_mib": 16068.7,
+        "host_ram_available_mib": 691.58,
+        "host_commit_available_mib": 879.32,
+        "host_memory_load_percent": 95,
+        "gpu_snapshot": "8188, 4406, 0, 55"
+      },
+      "log": "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\audit-tests\\20261024-security\\final-dependencies\\offline-runtime-recheck-1.log"
+    },
+    {
+      "attempt": 2,
+      "exit_code": 0,
+      "seconds": 2.359,
+      "before": {
+        "utc": "2026-10-24T09:07:19.953768+00:00",
+        "host_ram_total_mib": 16068.7,
+        "host_ram_available_mib": 688.29,
+        "host_commit_available_mib": 874.19,
+        "host_memory_load_percent": 95,
+        "gpu_snapshot": "8188, 4406, 0, 55"
+      },
+      "after": {
+        "utc": "2026-10-24T09:07:22.383278+00:00",
+        "host_ram_total_mib": 16068.7,
+        "host_ram_available_mib": 680.73,
+        "host_commit_available_mib": 869.2,
+        "host_memory_load_percent": 95,
+        "gpu_snapshot": "8188, 4406, 0, 55"
+      },
+      "log": "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\audit-tests\\20261024-security\\final-dependencies\\offline-runtime-recheck-2.log"
+    }
+  ],
+  "finished_utc": "2026-10-24T09:07:22.455771+00:00"
+}

@@ -1,0 +1,93 @@
+.........FF.F..                                                          [100%]
+================================== FAILURES ===================================
+_ test_official_model_does_not_inherit_derivative_sampling[gemma4:e4b-it-qat-True-expected1] _
+
+tmp_path = WindowsPath('C:/Users/Dell/AppData/Local/Temp/pytest-of-Dell/pytest-86/test_official_model_does_not_i1')
+model = 'gemma4:e4b-it-qat', thinking = True, expected = (0.2, 0.95, 64, 1.0)
+
+    @pytest.mark.parametrize('model,thinking,expected', [
+        ('gemma4:e4b-it-qat', False, (1.0, .95, 64, 1.0)),
+        ('gemma4:e4b-it-qat', True, (.2, .95, 64, 1.0)),
+        ('gemma4:e4b-it-qat', None, (.2, .95, 64, 1.0)),
+        ('sight-gemma4-e4b:uncensored', False, (.7, .9, 40, 1.1)),
+    ])
+    def test_official_model_does_not_inherit_derivative_sampling(tmp_path, model, thinking, expected):
+        sent = []
+        def respond(request):
+            sent.append(json.loads(request.content))
+            return httpx.Response(200, json={'message': {'content': '4'}, 'done': True, 'done_reason': 'stop'})
+        provider = OllamaProvider(Config(tmp_path, model=model, thinking=thinking), transport=httpx.MockTransport(respond))
+        async def health():return ModelStatus('ready', 'fixture', supports_thinking=True)
+        provider._metadata_health = health
+        assert asyncio.run(provider.generate('2 plus 2'))['status'] == 'ok'
+        options = sent[0]['options']
+>       assert tuple(options[k] for k in ('temperature', 'top_p', 'top_k', 'repeat_penalty')) == expected
+E       assert (1.0, 0.95, 64, 1.0) == (0.2, 0.95, 64, 1.0)
+E         
+E         At index 0 diff: 1.0 != 0.2
+E         Use -v to get more diff
+
+sight\tests\test_official_gemma.py:55: AssertionError
+_ test_official_model_does_not_inherit_derivative_sampling[gemma4:e4b-it-qat-None-expected2] _
+
+tmp_path = WindowsPath('C:/Users/Dell/AppData/Local/Temp/pytest-of-Dell/pytest-86/test_official_model_does_not_i2')
+model = 'gemma4:e4b-it-qat', thinking = None, expected = (0.2, 0.95, 64, 1.0)
+
+    @pytest.mark.parametrize('model,thinking,expected', [
+        ('gemma4:e4b-it-qat', False, (1.0, .95, 64, 1.0)),
+        ('gemma4:e4b-it-qat', True, (.2, .95, 64, 1.0)),
+        ('gemma4:e4b-it-qat', None, (.2, .95, 64, 1.0)),
+        ('sight-gemma4-e4b:uncensored', False, (.7, .9, 40, 1.1)),
+    ])
+    def test_official_model_does_not_inherit_derivative_sampling(tmp_path, model, thinking, expected):
+        sent = []
+        def respond(request):
+            sent.append(json.loads(request.content))
+            return httpx.Response(200, json={'message': {'content': '4'}, 'done': True, 'done_reason': 'stop'})
+        provider = OllamaProvider(Config(tmp_path, model=model, thinking=thinking), transport=httpx.MockTransport(respond))
+        async def health():return ModelStatus('ready', 'fixture', supports_thinking=True)
+        provider._metadata_health = health
+        assert asyncio.run(provider.generate('2 plus 2'))['status'] == 'ok'
+        options = sent[0]['options']
+>       assert tuple(options[k] for k in ('temperature', 'top_p', 'top_k', 'repeat_penalty')) == expected
+E       assert (1.0, 0.95, 64, 1.0) == (0.2, 0.95, 64, 1.0)
+E         
+E         At index 0 diff: 1.0 != 0.2
+E         Use -v to get more diff
+
+sight\tests\test_official_gemma.py:55: AssertionError
+________ test_official_empty_answer_recovery_uses_nonthinking_profile _________
+
+tmp_path = WindowsPath('C:/Users/Dell/AppData/Local/Temp/pytest-of-Dell/pytest-86/test_official_empty_answer_rec0')
+
+    def test_official_empty_answer_recovery_uses_nonthinking_profile(tmp_path):
+        sent = []
+        def respond(request):
+            sent.append(json.loads(request.content))
+            message = {'thinking': 'private synthetic reasoning', 'content': ''} if len(sent) == 1 else {'content': '4'}
+            return httpx.Response(200, json={'message': message, 'done': True, 'done_reason': 'stop'})
+        provider = OllamaProvider(Config(tmp_path, model='gemma4:e4b-it-qat', thinking=True),
+                                  transport=httpx.MockTransport(respond))
+        async def health():return ModelStatus('ready', 'fixture', supports_thinking=True)
+        provider._metadata_health = health
+        answer = asyncio.run(provider.generate_chat('2 plus 2'))
+        assert answer['say'] == '4' and answer['local_inference_requests'] == 2
+>       assert [(r['think'], r['options']['temperature'], r['options']['num_predict']) for r in sent] == [
+            (True, .2, 1536), (False, 1.0, 512)]
+E       assert [(True, 1.0, ...se, 1.0, 512)] == [(True, 0.2, ...se, 1.0, 512)]
+E         
+E         At index 0 diff: (True, 1.0, 1536) != (True, 0.2, 1536)
+E         Use -v to get more diff
+
+sight\tests\test_official_gemma.py:72: AssertionError
+============================== warnings summary ===============================
+sight\.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\sight\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED sight\tests\test_official_gemma.py::test_official_model_does_not_inherit_derivative_sampling[gemma4:e4b-it-qat-True-expected1]
+FAILED sight\tests\test_official_gemma.py::test_official_model_does_not_inherit_derivative_sampling[gemma4:e4b-it-qat-None-expected2]
+FAILED sight\tests\test_official_gemma.py::test_official_empty_answer_recovery_uses_nonthinking_profile
+3 failed, 12 passed, 1 warning in 1.58s

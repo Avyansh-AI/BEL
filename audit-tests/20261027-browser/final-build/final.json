@@ -1,0 +1,23 @@
+{
+  "started_utc": "2026-10-26T18:46:10.160258+00:00",
+  "finished_utc": "2026-10-26T18:47:44.451338+00:00",
+  "seconds": 94.281,
+  "command": [
+    "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\sight\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "sight/tests",
+    "-q",
+    "--junitxml=C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\audit-tests\\20261027-browser\\final-build\\final.xml",
+    "--override-ini=cache_dir=C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\audit-tests\\20261027-browser\\final-build\\pytest-cache"
+  ],
+  "cwd": "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight",
+  "exit_code": 0,
+  "tests": 379,
+  "failure": 0,
+  "error": 0,
+  "skipped": 0,
+  "environment": "Windows-11-10.0.26300-SP0",
+  "python": "3.12.5",
+  "scope": "Automated regression including actual SQLite/process/Chromium/SAPI operations. Model/provider responses use fixtures; no live Gemma or cloud inference."
+}

@@ -1,0 +1,217 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF                                        [100%]
+================================== FAILURES ===================================
+_ test_real_child_failure_preserves_only_safe_diagnostics[browser_capture_unavailable-screenshot] _
+tests\test_worker_diagnostics.py:88: in test_real_child_failure_preserves_only_safe_diagnostics
+    assert getattr(error, "code", None) == code
+E   AssertionError: assert None == 'browser_capture_unavailable'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+_ test_real_child_failure_preserves_only_safe_diagnostics[browser_timeout-content] _
+tests\test_worker_diagnostics.py:88: in test_real_child_failure_preserves_only_safe_diagnostics
+    assert getattr(error, "code", None) == code
+E   AssertionError: assert None == 'browser_timeout'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+_ test_real_child_failure_preserves_only_safe_diagnostics[browser_closed-page] _
+tests\test_worker_diagnostics.py:88: in test_real_child_failure_preserves_only_safe_diagnostics
+    assert getattr(error, "code", None) == code
+E   AssertionError: assert None == 'browser_closed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+_ test_real_child_failure_preserves_only_safe_diagnostics[browser_failed-cleanup] _
+tests\test_worker_diagnostics.py:88: in test_real_child_failure_preserves_only_safe_diagnostics
+    assert getattr(error, "code", None) == code
+E   AssertionError: assert None == 'browser_failed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+______________ test_safe_worker_stages_survive_transport[launch] ______________
+tests\test_worker_diagnostics.py:100: in test_safe_worker_stages_survive_transport
+    assert getattr(worker_error(app), "diagnostics", None) == {
+E   AssertionError: assert None == {'resources': {'available_commit_mib': 5678, 'available_ram_mib': 1234, 'total_ram_mib': 8192}, 'stage': 'launch'}
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'diagnostics', None)
+E    +    where ValueError('Adapter dependency unavailable or operation failed') = worker_error(<fastapi.applications.FastAPI object at 0x000001EFD941BF50>)
+_____________ test_safe_worker_stages_survive_transport[context] ______________
+tests\test_worker_diagnostics.py:100: in test_safe_worker_stages_survive_transport
+    assert getattr(worker_error(app), "diagnostics", None) == {
+E   AssertionError: assert None == {'resources': {'available_commit_mib': 5678, 'available_ram_mib': 1234, 'total_ram_mib': 8192}, 'stage': 'context'}
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'diagnostics', None)
+E    +    where ValueError('Adapter dependency unavailable or operation failed') = worker_error(<fastapi.applications.FastAPI object at 0x000001EFD94CDF40>)
+______________ test_safe_worker_stages_survive_transport[fields] ______________
+tests\test_worker_diagnostics.py:100: in test_safe_worker_stages_survive_transport
+    assert getattr(worker_error(app), "diagnostics", None) == {
+E   AssertionError: assert None == {'resources': {'available_commit_mib': 5678, 'available_ram_mib': 1234, 'total_ram_mib': 8192}, 'stage': 'fields'}
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'diagnostics', None)
+E    +    where ValueError('Adapter dependency unavailable or operation failed') = worker_error(<fastapi.applications.FastAPI object at 0x000001EFD95C4860>)
+_____________ test_safe_worker_stages_survive_transport[cleanup] ______________
+tests\test_worker_diagnostics.py:100: in test_safe_worker_stages_survive_transport
+    assert getattr(worker_error(app), "diagnostics", None) == {
+E   AssertionError: assert None == {'resources': {'available_commit_mib': 5678, 'available_ram_mib': 1234, 'total_ram_mib': 8192}, 'stage': 'cleanup'}
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'diagnostics', None)
+E    +    where ValueError('Adapter dependency unavailable or operation failed') = worker_error(<fastapi.applications.FastAPI object at 0x000001EFD9657AA0>)
+_ test_untrusted_stage_is_replaced_with_fixed_unknown[SYNTHETIC_PRIVATE_HTML_AND_FIELD_CANARY] _
+tests\test_worker_diagnostics.py:109: in test_untrusted_stage_is_replaced_with_fixed_unknown
+    assert getattr(worker_error(app), "diagnostics", None) == {
+E   AssertionError: assert None == {'resources': {'available_commit_mib': 5678, 'available_ram_mib': 1234, 'total_ram_mib': 8192}, 'stage': 'unknown'}
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'diagnostics', None)
+E    +    where ValueError('Adapter dependency unavailable or operation failed') = worker_error(<fastapi.applications.FastAPI object at 0x000001EFD96A3530>)
+__________ test_untrusted_stage_is_replaced_with_fixed_unknown[None] __________
+tests\test_worker_diagnostics.py:109: in test_untrusted_stage_is_replaced_with_fixed_unknown
+    assert getattr(worker_error(app), "diagnostics", None) == {
+E   AssertionError: assert None == {'resources': {'available_commit_mib': 5678, 'available_ram_mib': 1234, 'total_ram_mib': 8192}, 'stage': 'unknown'}
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'diagnostics', None)
+E    +    where ValueError('Adapter dependency unavailable or operation failed') = worker_error(<fastapi.applications.FastAPI object at 0x000001EFD9860A70>)
+_________ test_untrusted_stage_is_replaced_with_fixed_unknown[stage2] _________
+tests\test_worker_diagnostics.py:109: in test_untrusted_stage_is_replaced_with_fixed_unknown
+    assert getattr(worker_error(app), "diagnostics", None) == {
+E   AssertionError: assert None == {'resources': {'available_commit_mib': 5678, 'available_ram_mib': 1234, 'total_ram_mib': 8192}, 'stage': 'unknown'}
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'diagnostics', None)
+E    +    where ValueError('Adapter dependency unavailable or operation failed') = worker_error(<fastapi.applications.FastAPI object at 0x000001EFD9951490>)
+_________ test_untrusted_stage_is_replaced_with_fixed_unknown[stage3] _________
+tests\test_worker_diagnostics.py:109: in test_untrusted_stage_is_replaced_with_fixed_unknown
+    assert getattr(worker_error(app), "diagnostics", None) == {
+E   AssertionError: assert None == {'resources': {'available_commit_mib': 5678, 'available_ram_mib': 1234, 'total_ram_mib': 8192}, 'stage': 'unknown'}
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'diagnostics', None)
+E    +    where ValueError('Adapter dependency unavailable or operation failed') = worker_error(<fastapi.applications.FastAPI object at 0x000001EFD98D6AB0>)
+__ test_resource_values_reject_bool_negative_oversize_and_nonintegers[True] ___
+tests\test_worker_diagnostics.py:125: in test_resource_values_reject_bool_negative_oversize_and_nonintegers
+    assert getattr(error, "code", None) == CAPTURE_CODE
+E   AssertionError: assert None == 'browser_capture_unavailable'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+__ test_resource_values_reject_bool_negative_oversize_and_nonintegers[False] __
+tests\test_worker_diagnostics.py:125: in test_resource_values_reject_bool_negative_oversize_and_nonintegers
+    assert getattr(error, "code", None) == CAPTURE_CODE
+E   AssertionError: assert None == 'browser_capture_unavailable'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+___ test_resource_values_reject_bool_negative_oversize_and_nonintegers[-1] ____
+tests\test_worker_diagnostics.py:125: in test_resource_values_reject_bool_negative_oversize_and_nonintegers
+    assert getattr(error, "code", None) == CAPTURE_CODE
+E   AssertionError: assert None == 'browser_capture_unavailable'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+_ test_resource_values_reject_bool_negative_oversize_and_nonintegers[1099511627777] _
+tests\test_worker_diagnostics.py:125: in test_resource_values_reject_bool_negative_oversize_and_nonintegers
+    assert getattr(error, "code", None) == CAPTURE_CODE
+E   AssertionError: assert None == 'browser_capture_unavailable'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+___ test_resource_values_reject_bool_negative_oversize_and_nonintegers[1.5] ___
+tests\test_worker_diagnostics.py:125: in test_resource_values_reject_bool_negative_oversize_and_nonintegers
+    assert getattr(error, "code", None) == CAPTURE_CODE
+E   AssertionError: assert None == 'browser_capture_unavailable'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+___ test_resource_values_reject_bool_negative_oversize_and_nonintegers[123] ___
+tests\test_worker_diagnostics.py:125: in test_resource_values_reject_bool_negative_oversize_and_nonintegers
+    assert getattr(error, "code", None) == CAPTURE_CODE
+E   AssertionError: assert None == 'browser_capture_unavailable'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+__ test_resource_values_reject_bool_negative_oversize_and_nonintegers[None] ___
+tests\test_worker_diagnostics.py:125: in test_resource_values_reject_bool_negative_oversize_and_nonintegers
+    assert getattr(error, "code", None) == CAPTURE_CODE
+E   AssertionError: assert None == 'browser_capture_unavailable'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+_ test_resource_values_reject_bool_negative_oversize_and_nonintegers[invalid7] _
+tests\test_worker_diagnostics.py:125: in test_resource_values_reject_bool_negative_oversize_and_nonintegers
+    assert getattr(error, "code", None) == CAPTURE_CODE
+E   AssertionError: assert None == 'browser_capture_unavailable'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+________________ test_resource_integer_boundaries_are_retained ________________
+tests\test_worker_diagnostics.py:135: in test_resource_integer_boundaries_are_retained
+    assert getattr(worker_error(app), "diagnostics", None) == {
+E   AssertionError: assert None == {'resources': {'available_commit_mib': 1099511627776, 'available_ram_mib': 0}, 'stage': 'screenshot'}
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'diagnostics', None)
+E    +    where ValueError('Adapter dependency unavailable or operation failed') = worker_error(<fastapi.applications.FastAPI object at 0x000001EFDA293C80>)
+_ test_unknown_or_unhashable_codes_fail_without_body_disclosure[SYNTHETIC_PRIVATE_HTML_AND_FIELD_CANARY] _
+tests\test_worker_diagnostics.py:147: in test_unknown_or_unhashable_codes_fail_without_body_disclosure
+    assert getattr(error, "code", None) == "adapter_failed"
+E   AssertionError: assert None == 'adapter_failed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+_____ test_unknown_or_unhashable_codes_fail_without_body_disclosure[None] _____
+tests\test_worker_diagnostics.py:147: in test_unknown_or_unhashable_codes_fail_without_body_disclosure
+    assert getattr(error, "code", None) == "adapter_failed"
+E   AssertionError: assert None == 'adapter_failed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+____ test_unknown_or_unhashable_codes_fail_without_body_disclosure[code2] _____
+tests\test_worker_diagnostics.py:147: in test_unknown_or_unhashable_codes_fail_without_body_disclosure
+    assert getattr(error, "code", None) == "adapter_failed"
+E   AssertionError: assert None == 'adapter_failed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+____ test_unknown_or_unhashable_codes_fail_without_body_disclosure[code3] _____
+tests\test_worker_diagnostics.py:147: in test_unknown_or_unhashable_codes_fail_without_body_disclosure
+    assert getattr(error, "code", None) == "adapter_failed"
+E   AssertionError: assert None == 'adapter_failed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+_ test_malformed_worker_failure_uses_fixed_generic_error[SYNTHETIC_PRIVATE_HTML_AND_FIELD_CANARY] _
+tests\test_worker_diagnostics.py:156: in test_malformed_worker_failure_uses_fixed_generic_error
+    assert getattr(error, "code", None) == "adapter_failed"
+E   AssertionError: assert None == 'adapter_failed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+________ test_malformed_worker_failure_uses_fixed_generic_error[null] _________
+tests\test_worker_diagnostics.py:156: in test_malformed_worker_failure_uses_fixed_generic_error
+    assert getattr(error, "code", None) == "adapter_failed"
+E   AssertionError: assert None == 'adapter_failed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+_________ test_malformed_worker_failure_uses_fixed_generic_error[[]] __________
+tests\test_worker_diagnostics.py:156: in test_malformed_worker_failure_uses_fixed_generic_error
+    assert getattr(error, "code", None) == "adapter_failed"
+E   AssertionError: assert None == 'adapter_failed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+_ test_malformed_worker_failure_uses_fixed_generic_error["SYNTHETIC_PRIVATE_HTML_AND_FIELD_CANARY"] _
+tests\test_worker_diagnostics.py:156: in test_malformed_worker_failure_uses_fixed_generic_error
+    assert getattr(error, "code", None) == "adapter_failed"
+E   AssertionError: assert None == 'adapter_failed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+__________ test_malformed_worker_failure_uses_fixed_generic_error[{] __________
+tests\test_worker_diagnostics.py:156: in test_malformed_worker_failure_uses_fixed_generic_error
+    assert getattr(error, "code", None) == "adapter_failed"
+E   AssertionError: assert None == 'adapter_failed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+_________ test_browser_diagnostics_cannot_be_spoofed_by_speech_worker _________
+tests\test_worker_diagnostics.py:164: in test_browser_diagnostics_cannot_be_spoofed_by_speech_worker
+    assert getattr(error, "code", None) == "adapter_failed"
+E   AssertionError: assert None == 'adapter_failed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+___________ test_oversized_failure_body_cannot_bypass_output_limit ____________
+tests\test_worker_diagnostics.py:173: in test_oversized_failure_body_cannot_bypass_output_limit
+    assert getattr(error, "code", None) == "adapter_failed"
+E   AssertionError: assert None == 'adapter_failed'
+E    +  where None = getattr(ValueError('Adapter dependency unavailable or operation failed'), 'code', None)
+_____ test_api_failure_records_safe_diagnostics_without_artifact_or_retry _____
+tests\test_worker_diagnostics.py:194: in test_api_failure_records_safe_diagnostics_without_artifact_or_retry
+    assert "Nothing is automatically retried" in response.json()["detail"]
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+E   KeyError: 'detail'
+============================== warnings summary ===============================
+.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\sight\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_worker_diagnostics.py::test_real_child_failure_preserves_only_safe_diagnostics[browser_capture_unavailable-screenshot]
+FAILED tests/test_worker_diagnostics.py::test_real_child_failure_preserves_only_safe_diagnostics[browser_timeout-content]
+FAILED tests/test_worker_diagnostics.py::test_real_child_failure_preserves_only_safe_diagnostics[browser_closed-page]
+FAILED tests/test_worker_diagnostics.py::test_real_child_failure_preserves_only_safe_diagnostics[browser_failed-cleanup]
+FAILED tests/test_worker_diagnostics.py::test_safe_worker_stages_survive_transport[launch]
+FAILED tests/test_worker_diagnostics.py::test_safe_worker_stages_survive_transport[context]
+FAILED tests/test_worker_diagnostics.py::test_safe_worker_stages_survive_transport[fields]
+FAILED tests/test_worker_diagnostics.py::test_safe_worker_stages_survive_transport[cleanup]
+FAILED tests/test_worker_diagnostics.py::test_untrusted_stage_is_replaced_with_fixed_unknown[SYNTHETIC_PRIVATE_HTML_AND_FIELD_CANARY]
+FAILED tests/test_worker_diagnostics.py::test_untrusted_stage_is_replaced_with_fixed_unknown[None]
+FAILED tests/test_worker_diagnostics.py::test_untrusted_stage_is_replaced_with_fixed_unknown[stage2]
+FAILED tests/test_worker_diagnostics.py::test_untrusted_stage_is_replaced_with_fixed_unknown[stage3]
+FAILED tests/test_worker_diagnostics.py::test_resource_values_reject_bool_negative_oversize_and_nonintegers[True]
+FAILED tests/test_worker_diagnostics.py::test_resource_values_reject_bool_negative_oversize_and_nonintegers[False]
+FAILED tests/test_worker_diagnostics.py::test_resource_values_reject_bool_negative_oversize_and_nonintegers[-1]
+FAILED tests/test_worker_diagnostics.py::test_resource_values_reject_bool_negative_oversize_and_nonintegers[1099511627777]
+FAILED tests/test_worker_diagnostics.py::test_resource_values_reject_bool_negative_oversize_and_nonintegers[1.5]
+FAILED tests/test_worker_diagnostics.py::test_resource_values_reject_bool_negative_oversize_and_nonintegers[123]
+FAILED tests/test_worker_diagnostics.py::test_resource_values_reject_bool_negative_oversize_and_nonintegers[None]
+FAILED tests/test_worker_diagnostics.py::test_resource_values_reject_bool_negative_oversize_and_nonintegers[invalid7]
+FAILED tests/test_worker_diagnostics.py::test_resource_integer_boundaries_are_retained
+FAILED tests/test_worker_diagnostics.py::test_unknown_or_unhashable_codes_fail_without_body_disclosure[SYNTHETIC_PRIVATE_HTML_AND_FIELD_CANARY]
+FAILED tests/test_worker_diagnostics.py::test_unknown_or_unhashable_codes_fail_without_body_disclosure[None]
+FAILED tests/test_worker_diagnostics.py::test_unknown_or_unhashable_codes_fail_without_body_disclosure[code2]
+FAILED tests/test_worker_diagnostics.py::test_unknown_or_unhashable_codes_fail_without_body_disclosure[code3]
+FAILED tests/test_worker_diagnostics.py::test_malformed_worker_failure_uses_fixed_generic_error[SYNTHETIC_PRIVATE_HTML_AND_FIELD_CANARY]
+FAILED tests/test_worker_diagnostics.py::test_malformed_worker_failure_uses_fixed_generic_error[null]
+FAILED tests/test_worker_diagnostics.py::test_malformed_worker_failure_uses_fixed_generic_error[[]]
+FAILED tests/test_worker_diagnostics.py::test_malformed_worker_failure_uses_fixed_generic_error["SYNTHETIC_PRIVATE_HTML_AND_FIELD_CANARY"]
+FAILED tests/test_worker_diagnostics.py::test_malformed_worker_failure_uses_fixed_generic_error[{]
+FAILED tests/test_worker_diagnostics.py::test_browser_diagnostics_cannot_be_spoofed_by_speech_worker
+FAILED tests/test_worker_diagnostics.py::test_oversized_failure_body_cannot_bypass_output_limit
+FAILED tests/test_worker_diagnostics.py::test_api_failure_records_safe_diagnostics_without_artifact_or_retry
+33 failed, 1 warning in 10.89s

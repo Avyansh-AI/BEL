@@ -1,0 +1,40 @@
+{
+  "reviewed_utc": "2026-10-26T13:04:22.016281+00:00",
+  "evidence": "audit-tests\\20261024-security\\current-build\\soak-20261024T141055Z-6bba57",
+  "checks": {
+    "one_hour_qualified": true,
+    "at_least_60_cycles": true,
+    "at_least_12_real_model_calls": true,
+    "every_model_answer_correct": true,
+    "all_recorded_checks_passed": true,
+    "all_three_planned_crashes_exercised": true,
+    "no_unplanned_backend_exits": true,
+    "no_two_minute_activity_gap": true,
+    "source_still_matches_tested_hashes": true,
+    "dependencies_still_match_tested_versions": true,
+    "same_owner_selected_model_and_thinking": true
+  },
+  "passed": true,
+  "elapsed_seconds": 3601.906,
+  "cycles": 60,
+  "check_count": 468,
+  "model_calls": 12,
+  "correct_answers": 12,
+  "max_health_check_gap_seconds": 60.937,
+  "max_telemetry_gap_seconds": 5.365,
+  "telemetry": {
+    "samples": 706,
+    "peak_gpu_mib": 4405.0,
+    "peak_gpu_temperature_c": 70.0,
+    "minimum_available_host_ram_mib": 67.33,
+    "peak_host_cpu_percent": 87.81,
+    "peak_server_working_set_mib": 72.11,
+    "cpu_temperature": "not available from the standard interfaces used"
+  },
+  "model_latency": {
+    "median_seconds": 10.086,
+    "max_seconds": 44.844,
+    "sample_count": 12
+  },
+  "scope": "Bounded shared-host serial workload; no guarantee for every future prompt, long contexts or added parallel models"
+}

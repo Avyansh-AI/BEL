@@ -150,8 +150,8 @@ class Forge:
             return {'text':output,'skill_invocation_id':invocation,'skill_id':identifier,'version':row['version'],'source_event_id':row['source_event_id']}
         finally:
             with self.store.connect() as db:
-                db.execute('UPDATE procedures SET invoked=invoked+1,failed=failed+?,reused=reused+?,last_used=? WHERE id=? AND version=?',
-                    (not success,row['invoked']>0,time.time(),identifier,row['version']))
+                db.execute('UPDATE procedures SET invoked=invoked+1,failed=failed+?,reused=reused+(invoked>0),last_used=? WHERE id=? AND version=?',
+                    (not success,time.time(),identifier,row['version']))
                 self.store.event('skill.invoked' if success else 'skill.failed',task,{'skill_id':identifier,'version':row['version'],'skill_invocation_id':invocation,'success':success},db)
                 db.execute('INSERT OR IGNORE INTO graph_edges VALUES(?,?,?)',(f'skill:{identifier}:{row["version"]}',task,'used_by'))
 
@@ -179,7 +179,10 @@ class Forge:
             for candidate in ids:
                 db.execute('DELETE FROM candidates WHERE id=?',(candidate,))
                 db.execute('DELETE FROM graph_edges WHERE source=? OR target=?',(candidate,candidate))
-            db.execute('DELETE FROM graph_edges WHERE source LIKE ? OR target LIKE ?',('skill:'+identifier+':%','skill:'+identifier+':%'))
+            # Skill ids may contain underscores, which are wildcards in LIKE.
+            # Match a literal namespace prefix so another skill keeps its lineage.
+            prefix='skill:'+identifier+':'
+            db.execute('DELETE FROM graph_edges WHERE instr(source,?)=1 OR instr(target,?)=1',(prefix,prefix))
             self.store.event('skill.forgotten',identifier,{'versions_removed':count},db)
         return {'removed_versions':count}
 

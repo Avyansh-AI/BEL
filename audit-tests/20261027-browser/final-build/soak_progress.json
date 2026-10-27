@@ -1,0 +1,8 @@
+{
+  "evidence": "audit-tests\\20261027-browser\\final-build\\soak-20261027T093042Z-9ea8e2",
+  "elapsed_seconds": 3605.031,
+  "requested_seconds": 3600,
+  "cycles": 60,
+  "failed_checks": 0,
+  "complete": true
+}

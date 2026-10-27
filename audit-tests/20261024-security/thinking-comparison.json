@@ -1,0 +1,1213 @@
+{
+  "started_utc": "2026-10-24T03:32:37.932129+00:00",
+  "model": "gemma4:e4b-it-qat",
+  "system_prompt": "You are SIGHT, an AI assistant. Answer the user's question accurately and directly, using their language. Use clear, professional language without slang, memes or emojis. Tools are unavailable in this chat.",
+  "thinking": true,
+  "cloud_requests": 0,
+  "cases": [
+    [
+      "discount_regression",
+      "A price of 250 is reduced by 20%, then 10% tax is added to the reduced price. Reply only the final number.",
+      "220",
+      true
+    ],
+    [
+      "discount_holdout",
+      "An item costs 180. Apply a 25% discount, then add 8% tax to the discounted price. Reply only the final number.",
+      "145.8",
+      true
+    ],
+    [
+      "reverse_percentage",
+      "A price becomes 72 after a 20% increase. What was the original price? Reply only the number.",
+      "60",
+      true
+    ],
+    [
+      "basket",
+      "Buy 3 items at 17 each and 5 items at 9 each, then subtract a voucher of 10 from the total. Reply only the amount paid.",
+      "86",
+      true
+    ],
+    [
+      "rate",
+      "A vehicle travels 150 kilometres in 2.5 hours. Reply only its average speed in kilometres per hour as a number.",
+      "60",
+      true
+    ],
+    [
+      "ratio",
+      "Split 84 in the ratio 2:5. Reply only the larger share as a number.",
+      "60",
+      true
+    ],
+    [
+      "parallel_plan",
+      "Task A takes 10 minutes. B takes 15 minutes and C takes 12 minutes. Both B and C depend on A and can then run in parallel. Reply only the earliest total completion time in minutes.",
+      "25",
+      true
+    ],
+    [
+      "sequential_plan",
+      "A download takes 10 minutes, installation then takes 15 minutes, and testing then takes 12 minutes. Reply only their total duration in minutes.",
+      "37",
+      true
+    ],
+    [
+      "weighted_mean",
+      "Two groups have average scores of 60 and 90. They contain 3 and 2 people respectively. Reply only the combined average score.",
+      "72",
+      true
+    ],
+    [
+      "invalid_inference",
+      "Every red block is heavy. Some heavy blocks are wooden. Must some red blocks be wooden? Reply only YES or NO.",
+      "NO",
+      false
+    ],
+    [
+      "valid_inference",
+      "Every sparrow is a bird. Every bird is warm-blooded. Must every sparrow be warm-blooded? Reply only YES or NO.",
+      "YES",
+      false
+    ],
+    [
+      "instruction",
+      "Return exactly SIGHT_READY and nothing else.",
+      "SIGHT_READY",
+      false
+    ]
+  ],
+  "seeds": [
+    1,
+    7,
+    19,
+    31,
+    59
+  ],
+  "profiles": [
+    [
+      "official_thinking",
+      1.0
+    ]
+  ],
+  "rows": [
+    {
+      "case": "discount_regression",
+      "seed": 1,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "230.0",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 6
+        }
+      },
+      "seconds": 16.547,
+      "passed": false
+    },
+    {
+      "case": "discount_regression",
+      "seed": 7,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "220",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 231
+        }
+      },
+      "seconds": 4.344,
+      "passed": true
+    },
+    {
+      "case": "discount_regression",
+      "seed": 19,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "220",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 205
+        }
+      },
+      "seconds": 3.859,
+      "passed": true
+    },
+    {
+      "case": "discount_regression",
+      "seed": 31,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "220",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 195
+        }
+      },
+      "seconds": 3.609,
+      "passed": true
+    },
+    {
+      "case": "discount_regression",
+      "seed": 59,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "220",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 247
+        }
+      },
+      "seconds": 4.61,
+      "passed": true
+    },
+    {
+      "case": "discount_holdout",
+      "seed": 1,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "117",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 4
+        }
+      },
+      "seconds": 0.781,
+      "passed": false
+    },
+    {
+      "case": "discount_holdout",
+      "seed": 7,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "145.8",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 214
+        }
+      },
+      "seconds": 3.953,
+      "passed": true
+    },
+    {
+      "case": "discount_holdout",
+      "seed": 19,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "145.80",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 202
+        }
+      },
+      "seconds": 3.781,
+      "passed": true
+    },
+    {
+      "case": "discount_holdout",
+      "seed": 31,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "145.8",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 308
+        }
+      },
+      "seconds": 5.922,
+      "passed": true
+    },
+    {
+      "case": "discount_holdout",
+      "seed": 59,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "121.50",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 7
+        }
+      },
+      "seconds": 1.094,
+      "passed": false
+    },
+    {
+      "case": "reverse_percentage",
+      "seed": 1,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 83,
+          "output_tokens": 3
+        }
+      },
+      "seconds": 1.172,
+      "passed": true
+    },
+    {
+      "case": "reverse_percentage",
+      "seed": 7,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 83,
+          "output_tokens": 227
+        }
+      },
+      "seconds": 5.187,
+      "passed": true
+    },
+    {
+      "case": "reverse_percentage",
+      "seed": 19,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 83,
+          "output_tokens": 164
+        }
+      },
+      "seconds": 4.141,
+      "passed": true
+    },
+    {
+      "case": "reverse_percentage",
+      "seed": 31,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 83,
+          "output_tokens": 302
+        }
+      },
+      "seconds": 6.594,
+      "passed": true
+    },
+    {
+      "case": "reverse_percentage",
+      "seed": 59,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 83,
+          "output_tokens": 3
+        }
+      },
+      "seconds": 1.406,
+      "passed": true
+    },
+    {
+      "case": "basket",
+      "seed": 1,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "$109",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 94,
+          "output_tokens": 5
+        }
+      },
+      "seconds": 1.531,
+      "passed": false
+    },
+    {
+      "case": "basket",
+      "seed": 7,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "86",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 94,
+          "output_tokens": 169
+        }
+      },
+      "seconds": 4.078,
+      "passed": true
+    },
+    {
+      "case": "basket",
+      "seed": 19,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "86",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 94,
+          "output_tokens": 117
+        }
+      },
+      "seconds": 3.141,
+      "passed": true
+    },
+    {
+      "case": "basket",
+      "seed": 31,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "86",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 94,
+          "output_tokens": 186
+        }
+      },
+      "seconds": 4.328,
+      "passed": true
+    },
+    {
+      "case": "basket",
+      "seed": 59,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "The total amount paid is $86.",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 94,
+          "output_tokens": 192
+        }
+      },
+      "seconds": 4.14,
+      "passed": false
+    },
+    {
+      "case": "rate",
+      "seed": 1,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 86,
+          "output_tokens": 3
+        }
+      },
+      "seconds": 1.062,
+      "passed": true
+    },
+    {
+      "case": "rate",
+      "seed": 7,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 86,
+          "output_tokens": 112
+        }
+      },
+      "seconds": 2.922,
+      "passed": true
+    },
+    {
+      "case": "rate",
+      "seed": 19,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 86,
+          "output_tokens": 87
+        }
+      },
+      "seconds": 2.328,
+      "passed": true
+    },
+    {
+      "case": "rate",
+      "seed": 31,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 86,
+          "output_tokens": 114
+        }
+      },
+      "seconds": 2.625,
+      "passed": true
+    },
+    {
+      "case": "rate",
+      "seed": 59,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 86,
+          "output_tokens": 3
+        }
+      },
+      "seconds": 0.797,
+      "passed": true
+    },
+    {
+      "case": "ratio",
+      "seed": 1,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 79,
+          "output_tokens": 223
+        }
+      },
+      "seconds": 4.391,
+      "passed": true
+    },
+    {
+      "case": "ratio",
+      "seed": 7,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 79,
+          "output_tokens": 172
+        }
+      },
+      "seconds": 3.765,
+      "passed": true
+    },
+    {
+      "case": "ratio",
+      "seed": 19,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 79,
+          "output_tokens": 155
+        }
+      },
+      "seconds": 3.765,
+      "passed": true
+    },
+    {
+      "case": "ratio",
+      "seed": 31,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 79,
+          "output_tokens": 221
+        }
+      },
+      "seconds": 4.391,
+      "passed": true
+    },
+    {
+      "case": "ratio",
+      "seed": 59,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "60",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 79,
+          "output_tokens": 150
+        }
+      },
+      "seconds": 3.25,
+      "passed": true
+    },
+    {
+      "case": "parallel_plan",
+      "seed": 1,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "25",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 104,
+          "output_tokens": 3
+        }
+      },
+      "seconds": 0.953,
+      "passed": true
+    },
+    {
+      "case": "parallel_plan",
+      "seed": 7,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "25",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 104,
+          "output_tokens": 387
+        }
+      },
+      "seconds": 7.0,
+      "passed": true
+    },
+    {
+      "case": "parallel_plan",
+      "seed": 19,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "25",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 104,
+          "output_tokens": 351
+        }
+      },
+      "seconds": 6.219,
+      "passed": true
+    },
+    {
+      "case": "parallel_plan",
+      "seed": 31,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "25",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 104,
+          "output_tokens": 275
+        }
+      },
+      "seconds": 4.984,
+      "passed": true
+    },
+    {
+      "case": "parallel_plan",
+      "seed": 59,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "25",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 104,
+          "output_tokens": 383
+        }
+      },
+      "seconds": 6.594,
+      "passed": true
+    },
+    {
+      "case": "sequential_plan",
+      "seed": 1,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "37",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 3
+        }
+      },
+      "seconds": 0.656,
+      "passed": true
+    },
+    {
+      "case": "sequential_plan",
+      "seed": 7,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "37",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 111
+        }
+      },
+      "seconds": 2.25,
+      "passed": true
+    },
+    {
+      "case": "sequential_plan",
+      "seed": 19,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "37",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 181
+        }
+      },
+      "seconds": 3.359,
+      "passed": true
+    },
+    {
+      "case": "sequential_plan",
+      "seed": 31,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "37",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 127
+        }
+      },
+      "seconds": 2.532,
+      "passed": true
+    },
+    {
+      "case": "sequential_plan",
+      "seed": 59,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "37 minutes",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 91,
+          "output_tokens": 4
+        }
+      },
+      "seconds": 0.593,
+      "passed": false
+    },
+    {
+      "case": "weighted_mean",
+      "seed": 1,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "75",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 89,
+          "output_tokens": 3
+        }
+      },
+      "seconds": 0.657,
+      "passed": false
+    },
+    {
+      "case": "weighted_mean",
+      "seed": 7,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "72",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 89,
+          "output_tokens": 179
+        }
+      },
+      "seconds": 3.375,
+      "passed": true
+    },
+    {
+      "case": "weighted_mean",
+      "seed": 19,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "72",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 89,
+          "output_tokens": 470
+        }
+      },
+      "seconds": 8.046,
+      "passed": true
+    },
+    {
+      "case": "weighted_mean",
+      "seed": 31,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "72",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 89,
+          "output_tokens": 322
+        }
+      },
+      "seconds": 5.516,
+      "passed": true
+    },
+    {
+      "case": "weighted_mean",
+      "seed": 59,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "72",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 89,
+          "output_tokens": 190
+        }
+      },
+      "seconds": 3.468,
+      "passed": true
+    },
+    {
+      "case": "invalid_inference",
+      "seed": 1,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "NO",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 83,
+          "output_tokens": 2
+        }
+      },
+      "seconds": 0.657,
+      "passed": true
+    },
+    {
+      "case": "invalid_inference",
+      "seed": 7,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "NO",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 83,
+          "output_tokens": 379
+        }
+      },
+      "seconds": 6.828,
+      "passed": true
+    },
+    {
+      "case": "invalid_inference",
+      "seed": 19,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "NO",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 83,
+          "output_tokens": 360
+        }
+      },
+      "seconds": 6.562,
+      "passed": true
+    },
+    {
+      "case": "invalid_inference",
+      "seed": 31,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "NO",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 83,
+          "output_tokens": 349
+        }
+      },
+      "seconds": 6.188,
+      "passed": true
+    },
+    {
+      "case": "invalid_inference",
+      "seed": 59,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "NO",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 83,
+          "output_tokens": 359
+        }
+      },
+      "seconds": 6.406,
+      "passed": true
+    },
+    {
+      "case": "valid_inference",
+      "seed": 1,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "YES",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 85,
+          "output_tokens": 2
+        }
+      },
+      "seconds": 0.625,
+      "passed": true
+    },
+    {
+      "case": "valid_inference",
+      "seed": 7,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "YES",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 85,
+          "output_tokens": 247
+        }
+      },
+      "seconds": 4.625,
+      "passed": true
+    },
+    {
+      "case": "valid_inference",
+      "seed": 19,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "YES",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 85,
+          "output_tokens": 231
+        }
+      },
+      "seconds": 4.344,
+      "passed": true
+    },
+    {
+      "case": "valid_inference",
+      "seed": 31,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "YES",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 85,
+          "output_tokens": 117
+        }
+      },
+      "seconds": 2.375,
+      "passed": true
+    },
+    {
+      "case": "valid_inference",
+      "seed": 59,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "YES",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 85,
+          "output_tokens": 2
+        }
+      },
+      "seconds": 0.594,
+      "passed": true
+    },
+    {
+      "case": "instruction",
+      "seed": 1,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "SIGHT_READY",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 68,
+          "output_tokens": 93
+        }
+      },
+      "seconds": 2.062,
+      "passed": true
+    },
+    {
+      "case": "instruction",
+      "seed": 7,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "SIGHT_READY",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 68,
+          "output_tokens": 5
+        }
+      },
+      "seconds": 0.594,
+      "passed": true
+    },
+    {
+      "case": "instruction",
+      "seed": 19,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "SIGHT_READY",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 68,
+          "output_tokens": 5
+        }
+      },
+      "seconds": 0.609,
+      "passed": true
+    },
+    {
+      "case": "instruction",
+      "seed": 31,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "SIGHT_READY",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 68,
+          "output_tokens": 5
+        }
+      },
+      "seconds": 0.61,
+      "passed": true
+    },
+    {
+      "case": "instruction",
+      "seed": 59,
+      "profile": "official_thinking",
+      "temperature": 1.0,
+      "answer": {
+        "status": "ok",
+        "say": "SIGHT_READY",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 68,
+          "output_tokens": 34
+        }
+      },
+      "seconds": 1.046,
+      "passed": true
+    }
+  ],
+  "complete": true,
+  "selection_rule": "Candidate must reduce total failures without a worse failure count on any case; thinking qualification requires all 60 visible answers correct within existing timeout/output limits. No automatic adoption; limited benchmark, not a general correctness guarantee.",
+  "source_hashes": {
+    "sight_core/__init__.py": "ba90670254fe47f418ab14be3b3be9504f17d926353794588fc52ee42faa745d",
+    "sight_core/api.py": "fbe04062a624d4e9a9fdd68cfe2a42a8b4f68f4d4fd38435fe8c1002d96bd0dc",
+    "sight_core/artifacts.py": "63a3cda1a3aab2ec384cf976e13eabb3a94ee982db53e5cf63fad18fc9e763c6",
+    "sight_core/brain_store.py": "fcaa29228b8986e8aa86fac9bcf069a1561b4e85f1217936dd79d07db407f5ff",
+    "sight_core/capabilities.py": "ea119ff951bf47d863033994ff6119bdb6a1bbb20288ce821da5d50d18aeddee",
+    "sight_core/capability_worker.py": "9153358ea1ae4145c00e18aba87fed95177a9abc56745e0e69963e7558043451",
+    "sight_core/chatgpt.py": "71d352e1bd876a1f789d0a069c8863400777f1c5acd0c23062d8fcc6b82c845b",
+    "sight_core/cli.py": "61a701c56a9e513a0100379c6c546f2e3a474714bb754f18b15898b745c752e8",
+    "sight_core/config.py": "8f130850712c01a2a5c731cc7e538d55c71600d45f1db36c39eab0e068238d7a",
+    "sight_core/connector_contracts.py": "be01f06176268207823c2187da324cbe4c76ec3e260012948d55935c99f1f143",
+    "sight_core/forge.py": "d8c518ee6e011998bad61e887034cd25681db8bc31cac4d95009c8895dac1ce9",
+    "sight_core/jobs.py": "28f02fb59809c6fd120f1b14ffda218a913ce9817ce3a5008e7ea4d7ffe69719",
+    "sight_core/learning_api.py": "d0c7c2f37fb10d211e3f8cfdde8c9ab8a4f9da329c22de0bbeba985f22b06336",
+    "sight_core/local_adapters.py": "eae42f13db3415b19666d89ca8911808500eedb0819e79c74bef1d54601af52a",
+    "sight_core/mcp_bridge.py": "49d6c1e6e9e326dc4188ec81c976ca62ba1d260918dc59a53b98d9e28ef69460",
+    "sight_core/memory.py": "a2ea70e715c60d672a220c465cdce1ff29a17000e99a38a5b16d1423c1f178c9",
+    "sight_core/models.py": "7f8495e565f84d5dad13d8c4e9e682bb5cd198bfbc11064193f3132f592d3104",
+    "sight_core/proactive.py": "8a2862d1198608a1c90eda2ae983bdfe2dae3b7d7bbf1ca0dda0fdf3e7c375cf",
+    "sight_core/quotas.py": "2a674f9fa940a3a94a4a1988aeb78f66ccdaa39fce15268028ce070fbf2b1162",
+    "sight_core/recovery.py": "90031d470fe5759074210f1ce4a7965ae131a0777c1858079e2f92f68f2ea9bf",
+    "sight_core/releases.py": "fffc22da8bf3596c1d9f3e116b9e253573c0e106042a74a36afb1066880503c6",
+    "sight_core/routing.py": "4e27f6a0f66a19974f717c825b5adf8b9ef93036478fe4635eb68ca1e6b84759",
+    "sight_core/security.py": "1b2eeb4442fae466f87ca2a94c1705b69d7577f269f1f28fe24403a302712ec3",
+    "sight_core/skill_worker.py": "111825fb41aa4e9623e08a962457982ba446eeb1dfc2c13fbca4fc5777690eff",
+    "sight_core/store.py": "6e89a62392497bbaf6a2618aa1154c82309b6a68a375867f8066cf95f089c9ab",
+    "sight_core/tools.py": "44dbef9c6cac45c76409b2ceded7712f20ea39c22cac33eedbf04c134e1ea47a"
+  },
+  "summary": {
+    "official_thinking": {
+      "passed": 53,
+      "total": 60
+    }
+  },
+  "finished_utc": "2026-10-24T03:36:12.118077+00:00"
+}

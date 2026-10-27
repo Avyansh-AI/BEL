@@ -1,0 +1,52 @@
+Looking in links: .cache\security-wheelhouse
+Ignoring jeepney: markers 'sys_platform == "linux"' don't match your environment
+Ignoring secretstorage: markers 'sys_platform == "linux"' don't match your environment
+Requirement already satisfied: annotated-doc==0.0.5 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 4)) (0.0.5)
+Requirement already satisfied: annotated-types==0.8.0 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 8)) (0.8.0)
+Requirement already satisfied: anyio==4.15.1 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 12)) (4.15.1)
+Processing .\.cache\security-wheelhouse\certifi-2026.10.19-py3-none-any.whl (from -r sight\requirements.lock (line 18))
+Requirement already satisfied: cffi==2.1.1 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 24)) (2.1.1)
+Requirement already satisfied: click==8.5.0 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 126)) (8.5.0)
+Requirement already satisfied: colorama==0.4.6 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 130)) (0.4.6)
+Requirement already satisfied: cryptography==50.0.2 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 134)) (50.0.2)
+Requirement already satisfied: fastapi==0.141.1 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 195)) (0.141.1)
+Requirement already satisfied: greenlet==3.5.6 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 199)) (3.5.6)
+Requirement already satisfied: h11==0.16.0 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 280)) (0.16.0)
+Requirement already satisfied: httpcore==1.0.9 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 286)) (1.0.9)
+Requirement already satisfied: httpx==0.28.1 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 290)) (0.28.1)
+Requirement already satisfied: idna==3.20 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 294)) (3.20)
+Requirement already satisfied: iniconfig==2.3.1 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 300)) (2.3.1)
+Requirement already satisfied: jaraco-classes==3.4.0 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 304)) (3.4.0)
+Requirement already satisfied: jaraco-context==6.1.2 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 308)) (6.1.2)
+Requirement already satisfied: jaraco-functools==4.6.0 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 312)) (4.6.0)
+Requirement already satisfied: keyring==25.6.0 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 322)) (25.6.0)
+Requirement already satisfied: more-itertools==11.2.1 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 326)) (11.2.1)
+Requirement already satisfied: packaging==26.3 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 332)) (26.3)
+Processing .\.cache\security-wheelhouse\pillow-13.0.0-cp312-cp312-win_amd64.whl (from -r sight\requirements.lock (line 336))
+Requirement already satisfied: pip==26.2 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 421)) (26.2)
+Requirement already satisfied: playwright==1.64.0 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 425)) (1.64.0)
+Requirement already satisfied: pluggy==1.7.0 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 435)) (1.7.0)
+Requirement already satisfied: pycparser==3.11 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 439)) (3.11)
+Requirement already satisfied: pydantic==2.14.1 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 443)) (2.14.1)
+Requirement already satisfied: pydantic-core==2.50.1 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 447)) (2.50.1)
+Requirement already satisfied: pyee==13.0.1 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 586)) (13.0.1)
+Requirement already satisfied: pygments==2.21.0 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 590)) (2.21.0)
+Requirement already satisfied: pytest==9.0.3 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 594)) (9.0.3)
+Requirement already satisfied: pywin32-ctypes==0.2.3 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 598)) (0.2.3)
+Requirement already satisfied: starlette==1.8.0 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 606)) (1.8.0)
+Requirement already satisfied: typing-extensions==4.16.0 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 610)) (4.16.0)
+Requirement already satisfied: typing-inspection==0.4.4 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 621)) (0.4.4)
+Requirement already satisfied: uvicorn==0.52.1 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 627)) (0.52.1)
+Requirement already satisfied: websockets==15.0.1 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 631)) (15.0.1)
+Requirement already satisfied: pyjwt==2.15.1 in .\sight\.venv\Lib\site-packages (from -r sight\requirements.lock (line 703)) (2.15.1)
+Installing collected packages: pillow, certifi
+  Attempting uninstall: pillow
+    Found existing installation: pillow 12.3.0
+    Uninstalling pillow-12.3.0:
+      Successfully uninstalled pillow-12.3.0
+  Attempting uninstall: certifi
+    Found existing installation: certifi 2026.7.22
+    Uninstalling certifi-2026.7.22:
+      Successfully uninstalled certifi-2026.7.22
+
+Successfully installed certifi-2026.10.19 pillow-13.0.0

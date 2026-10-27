@@ -9,24 +9,95 @@ import sys
 import tempfile
 import wave
 
+
+def memory_snapshot():
+    """Best-effort numeric host counters; no process names, paths or page data."""
+    if os.name != 'nt':
+        return {}
+    try:
+        import ctypes
+        from ctypes import wintypes
+        class Memory(ctypes.Structure):
+            _fields_ = [('length', wintypes.DWORD), ('load', wintypes.DWORD)] + [
+                (name, ctypes.c_uint64) for name in ('total', 'available', 'commit_total', 'commit_available',
+                                                    'virtual_total', 'virtual_available', 'extended')]
+        memory = Memory()
+        memory.length = ctypes.sizeof(memory)
+        if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(memory)):
+            return {}
+        return {'total_ram_mib': memory.total // 2**20, 'available_ram_mib': memory.available // 2**20,
+                'available_commit_mib': memory.commit_available // 2**20}
+    except (OSError, AttributeError):
+        return {}
+
+
+class BrowserFailure(Exception):
+    def __init__(self, code, stage):
+        self.code = code
+        self.diagnostics = {'stage': stage, 'resources': memory_snapshot()}
+        super().__init__('Isolated browser operation failed')
+
+
+def browser_failure(exc, stage, native=None, page=None):
+    from playwright.sync_api import TimeoutError as BrowserTimeout
+    message = str(exc)  # Classify only; never transmit or log the message.
+    if stage == 'screenshot' and 'Page.captureScreenshot' in message and 'Unable to capture screenshot' in message:
+        code = 'browser_capture_unavailable'
+    elif isinstance(exc, BrowserTimeout):
+        code = 'browser_timeout'
+    elif (native is not None and not native.is_connected()) or (page is not None and page.is_closed()):
+        code = 'browser_closed'
+    else:
+        code = 'browser_failed'
+    return BrowserFailure(code, stage)
+
+
+def failure_payload(exc):
+    payload = {'error': 'Adapter failed', 'code': 'adapter_failed'}
+    if isinstance(exc, BrowserFailure):
+        payload.update(code=exc.code, diagnostics=exc.diagnostics)
+    return payload
+
+
 def browser(value):
-    from playwright.sync_api import sync_playwright
-    with sync_playwright() as p:
-        browser=p.chromium.launch(headless=True,chromium_sandbox=True)
-        try:
-            context=browser.new_context(java_script_enabled=False,service_workers='block',accept_downloads=False,offline=True,viewport={'width':1024,'height':768})
-            blocked=[]
-            def reject(route):blocked.append(route.request.resource_type);route.abort()
-            context.route('**/*',reject)
-            page=context.new_page();page.set_default_timeout(2000)
-            page.set_content(value['html'],wait_until='domcontentloaded',timeout=5000)
-            for identifier,text in value['fields'].items():page.locator('#'+identifier).fill(text)
-            result={'title':page.title()[:200],'text':page.locator('body').inner_text()[:16000],
-                    'fields':{identifier:page.locator('#'+identifier).input_value() for identifier in value['fields']},
-                    'screenshot':base64.b64encode(page.screenshot(timeout=5000)).decode(),
-                    'blocked_requests':len(blocked),'untrusted_content':True,'network_allowed':False,'scripts_enabled':False,'submitted':False}
-            context.close();return result
-        finally:browser.close()
+    from playwright.sync_api import sync_playwright, Error
+    stage = 'launch'
+    failure = None
+    native = page = None
+    try:
+        with sync_playwright() as p:
+            try:
+                native=p.chromium.launch(headless=True,chromium_sandbox=True)
+                stage='context'
+                context=native.new_context(java_script_enabled=False,service_workers='block',accept_downloads=False,offline=True,viewport={'width':1024,'height':768})
+                blocked=[]
+                def reject(route):blocked.append(route.request.resource_type);route.abort()
+                context.route('**/*',reject)
+                stage='page'
+                page=context.new_page();page.set_default_timeout(2000)
+                stage='content'
+                page.set_content(value['html'],wait_until='domcontentloaded',timeout=5000)
+                stage='fields'
+                for identifier,text in value['fields'].items():page.locator('#'+identifier).fill(text)
+                result={'title':page.title()[:200],'text':page.locator('body').inner_text()[:16000],
+                        'fields':{identifier:page.locator('#'+identifier).input_value() for identifier in value['fields']}}
+                stage='screenshot'
+                result.update(screenshot=base64.b64encode(page.screenshot(timeout=5000)).decode(),
+                              blocked_requests=len(blocked),untrusted_content=True,network_allowed=False,scripts_enabled=False,submitted=False)
+                stage='cleanup'
+                context.close()
+            except Error as exc:
+                failure=browser_failure(exc,stage,native,page)
+            finally:
+                if native is not None:
+                    try:native.close()
+                    except Error as exc:
+                        if failure is None:failure=browser_failure(exc,'cleanup',native,page)
+        if failure is not None:raise failure
+        return result
+    except Error as exc:
+        # Preserve the first failure if driver teardown also fails.
+        raise failure if failure is not None else browser_failure(exc,stage,native,page) from None
 
 def speech(value):
     if os.name!='nt':raise ValueError('Windows SAPI required')
@@ -51,4 +122,4 @@ def main():
 if __name__=='__main__':
     try:main()
     except Exception as exc:
-        print(json.dumps({'error':'Adapter failed','kind':type(exc).__name__}));sys.exit(1)
+        print(json.dumps(failure_payload(exc)));sys.exit(1)

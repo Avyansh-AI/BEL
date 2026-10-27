@@ -1,0 +1,18 @@
+{
+  "started_utc": "2026-10-24T09:04:42.477419+00:00",
+  "interpreter": "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\sight\\.venv\\Scripts\\python.exe",
+  "script": "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\sight\\scripts\\dependency_audit.py",
+  "script_sha256": "ece0b5abee147ce92866d729f31bca76034fba7dc920040832002feeadbbe1cf",
+  "output_root_override": "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\audit-tests\\20261024-security\\final-dependencies\\dependencies",
+  "package_count": 38,
+  "selected_installed_versions": {
+    "pip": "26.2.2",
+    "certifi": "2026.10.19",
+    "Pillow": "13.0.0"
+  },
+  "request_scope": "Public PyPI package names and installed versions only; no provider requests",
+  "lock_sha256": {
+    "requirements.lock": "af2921572ce23f5e3ee280c989a087e2a49665ac653394248526512dcb969b3a",
+    "requirements-bootstrap.lock": "90df372c95fced73ab032edcb9d18360355d318842574d0d94bc194690e49a93"
+  }
+}

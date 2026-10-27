@@ -1,0 +1,19 @@
+{
+  "checked_utc": "2026-10-26T13:06:44.480470+00:00",
+  "runtime_version": "0.40.9",
+  "health": {
+    "status": "ready",
+    "message": "Installed quantized Gemma 4 E4B metadata verified; target VRAM measurement remains pending.",
+    "model": "gemma4:e4b-it-qat",
+    "configured": true,
+    "supports_tools": true,
+    "supports_vision": true,
+    "inference_verified": false,
+    "last_error": "",
+    "supports_thinking": true
+  },
+  "thinking_config": true,
+  "inference_requests": 0,
+  "scope": "Current loopback runtime and selected model metadata only; completed live inference evidence is separate",
+  "passed": true
+}

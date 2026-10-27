@@ -14,6 +14,13 @@ SYSTEM_PROMPT = (
 )
 
 OFFICIAL_GEMMA = 'gemma4:e4b-it-qat'
+# Exact owner-selected artifact, verified against all installed blobs. Official
+# QAT metadata has no E4B display name; never infer identity from the tag alone.
+OFFICIAL_GEMMA_DIGEST = 'ee665637121887cf3befff38abbb1be4ee117c7db867d97a67e29049ecd7e15f'
+OFFICIAL_GEMMA_IDENTITY = {
+    'general.architecture': 'gemma4', 'general.parameter_count': 7463013674,
+    'gemma4.block_count': 42, 'gemma4.embedding_length': 2560,
+}
 
 
 @dataclass
@@ -111,8 +118,14 @@ class OllamaProvider:
                 code, info = await self.request_json(client, 'POST', '/api/show', json={'model': self.config.model})
                 if code != 200:
                     return ModelStatus("unsupported_model", "Ollama model metadata could not be verified.", self.config.model)
-                identity = " ".join(str(v) for v in info.get("model_info", {}).values()).lower()
-                if "e4b" not in identity:
+                model_info = info.get('model_info', {})
+                if self.config.model == OFFICIAL_GEMMA:
+                    verified = (selected.get('digest') == OFFICIAL_GEMMA_DIGEST
+                                and details.get('quantization_level') == 'Q4_0'
+                                and all(model_info.get(key) == value for key,value in OFFICIAL_GEMMA_IDENTITY.items()))
+                else:
+                    verified = 'e4b' in ' '.join(str(v) for v in model_info.values()).lower()
+                if not verified:
                     return ModelStatus("unsupported_model", "Model metadata does not confirm the E4B variant. No weights were loaded.", self.config.model)
                 capabilities = info.get("capabilities", [])
                 return ModelStatus("ready", "Installed quantized Gemma 4 E4B metadata verified; target VRAM measurement remains pending.", self.config.model, True, "tools" in capabilities, "vision" in capabilities, supports_thinking='thinking' in capabilities)
@@ -142,8 +155,9 @@ class OllamaProvider:
                     thinking = status.supports_thinking and self.config.thinking is not False
                     payload={"model": self.config.model, "messages": [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": text}], "stream": False, "think": thinking, "keep_alive": "5m", "options": {"num_ctx": 4096, "num_predict": 1536 if thinking else 512, "num_batch": 128, "use_mmap": True, "temperature": 0.7, "top_p": 0.9, "top_k": 40, "repeat_penalty": 1.1}}
                     if self.config.model == OFFICIAL_GEMMA:
-                        # Official model parameters, not the derivative's tuning.
-                        payload['options'].update(temperature=1.0,top_p=0.95,top_k=64,repeat_penalty=1.0)
+                        # The lower thinking temperature passed the recorded paired
+                        # local evaluation. Preserve the owner's non-thinking mode.
+                        payload['options'].update(temperature=0.2 if thinking else 1.0,top_p=0.95,top_k=64,repeat_penalty=1.0)
                     if json_schema is not None:payload['format']=json_schema
                     code, data = await self.request_json(client, 'POST', '/api/chat', json=payload)
                     first_usage = None
@@ -159,6 +173,8 @@ class OllamaProvider:
                         first_usage = {k: data.get(k) for k in ('prompt_eval_count', 'eval_count')}
                         payload['think'] = False
                         payload['options']['num_predict'] = 512
+                        if self.config.model == OFFICIAL_GEMMA:
+                            payload['options']['temperature'] = 1.0
                         code, data = await self.request_json(client, 'POST', '/api/chat', json=payload)
                     if code != 200:
                         try:

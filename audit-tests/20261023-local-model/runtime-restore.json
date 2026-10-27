@@ -1,0 +1,18 @@
+{
+  "version": "0.40.9",
+  "url": "https://github.com/ollama/ollama/releases/download/v0.40.9/ollama-windows-amd64.zip",
+  "expected_sha256": "c35019c95679eae1cb28fda4732a7c97978b9fbcbd8adfb5cbcc8fe7c161ea0b",
+  "expected_bytes": 1586281618,
+  "started_utc": "2026-10-23T09:10:19.668052+00:00",
+  "target": "C:\\Users\\Dell\\AppData\\Local\\Programs\\Ollama",
+  "complete": true,
+  "global_path_changed": false,
+  "startup_entry_created": false,
+  "model_weights_modified": false,
+  "actual_sha256": "c35019c95679eae1cb28fda4732a7c97978b9fbcbd8adfb5cbcc8fe7c161ea0b",
+  "extracted_files": 80,
+  "extracted_bytes": 2230815247,
+  "version_exit_code": 0,
+  "version_output": "Warning: could not connect to a running Ollama instance\nWarning: client version is 0.40.9",
+  "seconds": 260.047
+}

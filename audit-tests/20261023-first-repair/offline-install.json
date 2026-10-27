@@ -1,0 +1,22 @@
+{
+  "started_utc": "2026-10-23T03:29:53.857257+00:00",
+  "command": [
+    "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "-NoProfile",
+    "-NonInteractive",
+    "-File",
+    "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\test-data\\repository-audit-20261023\\install-check.ps1",
+    "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\test-data\\repository-audit-20261023\\sight\\scripts\\install.ps1",
+    "..\\..\\Phase-4\\offline\\wheels",
+    "..\\..\\..\\..\\..\\AppData\\Local\\ms-playwright"
+  ],
+  "install_exit_code": 0,
+  "fresh_venv": true,
+  "fresh_windows_account": false,
+  "package_network_disabled": true,
+  "relative_wheel_and_browser_paths": true,
+  "wheel_count": 39,
+  "runtime_exit_code": 0,
+  "complete": true,
+  "seconds": 74.719
+}

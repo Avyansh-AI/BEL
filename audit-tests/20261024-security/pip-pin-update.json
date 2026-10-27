@@ -1,0 +1,28 @@
+{
+  "package": "pip",
+  "from": "26.2",
+  "to": "26.2.2",
+  "reason": "Vendored Certifi update for compromised emSign chain",
+  "files": [
+    {
+      "path": "sight/requirements.in",
+      "before_sha256": "af87a21e8b1344ae361e2cb7ae730abf2ebff221c29ed5f05b0ea684a36f262b",
+      "after_sha256": "67de9cdefdfe861f036b8a535038fc6a06001b9f788d0211b0efabde9240ee3d"
+    },
+    {
+      "path": "sight/requirements-bootstrap.in",
+      "before_sha256": "f96643c7a1221a583baa765525ae75cf61c79f3afb1811366cf5068322211a38",
+      "after_sha256": "b7c500aa30157f8cdf61ef1b748ae82425b5b8ce19ed89a25e2a686c33ecba4a"
+    },
+    {
+      "path": "sight/requirements.lock",
+      "before_sha256": "93622d609f4338e706e15600824c638d0664f7cf24fa42a316ff7679486d1dc7",
+      "after_sha256": "af2921572ce23f5e3ee280c989a087e2a49665ac653394248526512dcb969b3a"
+    },
+    {
+      "path": "sight/requirements-bootstrap.lock",
+      "before_sha256": "9fb541a06b87aca2d0a86d3f516407057f4eb53f3889277a0cff7960278e9d16",
+      "after_sha256": "90df372c95fced73ab032edcb9d18360355d318842574d0d94bc194690e49a93"
+    }
+  ]
+}

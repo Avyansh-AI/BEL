@@ -1,0 +1,85 @@
+{
+  "reviewed_utc": "2026-10-27T14:36:04.379300+00:00",
+  "reviewer_sha256": "423ccda08ef78c92370029f8d9fd631960c6be186c1bcdff44db9a3bcdead095",
+  "evidence": "audit-tests/20261027-browser/final-build/soak-20261027T093042Z-9ea8e2",
+  "checks": {
+    "one_hour_qualified": true,
+    "at_least_60_cycles": true,
+    "at_least_12_real_model_calls": true,
+    "every_model_answer_correct": true,
+    "all_recorded_checks_passed": true,
+    "all_three_planned_crashes_exercised": true,
+    "no_unplanned_backend_exits": true,
+    "no_two_minute_activity_gap": true,
+    "source_still_matches_tested_hashes": true,
+    "soak_harness_in_source_manifest": true,
+    "dependencies_still_match_tested_versions": true,
+    "same_owner_selected_model_and_thinking": true,
+    "cloud_requests_zero": true,
+    "six_browser_checks_at_expected_cycles": true,
+    "every_browser_image_verified": true,
+    "six_distinct_png_artifacts": true,
+    "browser_call_hash_multiplicities_match_artifacts": true,
+    "exact_artifact_names_and_hashes_match_backup_and_restore": true,
+    "backup_bundle_manifest_verified": true,
+    "restored_files_exactly_match_manifest_plus_restore_record": true,
+    "every_non_database_manifest_entry_restored_exactly": true,
+    "restore_record_references_verified_manifest_and_policy": true,
+    "restored_databases_match_expected_recovery_policy": true
+  },
+  "passed": true,
+  "elapsed_seconds": 3605.031,
+  "cycles": 60,
+  "check_count": 487,
+  "model_calls": 12,
+  "correct_answers": 12,
+  "browser_calls": 6,
+  "browser_hash_multiplicities": {
+    "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793": 6
+  },
+  "artifact_names_and_hashes": {
+    "363a1230c336493e82f957c4d33389da.png": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793",
+    "64929197169a44f3948466db30548c14.png": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793",
+    "b3e1925b8c39495c83abde123eaf6e9d.png": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793",
+    "bf02c11101c6448595028955afd903a3.png": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793",
+    "c4568cc7a0e2432eaf679ec5bfb2f7c0.png": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793",
+    "ea44dc8485304ad18bf6cb41d7e19e61.png": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793"
+  },
+  "backup_manifest_entries": 69,
+  "restored_non_database_entries_checked": 67,
+  "restored_database_checks": {
+    "brain.sqlite3": {
+      "integrity_ok": true,
+      "supported_schema_version": true,
+      "schema_matches": true,
+      "tables_compared": 18,
+      "mismatched_tables": [],
+      "logical_data_matches_expected_restore": true
+    },
+    "sight.sqlite3": {
+      "integrity_ok": true,
+      "supported_schema_version": true,
+      "schema_matches": true,
+      "tables_compared": 7,
+      "mismatched_tables": [],
+      "logical_data_matches_expected_restore": true
+    }
+  },
+  "max_health_check_gap_seconds": 60.969,
+  "max_telemetry_gap_seconds": 5.129,
+  "telemetry": {
+    "samples": 711,
+    "peak_gpu_mib": 4405.0,
+    "peak_gpu_temperature_c": 74.0,
+    "minimum_available_host_ram_mib": 147.38,
+    "peak_host_cpu_percent": 61.56,
+    "peak_server_working_set_mib": 70.57,
+    "cpu_temperature": "not available from the standard interfaces used"
+  },
+  "model_latency": {
+    "median_seconds": 8.437999999999999,
+    "max_seconds": 17.656,
+    "sample_count": 12
+  },
+  "scope": "Current-profile serial shared-host workload with six real offline browser calls; no guarantee for future prompts, long contexts or parallel models. Restore databases are compared logically after documented policy changes, not byte-for-byte."
+}

@@ -1,0 +1,12 @@
+{
+  "timestamp_utc": "2026-10-24T09:07:39.197236+00:00",
+  "authorization": "Owner explicitly chose Enable thinking for SIGHT in this conversation",
+  "path": "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\owner-data\\local-model.json",
+  "previous_file_exists": false,
+  "model": "gemma4:e4b-it-qat",
+  "thinking": true,
+  "metadata_verified": true,
+  "config_sha256": "7751993ad95b3445be060c751bed7b7f84a264de750fc252514c3011344d0e1f",
+  "owner_memories_modified": false,
+  "earlier_phase_configuration_modified": false
+}

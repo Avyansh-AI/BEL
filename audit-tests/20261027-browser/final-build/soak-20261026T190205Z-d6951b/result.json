@@ -1,0 +1,437 @@
+{
+  "started_utc": "2026-10-26T19:02:05.865176+00:00",
+  "requested_seconds": 3600,
+  "model": "gemma4:e4b-it-qat",
+  "thinking": true,
+  "data_dir": "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\test-data\\soak-20261026T190205Z-d6951b",
+  "checks": [
+    {
+      "name": "home HTML exact bytes",
+      "passed": true,
+      "elapsed_seconds": 1.328,
+      "detail": null
+    },
+    {
+      "name": "core healthy and cloud disabled",
+      "passed": true,
+      "elapsed_seconds": 1.36,
+      "detail": null
+    },
+    {
+      "name": "approved local tool",
+      "passed": true,
+      "elapsed_seconds": 1.391,
+      "detail": null
+    },
+    {
+      "name": "authenticated WebSocket reconnect",
+      "passed": true,
+      "elapsed_seconds": 1.406,
+      "detail": null
+    },
+    {
+      "name": "socket response received",
+      "passed": true,
+      "elapsed_seconds": 1.422,
+      "detail": null
+    },
+    {
+      "name": "authenticated WebSocket reconnect",
+      "passed": true,
+      "elapsed_seconds": 1.438,
+      "detail": null
+    },
+    {
+      "name": "socket retry is idempotent",
+      "passed": true,
+      "elapsed_seconds": 1.438,
+      "detail": null
+    },
+    {
+      "name": "durable task completes once",
+      "passed": true,
+      "elapsed_seconds": 1.5,
+      "detail": null
+    },
+    {
+      "name": "real Gemma inference completes",
+      "passed": true,
+      "elapsed_seconds": 2.844,
+      "detail": null
+    },
+    {
+      "name": "browser artifact download matches hash",
+      "passed": true,
+      "elapsed_seconds": 3.891,
+      "detail": null
+    },
+    {
+      "name": "browser captures after real Gemma inference",
+      "passed": true,
+      "elapsed_seconds": 3.906,
+      "detail": null
+    },
+    {
+      "name": "browser network and scripts remain disabled",
+      "passed": true,
+      "elapsed_seconds": 3.906,
+      "detail": null
+    },
+    {
+      "name": "core healthy and cloud disabled",
+      "passed": true,
+      "elapsed_seconds": 61.953,
+      "detail": null
+    },
+    {
+      "name": "approved local tool",
+      "passed": true,
+      "elapsed_seconds": 61.985,
+      "detail": null
+    },
+    {
+      "name": "authenticated WebSocket reconnect",
+      "passed": true,
+      "elapsed_seconds": 61.985,
+      "detail": null
+    },
+    {
+      "name": "socket response received",
+      "passed": true,
+      "elapsed_seconds": 62.0,
+      "detail": null
+    },
+    {
+      "name": "authenticated WebSocket reconnect",
+      "passed": true,
+      "elapsed_seconds": 62.0,
+      "detail": null
+    },
+    {
+      "name": "socket retry is idempotent",
+      "passed": true,
+      "elapsed_seconds": 62.0,
+      "detail": null
+    },
+    {
+      "name": "durable task completes once",
+      "passed": true,
+      "elapsed_seconds": 62.078,
+      "detail": null
+    },
+    {
+      "name": "core healthy and cloud disabled",
+      "passed": true,
+      "elapsed_seconds": 122.125,
+      "detail": null
+    },
+    {
+      "name": "approved local tool",
+      "passed": true,
+      "elapsed_seconds": 122.156,
+      "detail": null
+    },
+    {
+      "name": "authenticated WebSocket reconnect",
+      "passed": true,
+      "elapsed_seconds": 122.156,
+      "detail": null
+    },
+    {
+      "name": "socket response received",
+      "passed": true,
+      "elapsed_seconds": 122.172,
+      "detail": null
+    },
+    {
+      "name": "authenticated WebSocket reconnect",
+      "passed": true,
+      "elapsed_seconds": 122.172,
+      "detail": null
+    },
+    {
+      "name": "socket retry is idempotent",
+      "passed": true,
+      "elapsed_seconds": 122.188,
+      "detail": null
+    },
+    {
+      "name": "durable task completes once",
+      "passed": true,
+      "elapsed_seconds": 122.25,
+      "detail": null
+    },
+    {
+      "name": "core healthy and cloud disabled",
+      "passed": true,
+      "elapsed_seconds": 182.281,
+      "detail": null
+    },
+    {
+      "name": "approved local tool",
+      "passed": true,
+      "elapsed_seconds": 182.313,
+      "detail": null
+    },
+    {
+      "name": "authenticated WebSocket reconnect",
+      "passed": true,
+      "elapsed_seconds": 182.328,
+      "detail": null
+    },
+    {
+      "name": "socket response received",
+      "passed": true,
+      "elapsed_seconds": 182.344,
+      "detail": null
+    },
+    {
+      "name": "authenticated WebSocket reconnect",
+      "passed": true,
+      "elapsed_seconds": 182.344,
+      "detail": null
+    },
+    {
+      "name": "socket retry is idempotent",
+      "passed": true,
+      "elapsed_seconds": 182.344,
+      "detail": null
+    },
+    {
+      "name": "durable task completes once",
+      "passed": true,
+      "elapsed_seconds": 182.406,
+      "detail": null
+    },
+    {
+      "name": "injected runtime outage fails locally",
+      "passed": true,
+      "elapsed_seconds": 182.61,
+      "detail": null
+    },
+    {
+      "name": "UI survives unavailable runtime",
+      "passed": true,
+      "elapsed_seconds": 182.61,
+      "detail": null
+    },
+    {
+      "name": "runtime metadata reconnects",
+      "passed": true,
+      "elapsed_seconds": 182.985,
+      "detail": null
+    },
+    {
+      "name": "core healthy and cloud disabled",
+      "passed": true,
+      "elapsed_seconds": 243.031,
+      "detail": null
+    },
+    {
+      "name": "approved local tool",
+      "passed": true,
+      "elapsed_seconds": 243.078,
+      "detail": null
+    },
+    {
+      "name": "authenticated WebSocket reconnect",
+      "passed": true,
+      "elapsed_seconds": 243.094,
+      "detail": null
+    },
+    {
+      "name": "socket response received",
+      "passed": true,
+      "elapsed_seconds": 243.125,
+      "detail": null
+    },
+    {
+      "name": "authenticated WebSocket reconnect",
+      "passed": true,
+      "elapsed_seconds": 243.125,
+      "detail": null
+    },
+    {
+      "name": "socket retry is idempotent",
+      "passed": true,
+      "elapsed_seconds": 243.125,
+      "detail": null
+    },
+    {
+      "name": "durable task completes once",
+      "passed": true,
+      "elapsed_seconds": 243.219,
+      "detail": null
+    },
+    {
+      "name": "core healthy and cloud disabled",
+      "passed": true,
+      "elapsed_seconds": 303.25,
+      "detail": null
+    },
+    {
+      "name": "approved local tool",
+      "passed": true,
+      "elapsed_seconds": 303.281,
+      "detail": null
+    },
+    {
+      "name": "authenticated WebSocket reconnect",
+      "passed": true,
+      "elapsed_seconds": 303.281,
+      "detail": null
+    },
+    {
+      "name": "socket response received",
+      "passed": true,
+      "elapsed_seconds": 303.297,
+      "detail": null
+    },
+    {
+      "name": "authenticated WebSocket reconnect",
+      "passed": true,
+      "elapsed_seconds": 303.297,
+      "detail": null
+    },
+    {
+      "name": "socket retry is idempotent",
+      "passed": true,
+      "elapsed_seconds": 303.313,
+      "detail": null
+    },
+    {
+      "name": "durable task completes once",
+      "passed": true,
+      "elapsed_seconds": 303.375,
+      "detail": null
+    },
+    {
+      "name": "real Gemma inference completes",
+      "passed": true,
+      "elapsed_seconds": 320.11,
+      "detail": null
+    }
+  ],
+  "cloud_requests": 0,
+  "fault_scope": "Test-process loopback model transport; host network unchanged",
+  "source_hashes": {
+    "sight_core/__init__.py": "ba90670254fe47f418ab14be3b3be9504f17d926353794588fc52ee42faa745d",
+    "sight_core/api.py": "fbe04062a624d4e9a9fdd68cfe2a42a8b4f68f4d4fd38435fe8c1002d96bd0dc",
+    "sight_core/artifacts.py": "63a3cda1a3aab2ec384cf976e13eabb3a94ee982db53e5cf63fad18fc9e763c6",
+    "sight_core/brain_store.py": "fcaa29228b8986e8aa86fac9bcf069a1561b4e85f1217936dd79d07db407f5ff",
+    "sight_core/capabilities.py": "503d8575809fa21b45b3b07b20c4ca35915651a315e6dd9edb767af16173e6c3",
+    "sight_core/capability_worker.py": "940ccd09dde38a61fb23818d814c6249a953bd184cb0d18a825267df2d0d111b",
+    "sight_core/chatgpt.py": "71d352e1bd876a1f789d0a069c8863400777f1c5acd0c23062d8fcc6b82c845b",
+    "sight_core/cli.py": "61a701c56a9e513a0100379c6c546f2e3a474714bb754f18b15898b745c752e8",
+    "sight_core/config.py": "8f130850712c01a2a5c731cc7e538d55c71600d45f1db36c39eab0e068238d7a",
+    "sight_core/connector_contracts.py": "be01f06176268207823c2187da324cbe4c76ec3e260012948d55935c99f1f143",
+    "sight_core/forge.py": "d8c518ee6e011998bad61e887034cd25681db8bc31cac4d95009c8895dac1ce9",
+    "sight_core/jobs.py": "28f02fb59809c6fd120f1b14ffda218a913ce9817ce3a5008e7ea4d7ffe69719",
+    "sight_core/learning_api.py": "d0c7c2f37fb10d211e3f8cfdde8c9ab8a4f9da329c22de0bbeba985f22b06336",
+    "sight_core/local_adapters.py": "eae42f13db3415b19666d89ca8911808500eedb0819e79c74bef1d54601af52a",
+    "sight_core/mcp_bridge.py": "49d6c1e6e9e326dc4188ec81c976ca62ba1d260918dc59a53b98d9e28ef69460",
+    "sight_core/memory.py": "a2ea70e715c60d672a220c465cdce1ff29a17000e99a38a5b16d1423c1f178c9",
+    "sight_core/models.py": "7864ec4f82d3a718f5a835dad1b9b6db4ca4fa27833d7e0bf3eab89c2c3e9a6e",
+    "sight_core/proactive.py": "8a2862d1198608a1c90eda2ae983bdfe2dae3b7d7bbf1ca0dda0fdf3e7c375cf",
+    "sight_core/quotas.py": "2a674f9fa940a3a94a4a1988aeb78f66ccdaa39fce15268028ce070fbf2b1162",
+    "sight_core/recovery.py": "90031d470fe5759074210f1ce4a7965ae131a0777c1858079e2f92f68f2ea9bf",
+    "sight_core/releases.py": "fffc22da8bf3596c1d9f3e116b9e253573c0e106042a74a36afb1066880503c6",
+    "sight_core/routing.py": "4e27f6a0f66a19974f717c825b5adf8b9ef93036478fe4635eb68ca1e6b84759",
+    "sight_core/security.py": "1b2eeb4442fae466f87ca2a94c1705b69d7577f269f1f28fe24403a302712ec3",
+    "sight_core/skill_worker.py": "111825fb41aa4e9623e08a962457982ba446eeb1dfc2c13fbca4fc5777690eff",
+    "sight_core/store.py": "6e89a62392497bbaf6a2618aa1154c82309b6a68a375867f8066cf95f089c9ab",
+    "sight_core/tools.py": "44dbef9c6cac45c76409b2ceded7712f20ea39c22cac33eedbf04c134e1ea47a",
+    "apps/ui/capabilities.html": "7568d669423d7f8353fd9627754a1ad7d4fc60725b4b90b2c9784161f31c9d9d",
+    "apps/ui/index.html": "0883f953221ab94b0ecf21a7894ff1f5b2d650f14ccaf26b467365761cee01a6",
+    "apps/ui/learning.html": "1df2b6bddebc2410919b1f99f6a70b1b5d25761bbb515c8c715b8e584b33cda0",
+    "apps/ui/systems.html": "3d9b4528b18cb524916c34d8146e67cb3f7b92e82b45cb5a5a1bda1e44edf2c3",
+    "apps/ui/tasks.html": "24735dc59e928e0056eedfc036727067192028a84ff770659583cf8e3c44ab83",
+    "apps/ui/vision.html": "acf16546b60d2c0348c9e78834f5d98a450575470aaaa1937875e342b78231c5",
+    "requirements.lock": "af2921572ce23f5e3ee280c989a087e2a49665ac653394248526512dcb969b3a",
+    "requirements-bootstrap.lock": "90df372c95fced73ab032edcb9d18360355d318842574d0d94bc194690e49a93",
+    "scripts/launch.py": "e7372eaa4853c97ec3d0c8339b06725e320ec6779401ecf6a88767fcde474fc9",
+    "scripts/soak_worker.py": "b7cfcc10ee2697647e496393729a9f1f375dbc009384c707bc521a0825ab02c4",
+    "scripts/phase4_soak.py": "c2d7c7ba81219b064d1d181adc5ad858819d3deb42750e4068b26dc0d528f580"
+  },
+  "dependency_versions": {
+    "PyJWT": "2.15.1",
+    "Pygments": "2.21.0",
+    "annotated-doc": "0.0.5",
+    "annotated-types": "0.8.0",
+    "anyio": "4.15.1",
+    "certifi": "2026.10.19",
+    "cffi": "2.1.1",
+    "click": "8.5.0",
+    "colorama": "0.4.6",
+    "cryptography": "50.0.2",
+    "fastapi": "0.141.1",
+    "greenlet": "3.5.6",
+    "h11": "0.16.0",
+    "httpcore": "1.0.9",
+    "httpx": "0.28.1",
+    "idna": "3.20",
+    "iniconfig": "2.3.1",
+    "jaraco.classes": "3.4.0",
+    "jaraco.context": "6.1.2",
+    "jaraco.functools": "4.6.0",
+    "keyring": "25.6.0",
+    "more-itertools": "11.2.1",
+    "packaging": "26.3",
+    "pillow": "13.0.0",
+    "pip": "26.2.2",
+    "playwright": "1.64.0",
+    "pluggy": "1.7.0",
+    "pycparser": "3.11",
+    "pydantic": "2.14.1",
+    "pydantic_core": "2.50.1",
+    "pyee": "13.0.1",
+    "pytest": "9.0.3",
+    "pywin32-ctypes": "0.2.3",
+    "starlette": "1.8.0",
+    "typing-inspection": "0.4.4",
+    "typing_extensions": "4.16.0",
+    "uvicorn": "0.52.1",
+    "websockets": "15.0.1"
+  },
+  "complete": false,
+  "cycles": 6,
+  "model_calls": [
+    {
+      "cycle": 0,
+      "seconds": 1.344,
+      "status": "ok",
+      "answer": "42",
+      "expected_answer": "42",
+      "answer_correct": true,
+      "recovery": null,
+      "local_inference_requests": 1
+    },
+    {
+      "cycle": 5,
+      "seconds": 16.735,
+      "status": "ok",
+      "answer": "42",
+      "expected_answer": "42",
+      "answer_correct": true,
+      "recovery": null,
+      "local_inference_requests": 1
+    }
+  ],
+  "browser_checks": true,
+  "browser_calls": [
+    {
+      "cycle": 0,
+      "seconds": 1.062,
+      "sha256": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793",
+      "size": [
+        1024,
+        768
+      ],
+      "nonblank": true,
+      "blocked_requests": 1
+    }
+  ],
+  "planned_server_crashes": 0,
+  "unplanned_server_exits": 0,
+  "elapsed_seconds": 320.11
+}

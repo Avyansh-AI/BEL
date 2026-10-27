@@ -1,0 +1,60 @@
+{
+  "timestamp_utc": "2026-10-23T03:29:52.343979+00:00",
+  "model": "gemma4:e4b-it-qat",
+  "read_only": true,
+  "manifest_exists": true,
+  "files": [
+    {
+      "digest": "sha256:e3b14aa7ca020ed9ee88743916be4c028cc010b775d90487cd05a462f6b041ac",
+      "size": 545,
+      "matches": true
+    },
+    {
+      "digest": "sha256:c6398448d84a4836fdedf58f9775979e69ae0cc4dfdf4d697b5597693a555b12",
+      "size": 991551904,
+      "matches": true
+    },
+    {
+      "digest": "sha256:e8b6a059ba86947a44ace84d6e5679795bc41862c25c30513142588f0e9dba1d",
+      "size": 5154939136,
+      "matches": true
+    },
+    {
+      "digest": "sha256:0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "size": 10174,
+      "matches": true
+    },
+    {
+      "digest": "sha256:56380ca2ab89f1f68c283f4d50863c0bcab52ae3f1b9a88e4ab5617b176f71a3",
+      "size": 42,
+      "matches": true
+    },
+    {
+      "digest": "sha256:ee665637121887cf3befff38abbb1be4ee117c7db867d97a67e29049ecd7e15f",
+      "size": 900,
+      "matches": true
+    }
+  ],
+  "path_executable": null,
+  "cloud_inference_requests": 0,
+  "live_inference_verified": false,
+  "scope": "Local file integrity and loopback runtime availability only",
+  "per_user_executable_exists": false,
+  "program_files_executable_exists": false,
+  "manifest_sha256": "65da2fa3cd9d19d86c7fe3c871b1050a4ac1fbbbd80e51be7789fa9fbfa9f908",
+  "matches_previously_verified_manifest": false,
+  "ollama_connection_error": "ConnectTimeout",
+  "adapter_health": {
+    "status": "offline",
+    "message": "Ollama is unavailable on 127.0.0.1:11434. Start the local runtime and verify the selected model.",
+    "model": "gemma4:e4b-it-qat",
+    "configured": false,
+    "supports_tools": false,
+    "supports_vision": false,
+    "inference_verified": false,
+    "last_error": "",
+    "supports_thinking": false
+  },
+  "file_integrity_passed": true,
+  "seconds": 9.672
+}

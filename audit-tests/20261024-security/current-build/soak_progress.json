@@ -1,0 +1,8 @@
+{
+  "evidence": "audit-tests\\20261024-security\\current-build\\soak-20261024T141055Z-6bba57",
+  "elapsed_seconds": 3601.906,
+  "requested_seconds": 3600,
+  "cycles": 60,
+  "failed_checks": 0,
+  "complete": true
+}

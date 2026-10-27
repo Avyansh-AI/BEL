@@ -48,5 +48,5 @@ def test_single_data_directory_owner(tmp_path):
     from sight_core.cli import single_instance
     with single_instance(tmp_path):
         import subprocess,sys
-        result = subprocess.run([sys.executable, "-c", "from sight_core.cli import single_instance;from pathlib import Path;import sys\nwith single_instance(Path(sys.argv[1])):pass", str(tmp_path)], capture_output=True, text=True)
+        result = subprocess.run([sys.executable, "-c", "from sight_core.cli import single_instance;from pathlib import Path;import sys\nwith single_instance(Path(sys.argv[1])):pass", str(tmp_path)], cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True, timeout=10)
         assert result.returncode != 0 and "Another SIGHT server" in result.stderr

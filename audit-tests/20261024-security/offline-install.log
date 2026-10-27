@@ -1,0 +1,227 @@
+Looking in links: c:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse
+Processing c:\users\dell\documents\ai projects\sight\github-publish\sight\.cache\security-wheelhouse\pip-26.2-py3-none-any.whl (from -r requirements-bootstrap.lock (line 3))
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 24.2
+    Uninstalling pip-24.2:
+      Successfully uninstalled pip-24.2
+Successfully installed pip-26.2
+Looking in links: c:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse
+Ignoring jeepney: markers 'sys_platform == "linux"' don't match your environment
+Ignoring secretstorage: markers 'sys_platform == "linux"' don't match your environment
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\annotated_doc-0.0.5-py3-none-any.whl (from -r requirements.lock (line 5))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\annotated_types-0.8.0-py3-none-any.whl (from -r requirements.lock (line 9))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\anyio-4.15.1-py3-none-any.whl (from -r requirements.lock (line 13))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\certifi-2026.10.19-py3-none-any.whl (from -r requirements.lock (line 19))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\cffi-2.1.1-cp312-cp312-win_amd64.whl (from -r requirements.lock (line 26))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\click-8.5.0-py3-none-any.whl (from -r requirements.lock (line 128))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\colorama-0.4.6-py2.py3-none-any.whl (from -r requirements.lock (line 132))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\cryptography-50.0.2-cp311-abi3-win_amd64.whl (from -r requirements.lock (line 136))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\fastapi-0.141.1-py3-none-any.whl (from -r requirements.lock (line 197))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\greenlet-3.5.6-cp312-cp312-win_amd64.whl (from -r requirements.lock (line 201))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\h11-0.16.0-py3-none-any.whl (from -r requirements.lock (line 282))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\httpcore-1.0.9-py3-none-any.whl (from -r requirements.lock (line 288))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\httpx-0.28.1-py3-none-any.whl (from -r requirements.lock (line 292))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\idna-3.20-py3-none-any.whl (from -r requirements.lock (line 296))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\iniconfig-2.3.1-py3-none-any.whl (from -r requirements.lock (line 302))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\jaraco.classes-3.4.0-py3-none-any.whl (from -r requirements.lock (line 306))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\jaraco_context-6.1.2-py3-none-any.whl (from -r requirements.lock (line 310))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\jaraco_functools-4.6.0-py3-none-any.whl (from -r requirements.lock (line 314))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\keyring-25.6.0-py3-none-any.whl (from -r requirements.lock (line 324))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\more_itertools-11.2.1-py3-none-any.whl (from -r requirements.lock (line 328))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\packaging-26.3-py3-none-any.whl (from -r requirements.lock (line 334))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\pillow-13.0.0-cp312-cp312-win_amd64.whl (from -r requirements.lock (line 338))
+Requirement already satisfied: pip==26.2 in .\.venv\Lib\site-packages (from -r requirements.lock (line 423)) (26.2)
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\playwright-1.64.0-py3-none-win_amd64.whl (from -r requirements.lock (line 427))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\pluggy-1.7.0-py3-none-any.whl (from -r requirements.lock (line 437))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\pycparser-3.11-py3-none-any.whl (from -r requirements.lock (line 441))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\pydantic-2.14.1-py3-none-any.whl (from -r requirements.lock (line 445))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\pydantic_core-2.50.1-cp312-cp312-win_amd64.whl (from -r requirements.lock (line 449))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\pyee-13.0.1-py3-none-any.whl (from -r requirements.lock (line 588))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\pygments-2.21.0-py3-none-any.whl (from -r requirements.lock (line 592))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\pytest-9.0.3-py3-none-any.whl (from -r requirements.lock (line 596))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\pywin32_ctypes-0.2.3-py3-none-any.whl (from -r requirements.lock (line 600))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\starlette-1.8.0-py3-none-any.whl (from -r requirements.lock (line 608))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\typing_extensions-4.16.0-py3-none-any.whl (from -r requirements.lock (line 612))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\typing_inspection-0.4.4-py3-none-any.whl (from -r requirements.lock (line 623))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\uvicorn-0.52.1-py3-none-any.whl (from -r requirements.lock (line 629))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\websockets-15.0.1-cp312-cp312-win_amd64.whl (from -r requirements.lock (line 633))
+Processing C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\.cache\security-wheelhouse\pyjwt-2.15.1-py3-none-any.whl (from -r requirements.lock (line 705))
+Installing collected packages: websockets, typing-extensions, pywin32-ctypes, pyjwt, pygments, pycparser, pluggy, pillow, packaging, more-itertools, jaraco-context, iniconfig, idna, h11, greenlet, colorama, click, certifi, annotated-types, annotated-doc, uvicorn, typing-inspection, pytest, pyee, pydantic-core, jaraco-functools, jaraco-classes, httpcore, cffi, anyio, starlette, pydantic, playwright, keyring, httpx, cryptography, fastapi
+
+Successfully installed annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 certifi-2026.10.19 cffi-2.1.1 click-8.5.0 colorama-0.4.6 cryptography-50.0.2 fastapi-0.141.1 greenlet-3.5.6 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 idna-3.20 iniconfig-2.3.1 jaraco-classes-3.4.0 jaraco-context-6.1.2 jaraco-functools-4.6.0 keyring-25.6.0 more-itertools-11.2.1 packaging-26.3 pillow-13.0.0 playwright-1.64.0 pluggy-1.7.0 pycparser-3.11 pydantic-2.14.1 pydantic-core-2.50.1 pyee-13.0.1 pygments-2.21.0 pyjwt-2.15.1 pytest-9.0.3 pywin32-ctypes-0.2.3 starlette-1.8.0 typing-extensions-4.16.0 typing-inspection-0.4.4 uvicorn-0.52.1 websockets-15.0.1
+No broken requirements found.
+{
+  "version": "0.4.0",
+  "environment": "Windows-11-10.0.26300-SP0",
+  "python": "3.12.5",
+  "data_directory": "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\test-data\\security-audit-20261024\\isolated-data",
+  "api_bind": "127.0.0.1:8080",
+  "model": {
+    "status": "needs_model",
+    "message": "Select an installed Gemma 4 E4B Ollama tag with SIGHT_OLLAMA_MODEL; no model is configured.",
+    "model": "",
+    "configured": false,
+    "supports_tools": false,
+    "supports_vision": false,
+    "inference_verified": false,
+    "last_error": "",
+    "supports_thinking": false
+  },
+  "limits": {
+    "concurrent_inference": 1,
+    "context_tokens": 4096,
+    "output_tokens": 1536,
+    "nonthinking_output_tokens": 512,
+    "thinking": "automatic when supported; owner can disable",
+    "model_file_budget_bytes": 6442450944,
+    "vram_target_bytes": 8589934592,
+    "vram_measured": false,
+    "idle_unload": "5m",
+    "batch_tokens": 128,
+    "memory_mapped": true,
+    "stream_mode": "buffered"
+  },
+  "cloud": [
+    {
+      "status": "disabled",
+      "message": "Provider is disabled by owner policy.",
+      "model": "",
+      "configured": false,
+      "supports_tools": false,
+      "supports_vision": false,
+      "inference_verified": false,
+      "last_error": "",
+      "supports_thinking": false,
+      "id": "groq",
+      "credential_present": true,
+      "billing_enabled": false,
+      "free_only": true,
+      "free_tier_confirmed": false,
+      "blocked_by_local_only": false,
+      "limits": {
+        "output_tokens": 512,
+        "daily_requests": 10,
+        "requests_per_minute": 3,
+        "daily_tokens": 10000,
+        "tokens_per_minute": 2000,
+        "daily_budget_usd": 0.0,
+        "daily_window": "rolling_24_hours",
+        "automatic_retries": 0,
+        "stream_mode": "buffered"
+      },
+      "quota": {
+        "allowed": true,
+        "status": "ok",
+        "reason": "",
+        "retry_after_seconds": 0,
+        "requests_used_24h": 0,
+        "requests_remaining_24h": 10,
+        "tokens_reserved_24h": 0,
+        "reserved_usd_24h": 0,
+        "window": "rolling_24_hours",
+        "scope": "all models and keys for this provider in this SIGHT data directory",
+        "provider_observation": {}
+      }
+    },
+    {
+      "status": "disabled",
+      "message": "Provider is disabled by owner policy.",
+      "model": "",
+      "configured": false,
+      "supports_tools": false,
+      "supports_vision": false,
+      "inference_verified": false,
+      "last_error": "",
+      "supports_thinking": false,
+      "id": "gemini",
+      "credential_present": true,
+      "billing_enabled": false,
+      "free_only": true,
+      "free_tier_confirmed": false,
+      "blocked_by_local_only": false,
+      "limits": {
+        "output_tokens": 512,
+        "daily_requests": 10,
+        "requests_per_minute": 3,
+        "daily_tokens": 10000,
+        "tokens_per_minute": 2000,
+        "daily_budget_usd": 0.0,
+        "daily_window": "rolling_24_hours",
+        "automatic_retries": 0,
+        "stream_mode": "buffered"
+      },
+      "quota": {
+        "allowed": true,
+        "status": "ok",
+        "reason": "",
+        "retry_after_seconds": 0,
+        "requests_used_24h": 0,
+        "requests_remaining_24h": 10,
+        "tokens_reserved_24h": 0,
+        "reserved_usd_24h": 0,
+        "window": "rolling_24_hours",
+        "scope": "all models and keys for this provider in this SIGHT data directory",
+        "provider_observation": {}
+      }
+    },
+    {
+      "status": "disabled",
+      "message": "Provider is disabled by owner policy.",
+      "model": "",
+      "configured": false,
+      "supports_tools": false,
+      "supports_vision": false,
+      "inference_verified": false,
+      "last_error": "",
+      "supports_thinking": false,
+      "id": "openrouter",
+      "credential_present": true,
+      "billing_enabled": false,
+      "free_only": true,
+      "free_tier_confirmed": false,
+      "blocked_by_local_only": false,
+      "limits": {
+        "output_tokens": 512,
+        "daily_requests": 10,
+        "requests_per_minute": 3,
+        "daily_tokens": 10000,
+        "tokens_per_minute": 2000,
+        "daily_budget_usd": 0.0,
+        "daily_window": "rolling_24_hours",
+        "automatic_retries": 0,
+        "stream_mode": "buffered"
+      },
+      "quota": {
+        "allowed": true,
+        "status": "ok",
+        "reason": "",
+        "retry_after_seconds": 0,
+        "requests_used_24h": 0,
+        "requests_remaining_24h": 10,
+        "tokens_reserved_24h": 0,
+        "reserved_usd_24h": 0,
+        "window": "rolling_24_hours",
+        "scope": "all models and keys for this provider in this SIGHT data directory",
+        "provider_observation": {}
+      }
+    },
+    {
+      "id": "chatgpt",
+      "status": "not_connected",
+      "configured": false,
+      "billing_enabled": false,
+      "reason": "Connect optional official ChatGPT sign-in from Systems. API keys do not authorize ChatGPT plan usage."
+    }
+  ],
+  "vault": {
+    "available": true,
+    "backend": "WinVaultKeyring",
+    "credentials_checked": false
+  },
+  "windows_target_verified": "See audit evidence; doctor does not certify hardware",
+  "voice_enrollment": "PENDING_OWNER_RECORDING",
+  "phase": 4,
+  "release": "PARTIAL"
+}
+CALLER_LOCATION_PRESERVED

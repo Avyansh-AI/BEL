@@ -23,6 +23,41 @@ from .tools import StrictModel
 
 ROOT=Path(__file__).resolve().parents[1]
 
+
+class AdapterFailure(ValueError):
+    """Only fixed messages and allowlisted counters cross the worker boundary."""
+    MESSAGES = {
+        'adapter_failed': 'Adapter dependency unavailable or operation failed',
+        'browser_capture_unavailable': 'The browser could not capture a screenshot. No artifact was created.',
+        'browser_timeout': 'The browser operation exceeded its deadline. No artifact was created.',
+        'browser_closed': 'The isolated browser closed unexpectedly. No artifact was created.',
+        'browser_failed': 'The isolated browser operation failed. No artifact was created.',
+    }
+    STAGES = {'launch', 'context', 'page', 'content', 'fields', 'screenshot', 'cleanup'}
+    RESOURCES = {'total_ram_mib', 'available_ram_mib', 'available_commit_mib'}
+
+    def __init__(self, code='adapter_failed', diagnostics=None):
+        self.code = code if isinstance(code, str) and code in self.MESSAGES else 'adapter_failed'
+        self.diagnostics = {}
+        if self.code != 'adapter_failed':
+            data = diagnostics if isinstance(diagnostics, dict) else {}
+            stage = data.get('stage')
+            resources = data.get('resources')
+            self.diagnostics = {
+                'stage': stage if isinstance(stage, str) and stage in self.STAGES else 'unknown',
+                'resources': {key: value for key, value in resources.items()
+                              if key in self.RESOURCES and type(value) is int and 0 <= value <= 2**40}
+                             if isinstance(resources, dict) else {},
+            }
+        super().__init__(self.MESSAGES[self.code])
+
+    @classmethod
+    def from_worker(cls, identifier, result):
+        if identifier == 'browser.inspect' and isinstance(result, dict) and result.get('error') == 'Adapter failed':
+            return cls(result.get('code'), result.get('diagnostics'))
+        return cls()
+
+
 @dataclass(frozen=True)
 class Spec:
     id:str
@@ -132,9 +167,11 @@ class Capabilities:
                                                      **({'creationflags':0x08000000} if os.name=='nt' else {'start_new_session':True}))
         try:
             output,_=await asyncio.wait_for(process.communicate(canonical({'id':identifier,'arguments':args}).encode()),22)
-            if len(output)>12*1024**2 or process.returncode:raise ValueError('Adapter dependency unavailable or operation failed')
-            result=json.loads(output)
-            if 'error' in result:raise ValueError('Adapter failed')
+            if len(output)>12*1024**2:raise AdapterFailure()
+            try:result=json.loads(output)
+            except (ValueError,TypeError):raise AdapterFailure() from None
+            if not isinstance(result,dict):raise AdapterFailure()
+            if process.returncode or 'error' in result:raise AdapterFailure.from_worker(identifier,result)
             return result
         finally:
             if process.returncode is None:
@@ -180,6 +217,8 @@ class Capabilities:
                     from .mcp_bridge import TOOLS,VERSION
                     result={'endpoint':'/api/mcp','protocol':VERSION,'tools':sorted(TOOLS),'authentication':'OS owner session plus CSRF','authorization':'exact one-use actionApproval per call','remote_enabled':False}
                 else:raise ValueError('No implementation')
+            except AdapterFailure as exc:
+                self.store.event('capability.failed',{'id':identifier,'code':exc.code,'diagnostics':exc.diagnostics});raise
             except BaseException:
                 self.store.event('capability.failed',{'id':identifier});raise
             self.store.event('capability.finished',{'id':identifier,'seconds':round(time.monotonic()-started,4)})

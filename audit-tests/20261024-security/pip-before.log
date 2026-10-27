@@ -1,0 +1,25 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_________ test_installer_trust_store_excludes_compromised_emsign_root _________
+
+    def test_installer_trust_store_excludes_compromised_emsign_root():
+        # pip vendors its own CA bundle; updating top-level Certifi does not fix it.
+        from pip._vendor import certifi
+    
+        context = ssl.create_default_context(cafile=certifi.where())
+        names = {value for certificate in context.get_ca_certs()
+                 for rdn in certificate["subject"] for name, value in rdn if name == "commonName"}
+        assert len(names) > 50
+>       assert "emSign ECC Root CA - G3" not in names
+E       AssertionError: assert 'emSign ECC Root CA - G3' not in {'AC RAIZ FNMT-RCM SERVIDORES SEGUROS', 'ACCVRAIZ1', 'ANF Secure Server Root CA', 'Actalis Authentication Root CA', 'Amazon Root CA 1', 'Amazon Root CA 2', ...}
+
+sight\tests\test_dependency_security.py:34: AssertionError
+============================== warnings summary ===============================
+sight\.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\sight\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED sight\tests\test_dependency_security.py::test_installer_trust_store_excludes_compromised_emsign_root
+1 failed, 2 deselected, 1 warning in 0.55s

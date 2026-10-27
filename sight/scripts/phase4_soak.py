@@ -9,6 +9,7 @@ import ctypes
 from ctypes import wintypes
 from datetime import datetime,timezone
 import hashlib
+from io import BytesIO
 from importlib.metadata import distributions
 import json
 import os
@@ -23,6 +24,7 @@ import time
 import uuid
 import httpx
 import websockets
+from PIL import Image
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
@@ -31,7 +33,7 @@ from sight_core.recovery import backup_all,restore_all
 def source_hashes():
     result = {p.relative_to(ROOT).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for folder in ('sight_core','apps') for p in sorted((ROOT/folder).rglob('*')) if p.is_file() and '__pycache__' not in p.parts}
     for name in ('requirements.lock', 'requirements-bootstrap.lock', 'scripts/launch.py',
-                 'scripts/soak_worker.py'):
+                 'scripts/soak_worker.py', 'scripts/phase4_soak.py'):
         result[name] = hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
     return result
 
@@ -82,23 +84,27 @@ class Telemetry:
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--seconds',type=int,default=3600);parser.add_argument('--model',required=True)
     parser.add_argument('--thinking',action='store_true',help='Explicit comparison run; default uses the selected non-thinking configuration')
+    parser.add_argument('--evidence-directory',type=Path,help='Save a new audit run without replacing historical latest reports')
+    parser.add_argument('--browser-checks',action='store_true',help='Inspect synthetic offline HTML once every ten cycles after real local inference; no retries')
     args=parser.parse_args()
     if not 10<=args.seconds<=7200:raise ValueError('Duration must be 10..7200 real seconds')
     stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-'+uuid.uuid4().hex[:6]
-    evidence_dir=ROOT.parent/'evidence'/('soak-'+stamp);evidence_dir.mkdir(parents=True)
+    evidence_root=args.evidence_directory if args.evidence_directory else ROOT.parent/'evidence'
+    evidence_dir=evidence_root/('soak-'+stamp);evidence_dir.mkdir(parents=True)
     data=ROOT.parent/'test-data'/('soak-'+stamp);data.mkdir(parents=True)
     (data/'local-model.json').write_text(json.dumps({'model':args.model,'thinking':args.thinking}),encoding='utf-8')
     with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
     url=f'http://127.0.0.1:{port}';process=None;client=None;log=(evidence_dir/'server.log').open('w',encoding='utf-8')
     control=data/'test-transport-fault';control.write_text('')
     result={'started_utc':datetime.now(timezone.utc).isoformat(),'requested_seconds':args.seconds,'model':args.model,'thinking':args.thinking,'data_dir':str(data),'checks':[],
-            'cloud_requests':0,'fault_scope':'Test-process loopback model transport; host network unchanged','source_hashes':source_hashes(),'dependency_versions':dependency_versions(),'complete':False,'cycles':0,'model_calls':[],'planned_server_crashes':0,'unplanned_server_exits':0}
+            'cloud_requests':0,'fault_scope':'Test-process loopback model transport; host network unchanged','source_hashes':source_hashes(),'dependency_versions':dependency_versions(),'complete':False,'cycles':0,'model_calls':[],'browser_checks':args.browser_checks,'browser_calls':[],'planned_server_crashes':0,'unplanned_server_exits':0}
     checks=result['checks'];ws_ids=[];job_ids=[];telemetry=Telemetry(evidence_dir/'telemetry.jsonl',data/'soak-server.pid')
     thread=threading.Thread(target=telemetry.run,daemon=True);thread.start();start=time.monotonic()
     def save():
         result['elapsed_seconds']=round(time.monotonic()-start,3)
         (evidence_dir/'result.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
-        (ROOT/'reports/soak_progress.json').write_text(json.dumps({'evidence':str(evidence_dir),'elapsed_seconds':result['elapsed_seconds'],'requested_seconds':args.seconds,'cycles':result['cycles'],'failed_checks':sum(not c['passed'] for c in checks),'complete':result['complete']},indent=2),encoding='utf-8')
+        progress=(evidence_root/'soak_progress.json') if args.evidence_directory else ROOT/'reports/soak_progress.json'
+        progress.write_text(json.dumps({'evidence':str(evidence_dir),'elapsed_seconds':result['elapsed_seconds'],'requested_seconds':args.seconds,'cycles':result['cycles'],'failed_checks':sum(not c['passed'] for c in checks),'complete':result['complete']},indent=2),encoding='utf-8')
     def check(name,passed,detail=None):
         checks.append({'name':name,'passed':bool(passed),'elapsed_seconds':round(time.monotonic()-start,3),'detail':detail})
         if not passed:save();raise AssertionError(name)
@@ -157,6 +163,16 @@ def main():
                 tick=time.monotonic();answer=client.post('/api/utterance',json=request).json()
                 result['model_calls'].append({'cycle':cycle,'seconds':round(time.monotonic()-tick,3),'status':answer.get('status'),'answer':answer.get('say'),'expected_answer':'42','answer_correct':answer.get('say','').strip().strip('.')=='42','recovery':answer.get('recovery'),'local_inference_requests':answer.get('local_inference_requests',1)})
                 check('real Gemma inference completes',answer.get('status')=='ok' and bool(answer.get('say','').strip()) and answer.get('offline'))
+            if args.browser_checks and cycle%10==0:
+                tick=time.monotonic()
+                answer=action('/api/capability/invoke',{'id':'browser.inspect','arguments':{'html':'<title>SIGHT soak</title><h1>Local browser check</h1><input id="name"><img src="https://example.invalid/image.png"><script>document.title="Unexpected script"</script>','fields':{'name':'Synthetic owner'}}})['result']
+                artifact=answer['artifact'];download=client.get(artifact['download'])
+                check('browser artifact download matches hash',download.status_code==200 and hashlib.sha256(download.content).hexdigest()==artifact['sha256'])
+                with Image.open(BytesIO(download.content)) as png:
+                    size=png.size;nonblank=any(lo!=hi for lo,hi in png.convert('RGB').getextrema())
+                result['browser_calls'].append({'cycle':cycle,'seconds':round(time.monotonic()-tick,3),'artifact_id':artifact['id'],'sha256':artifact['sha256'],'size':size,'nonblank':nonblank,'blocked_requests':answer['blocked_requests']})
+                check('browser captures after real Gemma inference',size==(1024,768) and nonblank and answer['title']=='SIGHT soak' and answer['fields']=={'name':'Synthetic owner'})
+                check('browser network and scripts remain disabled',not answer['network_allowed'] and not answer['scripts_enabled'] and not answer['submitted'] and answer['blocked_requests']>=1)
             if cycle%10==3:
                 control.write_text('disconnect')
                 try:
@@ -193,6 +209,8 @@ def main():
         bundle=evidence_dir/'backup';recovered=data.parent/(data.name+'-restored')
         backup_all(data,bundle);restore_all(bundle,recovered)
         check('soak output files survive full restore',all((recovered/'files'/f'cycle-{i}.txt').read_text()==f'cycle {i}' for i in range(result['cycles'])))
+        if args.browser_checks:
+            check('browser artifacts survive full restore',all((recovered/'artifacts'/row['artifact_id']).is_file() and hashlib.sha256((recovered/'artifacts'/row['artifact_id']).read_bytes()).hexdigest()==row['sha256'] for row in result['browser_calls']))
         result['source_unchanged_during_run']=source_hashes()==result['source_hashes'];check('runtime source unchanged during soak',result['source_unchanged_during_run'])
         result['dependencies_unchanged_during_run']=dependency_versions()==result['dependency_versions'];check('installed dependencies unchanged during soak',result['dependencies_unchanged_during_run'])
         result['complete']=True
@@ -211,7 +229,9 @@ def main():
             times=sorted(r['seconds'] for r in result['model_calls']);result['model_latency']={'median_seconds':statistics.median(times),'max_seconds':max(times),'sample_count':len(times)}
             result['model_answer_correct_count']=sum(r['answer_correct'] for r in result['model_calls'])
             result['quality_scope']='Stability qualification measures runtime completion, not reasoning correctness; answer checks are reported separately.'
-        save();(ROOT/'reports/soak_latest.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+        save()
+        if args.evidence_directory is None:
+            (ROOT/'reports/soak_latest.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
         print(json.dumps({'evidence':str(evidence_dir),'complete':result['complete'],'one_hour_qualified':result['one_hour_qualified'],'error':result.get('error')}),flush=True)
     return 0 if result['complete'] else 1
 

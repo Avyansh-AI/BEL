@@ -1,0 +1,2243 @@
+{
+  "started_utc": "2026-10-26T18:36:37.223070+00:00",
+  "rounds": 10,
+  "cases": [
+    "original_install",
+    "local_fields",
+    "blocked_content"
+  ],
+  "plan": "Each fixed synthetic case in each round gets one fresh process, 25-second process deadline, no retries. No artificial resource exhaustion or model inference.",
+  "runtime": {
+    "python": "3.12.5 (tags/v3.12.5:ff3bc82, Aug  6 2024, 20:45:27) [MSC v.1940 64 bit (AMD64)]",
+    "playwright": "1.64.0"
+  },
+  "source_hashes": {
+    "browser_diagnostics.py": "ba0cfcb145f21591bebaa973dd793f3f24d735a7ad6c4b3d211305972b7d119e",
+    "capability_worker.py": "9153358ea1ae4145c00e18aba87fed95177a9abc56745e0e69963e7558043451"
+  },
+  "attempts": [
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2565.26,
+        "available_commit_mib": 2218.84
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.828
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2375.28,
+          "available_commit_mib": 2007.01
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2348.44,
+        "available_commit_mib": 1987.04
+      },
+      "image": {
+        "bytes": 4748,
+        "sha256": "14b18d7364fc5c86416c2cb25a5dbf0c7c04779de870f9294ec4921d0458d23d",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.922,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2548.84,
+        "available_commit_mib": 2187.36
+      },
+      "exit_code": 0,
+      "round": 1
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2538.05,
+        "available_commit_mib": 2165.94
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 1.515
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2319.21,
+          "available_commit_mib": 1934.59
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2304.66,
+        "available_commit_mib": 1927.87
+      },
+      "image": {
+        "bytes": 5830,
+        "sha256": "c09f62155cd71c38e53225730df2a898293dc26d6f01c84188b9bcab4bd15ce1",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 1.593,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2480.87,
+        "available_commit_mib": 2119.23
+      },
+      "exit_code": 0,
+      "round": 1
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2489.11,
+        "available_commit_mib": 2121.04
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.641
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2303.84,
+          "available_commit_mib": 1922.65
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2291.61,
+        "available_commit_mib": 1900.63
+      },
+      "image": {
+        "bytes": 5610,
+        "sha256": "4cc45afb578236415615cb1e48c39c9667af1f9a353d08fc604dacbd8644dee6",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 1
+      },
+      "seconds": 0.75,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2475.18,
+        "available_commit_mib": 2112.51
+      },
+      "exit_code": 0,
+      "round": 1
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2480.4,
+        "available_commit_mib": 2115.63
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.641
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2298.61,
+          "available_commit_mib": 1945.13
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2269.41,
+        "available_commit_mib": 1926.41
+      },
+      "image": {
+        "bytes": 4748,
+        "sha256": "14b18d7364fc5c86416c2cb25a5dbf0c7c04779de870f9294ec4921d0458d23d",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.719,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2451.6,
+        "available_commit_mib": 2123.18
+      },
+      "exit_code": 0,
+      "round": 2
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2523.96,
+        "available_commit_mib": 2184.77
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.625
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2323.16,
+          "available_commit_mib": 1980.22
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2304.81,
+        "available_commit_mib": 1967.9
+      },
+      "image": {
+        "bytes": 5830,
+        "sha256": "c09f62155cd71c38e53225730df2a898293dc26d6f01c84188b9bcab4bd15ce1",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.719,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2495.0,
+        "available_commit_mib": 2167.21
+      },
+      "exit_code": 0,
+      "round": 2
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2525.32,
+        "available_commit_mib": 2182.69
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.547
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2345.7,
+          "available_commit_mib": 1993.8
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2321.85,
+        "available_commit_mib": 1974.8
+      },
+      "image": {
+        "bytes": 5610,
+        "sha256": "4cc45afb578236415615cb1e48c39c9667af1f9a353d08fc604dacbd8644dee6",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 1
+      },
+      "seconds": 0.641,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2508.4,
+        "available_commit_mib": 2182.15
+      },
+      "exit_code": 0,
+      "round": 2
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2526.47,
+        "available_commit_mib": 2202.39
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.594
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2359.34,
+          "available_commit_mib": 2005.53
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2333.3,
+        "available_commit_mib": 1987.55
+      },
+      "image": {
+        "bytes": 4748,
+        "sha256": "14b18d7364fc5c86416c2cb25a5dbf0c7c04779de870f9294ec4921d0458d23d",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.688,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2516.18,
+        "available_commit_mib": 2188.21
+      },
+      "exit_code": 0,
+      "round": 3
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2530.46,
+        "available_commit_mib": 2200.34
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.609
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2342.02,
+          "available_commit_mib": 1990.0
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2319.22,
+        "available_commit_mib": 1976.3
+      },
+      "image": {
+        "bytes": 5830,
+        "sha256": "c09f62155cd71c38e53225730df2a898293dc26d6f01c84188b9bcab4bd15ce1",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.703,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2505.12,
+        "available_commit_mib": 2178.23
+      },
+      "exit_code": 0,
+      "round": 3
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2530.69,
+        "available_commit_mib": 2199.37
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.641
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2342.02,
+          "available_commit_mib": 1997.12
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2310.3,
+        "available_commit_mib": 1972.11
+      },
+      "image": {
+        "bytes": 5610,
+        "sha256": "4cc45afb578236415615cb1e48c39c9667af1f9a353d08fc604dacbd8644dee6",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 1
+      },
+      "seconds": 0.735,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2508.22,
+        "available_commit_mib": 2183.12
+      },
+      "exit_code": 0,
+      "round": 3
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2517.56,
+        "available_commit_mib": 2194.09
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.547
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2330.39,
+          "available_commit_mib": 1988.05
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2306.58,
+        "available_commit_mib": 1968.36
+      },
+      "image": {
+        "bytes": 4748,
+        "sha256": "14b18d7364fc5c86416c2cb25a5dbf0c7c04779de870f9294ec4921d0458d23d",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2510.6,
+        "available_commit_mib": 2177.93
+      },
+      "exit_code": 0,
+      "round": 4
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2525.34,
+        "available_commit_mib": 2188.47
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.547
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2323.97,
+          "available_commit_mib": 1978.78
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2296.61,
+        "available_commit_mib": 1959.14
+      },
+      "image": {
+        "bytes": 5830,
+        "sha256": "c09f62155cd71c38e53225730df2a898293dc26d6f01c84188b9bcab4bd15ce1",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2484.88,
+        "available_commit_mib": 2160.88
+      },
+      "exit_code": 0,
+      "round": 4
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2513.46,
+        "available_commit_mib": 2175.52
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.547
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2310.38,
+          "available_commit_mib": 1964.56
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2291.39,
+        "available_commit_mib": 1947.82
+      },
+      "image": {
+        "bytes": 5610,
+        "sha256": "4cc45afb578236415615cb1e48c39c9667af1f9a353d08fc604dacbd8644dee6",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 1
+      },
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2463.73,
+        "available_commit_mib": 2146.91
+      },
+      "exit_code": 0,
+      "round": 4
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2487.93,
+        "available_commit_mib": 2171.47
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.531
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2310.74,
+          "available_commit_mib": 1970.49
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2278.59,
+        "available_commit_mib": 1951.2
+      },
+      "image": {
+        "bytes": 4748,
+        "sha256": "14b18d7364fc5c86416c2cb25a5dbf0c7c04779de870f9294ec4921d0458d23d",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.609,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2466.78,
+        "available_commit_mib": 2145.31
+      },
+      "exit_code": 0,
+      "round": 5
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2495.77,
+        "available_commit_mib": 2173.39
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.594
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2301.55,
+          "available_commit_mib": 1965.04
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2276.14,
+        "available_commit_mib": 1953.75
+      },
+      "image": {
+        "bytes": 5830,
+        "sha256": "c09f62155cd71c38e53225730df2a898293dc26d6f01c84188b9bcab4bd15ce1",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.672,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2464.74,
+        "available_commit_mib": 2154.2
+      },
+      "exit_code": 0,
+      "round": 5
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2480.36,
+        "available_commit_mib": 2169.71
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.547
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2317.92,
+          "available_commit_mib": 1970.01
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2283.52,
+        "available_commit_mib": 1947.88
+      },
+      "image": {
+        "bytes": 5610,
+        "sha256": "4cc45afb578236415615cb1e48c39c9667af1f9a353d08fc604dacbd8644dee6",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 1
+      },
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2460.62,
+        "available_commit_mib": 2151.11
+      },
+      "exit_code": 0,
+      "round": 5
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2492.53,
+        "available_commit_mib": 2159.75
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.563
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2317.58,
+          "available_commit_mib": 1964.27
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2290.05,
+        "available_commit_mib": 1947.85
+      },
+      "image": {
+        "bytes": 4748,
+        "sha256": "14b18d7364fc5c86416c2cb25a5dbf0c7c04779de870f9294ec4921d0458d23d",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.641,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2479.3,
+        "available_commit_mib": 2152.82
+      },
+      "exit_code": 0,
+      "round": 6
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2491.39,
+        "available_commit_mib": 2164.23
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.531
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2294.91,
+          "available_commit_mib": 1957.87
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2279.52,
+        "available_commit_mib": 1943.7
+      },
+      "image": {
+        "bytes": 5830,
+        "sha256": "c09f62155cd71c38e53225730df2a898293dc26d6f01c84188b9bcab4bd15ce1",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.609,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2470.4,
+        "available_commit_mib": 2142.86
+      },
+      "exit_code": 0,
+      "round": 6
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2501.3,
+        "available_commit_mib": 2166.11
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.532
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2307.02,
+          "available_commit_mib": 1967.83
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2287.23,
+        "available_commit_mib": 1945.25
+      },
+      "image": {
+        "bytes": 5610,
+        "sha256": "4cc45afb578236415615cb1e48c39c9667af1f9a353d08fc604dacbd8644dee6",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 1
+      },
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2470.16,
+        "available_commit_mib": 2141.85
+      },
+      "exit_code": 0,
+      "round": 6
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2489.41,
+        "available_commit_mib": 2164.54
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.547
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2304.07,
+          "available_commit_mib": 1956.24
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2280.88,
+        "available_commit_mib": 1941.16
+      },
+      "image": {
+        "bytes": 4748,
+        "sha256": "14b18d7364fc5c86416c2cb25a5dbf0c7c04779de870f9294ec4921d0458d23d",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2469.84,
+        "available_commit_mib": 2140.38
+      },
+      "exit_code": 0,
+      "round": 7
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2502.43,
+        "available_commit_mib": 2171.46
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.547
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2297.29,
+          "available_commit_mib": 1955.82
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2287.9,
+        "available_commit_mib": 1951.0
+      },
+      "image": {
+        "bytes": 5830,
+        "sha256": "c09f62155cd71c38e53225730df2a898293dc26d6f01c84188b9bcab4bd15ce1",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2474.52,
+        "available_commit_mib": 2147.87
+      },
+      "exit_code": 0,
+      "round": 7
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2498.69,
+        "available_commit_mib": 2172.05
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.532
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2298.78,
+          "available_commit_mib": 1965.91
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2272.07,
+        "available_commit_mib": 1934.54
+      },
+      "image": {
+        "bytes": 5610,
+        "sha256": "4cc45afb578236415615cb1e48c39c9667af1f9a353d08fc604dacbd8644dee6",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 1
+      },
+      "seconds": 0.594,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2455.7,
+        "available_commit_mib": 2145.07
+      },
+      "exit_code": 0,
+      "round": 7
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2472.24,
+        "available_commit_mib": 2154.87
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.547
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2313.69,
+          "available_commit_mib": 1972.0
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2289.06,
+        "available_commit_mib": 1953.09
+      },
+      "image": {
+        "bytes": 4748,
+        "sha256": "14b18d7364fc5c86416c2cb25a5dbf0c7c04779de870f9294ec4921d0458d23d",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2477.2,
+        "available_commit_mib": 2149.71
+      },
+      "exit_code": 0,
+      "round": 8
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2495.82,
+        "available_commit_mib": 2159.54
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.546
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2311.7,
+          "available_commit_mib": 1970.04
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2289.71,
+        "available_commit_mib": 1952.85
+      },
+      "image": {
+        "bytes": 5830,
+        "sha256": "c09f62155cd71c38e53225730df2a898293dc26d6f01c84188b9bcab4bd15ce1",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.609,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2467.51,
+        "available_commit_mib": 2140.35
+      },
+      "exit_code": 0,
+      "round": 8
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2481.82,
+        "available_commit_mib": 2157.59
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.532
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2302.29,
+          "available_commit_mib": 1968.03
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2283.27,
+        "available_commit_mib": 1952.34
+      },
+      "image": {
+        "bytes": 5610,
+        "sha256": "4cc45afb578236415615cb1e48c39c9667af1f9a353d08fc604dacbd8644dee6",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 1
+      },
+      "seconds": 0.61,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2471.07,
+        "available_commit_mib": 2157.15
+      },
+      "exit_code": 0,
+      "round": 8
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2479.76,
+        "available_commit_mib": 2168.09
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.531
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2304.44,
+          "available_commit_mib": 1959.34
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2279.43,
+        "available_commit_mib": 1944.86
+      },
+      "image": {
+        "bytes": 4748,
+        "sha256": "14b18d7364fc5c86416c2cb25a5dbf0c7c04779de870f9294ec4921d0458d23d",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2458.05,
+        "available_commit_mib": 2148.91
+      },
+      "exit_code": 0,
+      "round": 9
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2473.58,
+        "available_commit_mib": 2159.63
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.532
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2299.46,
+          "available_commit_mib": 1957.54
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2281.17,
+        "available_commit_mib": 1944.36
+      },
+      "image": {
+        "bytes": 5830,
+        "sha256": "c09f62155cd71c38e53225730df2a898293dc26d6f01c84188b9bcab4bd15ce1",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.61,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2473.0,
+        "available_commit_mib": 2146.57
+      },
+      "exit_code": 0,
+      "round": 9
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2477.88,
+        "available_commit_mib": 2156.94
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.532
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2297.92,
+          "available_commit_mib": 1962.58
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2273.38,
+        "available_commit_mib": 1937.6
+      },
+      "image": {
+        "bytes": 5610,
+        "sha256": "4cc45afb578236415615cb1e48c39c9667af1f9a353d08fc604dacbd8644dee6",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 1
+      },
+      "seconds": 0.625,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2460.96,
+        "available_commit_mib": 2141.0
+      },
+      "exit_code": 0,
+      "round": 9
+    },
+    {
+      "case": "original_install",
+      "memory_before": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2473.29,
+        "available_commit_mib": 2140.59
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.625
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 85,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2384.18,
+          "available_commit_mib": 2004.86
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2355.88,
+        "available_commit_mib": 1990.53
+      },
+      "image": {
+        "bytes": 4748,
+        "sha256": "14b18d7364fc5c86416c2cb25a5dbf0c7c04779de870f9294ec4921d0458d23d",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.719,
+      "memory_after": {
+        "available": true,
+        "load_percent": 84,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2526.48,
+        "available_commit_mib": 2184.38
+      },
+      "exit_code": 0,
+      "round": 10
+    },
+    {
+      "case": "local_fields",
+      "memory_before": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2355.1,
+        "available_commit_mib": 2052.33
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.641
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 86,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2110.11,
+          "available_commit_mib": 1808.12
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2079.42,
+        "available_commit_mib": 1788.54
+      },
+      "image": {
+        "bytes": 5830,
+        "sha256": "c09f62155cd71c38e53225730df2a898293dc26d6f01c84188b9bcab4bd15ce1",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 0
+      },
+      "seconds": 0.719,
+      "memory_after": {
+        "available": true,
+        "load_percent": 85,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2266.86,
+        "available_commit_mib": 1974.81
+      },
+      "exit_code": 0,
+      "round": 10
+    },
+    {
+      "case": "blocked_content",
+      "memory_before": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2222.99,
+        "available_commit_mib": 1950.85
+      },
+      "capture_calls": 1,
+      "events": [
+        {
+          "event": "browser_disconnected",
+          "seconds": 0.687
+        }
+      ],
+      "passed": true,
+      "launch_options": {
+        "headless": true,
+        "chromium_sandbox": true
+      },
+      "browser_version": "156.0.8078.4",
+      "command_line_probe": "unavailable",
+      "capture_options": {
+        "timeout": 5000
+      },
+      "before_capture": {
+        "memory": {
+          "available": true,
+          "load_percent": 87,
+          "total_ram_mib": 16068.7,
+          "available_ram_mib": 2041.2,
+          "available_commit_mib": 1775.75
+        },
+        "page_closed": false,
+        "browser_connected": true,
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        }
+      },
+      "memory_after_capture": {
+        "available": true,
+        "load_percent": 87,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2022.2,
+        "available_commit_mib": 1758.27
+      },
+      "image": {
+        "bytes": 5610,
+        "sha256": "4cc45afb578236415615cb1e48c39c9667af1f9a353d08fc604dacbd8644dee6",
+        "size": [
+          1024,
+          768
+        ],
+        "nonblank": true
+      },
+      "security": {
+        "network_allowed": false,
+        "scripts_enabled": false,
+        "submitted": false,
+        "blocked_requests": 1
+      },
+      "seconds": 0.766,
+      "memory_after": {
+        "available": true,
+        "load_percent": 86,
+        "total_ram_mib": 16068.7,
+        "available_ram_mib": 2224.49,
+        "available_commit_mib": 1958.02
+      },
+      "exit_code": 0,
+      "round": 10
+    }
+  ],
+  "complete": true,
+  "passed_count": 30,
+  "finished_utc": "2026-10-26T18:37:10.089357+00:00"
+}

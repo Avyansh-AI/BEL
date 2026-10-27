@@ -1,0 +1,136 @@
+{
+  "checked_utc": "2026-10-27T14:41:07.839880+00:00",
+  "passed": true,
+  "checks": {
+    "expected_local_base_commit": true,
+    "index_unchanged_during_check": true,
+    "eleven_supplied_credentials_absent": true,
+    "no_private_runtime_or_cache_paths_staged": true,
+    "every_file_below_100_mib": true,
+    "six_ui_files_match_head": true,
+    "all_96_phase3_files_preserved": true,
+    "three_earlier_archives_preserved": true,
+    "historical_dist_and_upload_manifest_preserved": true,
+    "current_document_links_resolve_in_index_or_generated_outputs": true,
+    "owner_model_thinking_unchanged_and_ignored": true
+  },
+  "repository": "Avyansh-AI/BEL",
+  "base_commit": "372df995004bf640f352e06c8ea25c942b468663",
+  "observed_head": "372df995004bf640f352e06c8ea25c942b468663",
+  "index_entries_sha256_excluding_generated_outputs": "9720d55ba62542003d0662f3dbfff76fd465440377017d023efc2a78289e4da0",
+  "generated_outputs_excluded_from_inventory": [
+    "audit-tests/20261027-browser/final-build/publication-check-final.json",
+    "publication-tests/20261027-update/final-manifest.json"
+  ],
+  "credential_scan": {
+    "files_checked": 821,
+    "recognized_supplied_values": 11,
+    "matching_files": [],
+    "values_logged": false,
+    "scope": "Exact staged bytes, including binary blobs; no untracked or unstaged working bytes are qualified"
+  },
+  "unsafe_staged_paths": [],
+  "files_at_or_over_100_mib": [],
+  "byte_identical_previously_published_test_evidence": [
+    "sight/reports/runs/20261022T100402Z-49c429be/junit.xml",
+    "sight/reports/runs/20261022T100402Z-49c429be/pytest.log",
+    "sight/reports/runs/20261022T100402Z-49c429be/results.json",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/capabilities-desktop.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/capabilities-mobile.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_alert_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_alert_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_error_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_error_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_listening_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_listening_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_offline_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_offline_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_speaking_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_speaking_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_standby_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_standby_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_thinking_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_thinking_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_vision_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/diff_vision_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_alert_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_alert_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_error_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_error_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_listening_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_listening_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_offline_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_offline_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_speaking_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_speaking_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_standby_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_standby_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_thinking_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_thinking_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_vision_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/integrated_vision_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/learning_desktop.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/learning_mobile.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/metrics_1440x900.json",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/metrics_390x844.json",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_alert_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_alert_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_error_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_error_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_listening_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_listening_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_offline_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_offline_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_speaking_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_speaking_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_standby_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_standby_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_thinking_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_thinking_390x844.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_vision_1440x900.png",
+    "sight/reports/runs/20261022T100402Z-49c429be/ui_visual_diffs/original_vision_390x844.png"
+  ],
+  "ui_exact_git_head": {
+    "sight/apps/ui/capabilities.html": true,
+    "sight/apps/ui/index.html": true,
+    "sight/apps/ui/learning.html": true,
+    "sight/apps/ui/systems.html": true,
+    "sight/apps/ui/tasks.html": true,
+    "sight/apps/ui/vision.html": true
+  },
+  "phase3_preservation": {
+    "baseline_files": 96,
+    "changed": []
+  },
+  "earlier_package_preservation": {
+    "Phase-1/SIGHT-Phase1-Repaired.zip": true,
+    "Phase-2/SIGHT-Phase2-Verified.zip": true,
+    "Phase-3/SIGHT-Phase3-Partial.zip": true
+  },
+  "historical_publication_preservation": {
+    "UPLOAD_MANIFEST.json": true,
+    "dist/SIGHT-Phase4-Partial.zip": true,
+    "dist/SIGHT-Phase4-Partial.zip.sha256": true
+  },
+  "documentation": {
+    "files_checked": 11,
+    "missing_local_links": [],
+    "pending_links_to_generated_outputs": [
+      {
+        "document": "PUBLICATION.md",
+        "target": "audit-tests/20261027-browser/final-build/publication-check-final.json"
+      },
+      {
+        "document": "PUBLICATION.md",
+        "target": "publication-tests/20261027-update/final-manifest.json"
+      }
+    ],
+    "policy": "All other local targets must exist in the Git index; pending generated output paths must be staged before --verify"
+  },
+  "owner_configuration": {
+    "expected_model_and_thinking": true,
+    "git_ignored": true
+  },
+  "total_staged_bytes_excluding_generated_outputs": 236370015,
+  "next_step": "Stage only the two generated outputs, then rerun this script with --verify and the same output arguments."
+}

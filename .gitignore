@@ -10,3 +10,11 @@ sight/reports/ui_visual_diffs/
 owner-data/
 test-data/
 *.zip
+
+# Keep runtime state and raw server output local; retain audit summaries/manifests.
+audit-tests/**/server.log
+audit-tests/**/pytest-cache/
+audit-tests/**/backup/*
+!audit-tests/**/backup/manifest.json
+audit-tests/**/*.sqlite3
+audit-tests/**/*.sqlite3-*

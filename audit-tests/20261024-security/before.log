@@ -1,0 +1,100 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+___________ test_httpx_trust_store_excludes_compromised_emsign_root ___________
+
+    def test_httpx_trust_store_excludes_compromised_emsign_root():
+        # GHSA-6q48-6c7w-9gw2: provider TLS must not trust this compromised chain.
+        context = httpx.create_ssl_context(trust_env=False)
+        names = {
+            entry.value
+            for der in context.get_ca_certs(binary_form=True)
+            for entry in x509.load_der_x509_certificate(der).subject.get_attributes_for_oid(NameOID.COMMON_NAME)
+        }
+        assert len(names) > 50, "An empty trust store is not a security repair"
+>       assert "emSign ECC Root CA - G3" not in names
+E       AssertionError: assert 'emSign ECC Root CA - G3' not in {'AC RAIZ FNMT-RCM SERVIDORES SEGUROS', 'ACCVRAIZ1', 'ANF Secure Server Root CA', 'Actalis Authentication Root CA', 'Amazon Root CA 1', 'Amazon Root CA 2', ...}
+
+sight\tests\test_dependency_security.py:22: AssertionError
+______________ test_malformed_xbm_is_rejected_without_cpu_stall _______________
+
+tmp_path = WindowsPath('C:/Users/Dell/AppData/Local/Temp/pytest-of-Dell/pytest-82/test_malformed_xbm_is_rejected0')
+
+    def test_malformed_xbm_is_rejected_without_cpu_stall(tmp_path):
+        # GHSA-xgh8-jp6q-p5x8: overlapping header whitespace stalled Image.open.
+        # A child-process deadline bounds the regression even with the old wheel.
+        header = b"".join(b"#define" + b" " * 60 + suffix + b" 1\r"
+                          for suffix in (b"_width", b"_height", b"_x_hot", b"_y_hot"))
+        sample = (header + b"\r" * 59 + b"_bits").ljust(512, b"A")
+        path = tmp_path / "malformed.xbm"
+        path.write_bytes(sample)
+        child = """
+    import sys
+    from PIL import Image, UnidentifiedImageError
+    try:
+        Image.open(sys.argv[1])
+    except UnidentifiedImageError:
+        raise SystemExit(0)
+    raise SystemExit('Malformed image was accepted')
+    """
+>       result = subprocess.run([sys.executable, "-B", "-c", child, str(path)],
+                                cwd=Path(__file__).resolve().parents[1],
+                                capture_output=True, text=True, timeout=5)
+
+sight\tests\test_dependency_security.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: 1 args: ['C:\\Users\\Dell\\Documents\\Ai projects\\Sight...>
+input = None, endtime = 28657.062, orig_timeout = 5
+
+    def _communicate(self, input, endtime, orig_timeout):
+        # Start reader threads feeding into a list hanging off of this
+        # object, unless they've already been started.
+        if self.stdout and not hasattr(self, "_stdout_buff"):
+            self._stdout_buff = []
+            self.stdout_thread = \
+                    threading.Thread(target=self._readerthread,
+                                     args=(self.stdout, self._stdout_buff))
+            self.stdout_thread.daemon = True
+            self.stdout_thread.start()
+        if self.stderr and not hasattr(self, "_stderr_buff"):
+            self._stderr_buff = []
+            self.stderr_thread = \
+                    threading.Thread(target=self._readerthread,
+                                     args=(self.stderr, self._stderr_buff))
+            self.stderr_thread.daemon = True
+            self.stderr_thread.start()
+    
+        if self.stdin:
+            self._stdin_write(input)
+    
+        # Wait for the reader threads, or time out.  If we time out, the
+        # threads remain reading and the fds left open in case the user
+        # calls communicate again.
+        if self.stdout is not None:
+            self.stdout_thread.join(self._remaining_time(endtime))
+            if self.stdout_thread.is_alive():
+>               raise TimeoutExpired(self.args, orig_timeout)
+E               subprocess.TimeoutExpired: Command '['C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\sight\\.venv\\Scripts\\python.exe', '-B', '-c', "\nimport sys\nfrom PIL import Image, UnidentifiedImageError\ntry:\n    Image.open(sys.argv[1])\nexcept UnidentifiedImageError:\n    raise SystemExit(0)\nraise SystemExit('Malformed image was accepted')\n", 'C:\\Users\\Dell\\AppData\\Local\\Temp\\pytest-of-Dell\\pytest-82\\test_malformed_xbm_is_rejected0\\malformed.xbm']' timed out after 5 seconds
+
+C:\Users\Dell\AppData\Local\Programs\Python\Python312\Lib\subprocess.py:1630: TimeoutExpired
+============================== warnings summary ===============================
+sight\.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\sight\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_dependency_security.py::test_httpx_trust_store_excludes_compromised_emsign_root
+  C:\Users\Dell\Documents\Ai projects\Sight\github-publish\Sight\sight\tests\test_dependency_security.py:19: CryptographyDeprecationWarning: Parsed a serial number which wasn't positive (i.e., it was negative or zero), which is disallowed by RFC 5280. Loading this certificate will cause an exception in a future release of cryptography.
+    for entry in x509.load_der_x509_certificate(der).subject.get_attributes_for_oid(NameOID.COMMON_NAME)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED sight\tests\test_dependency_security.py::test_httpx_trust_store_excludes_compromised_emsign_root
+FAILED sight\tests\test_dependency_security.py::test_malformed_xbm_is_rejected_without_cpu_stall
+2 failed, 2 warnings in 5.65s

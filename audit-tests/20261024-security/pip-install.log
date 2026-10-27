@@ -1,0 +1,8 @@
+Looking in links: .cache\security-wheelhouse
+Processing .\.cache\security-wheelhouse\pip-26.2.2-py3-none-any.whl (from -r sight\requirements-bootstrap.lock (line 4))
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 26.2
+    Uninstalling pip-26.2:
+      Successfully uninstalled pip-26.2
+Successfully installed pip-26.2.2
