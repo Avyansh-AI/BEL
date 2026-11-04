@@ -60,6 +60,11 @@ def failure_payload(exc):
 
 
 def browser(value):
+    # Playwright otherwise defaults frozen applications to a bundled browser
+    # directory even when only its driver was bundled. Reuse the owner's normal
+    # installed cache; never download or silently attach to their browser.
+    if getattr(sys, 'frozen', False) and os.name == 'nt' and 'PLAYWRIGHT_BROWSERS_PATH' not in os.environ:
+        os.environ['PLAYWRIGHT_BROWSERS_PATH'] = str(Path(os.environ.get('LOCALAPPDATA', Path.home() / 'AppData/Local')) / 'ms-playwright')
     from playwright.sync_api import sync_playwright, Error
     stage = 'launch'
     failure = None

@@ -17,6 +17,7 @@ from .models import OllamaProvider, cloud_status
 from .security import Vault, private_directory, safe_file, atomic_private_write
 from .store import Store, restore_backup
 from .routing import ModelRouter
+from .identity import APP_NAME, identity
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -37,7 +38,7 @@ def single_instance(data_dir):
                 import fcntl
                 fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except OSError:
-            raise RuntimeError("Another SIGHT server owns this data directory")
+            raise RuntimeError("Another BEL server owns this data directory")
         try:
             if os.fstat(handle.fileno()).st_size == 0:
                 handle.write(b"0")
@@ -63,11 +64,11 @@ async def doctor(config):
             with sqlite3.connect(database.resolve().as_uri() + "?mode=ro", uri=True) as db:
                 row = db.execute("SELECT value FROM settings WHERE key=?", (key,)).fetchone()
                 return json.loads(row[0]) if row else default
-    return {"version": __version__, "environment": platform.platform(), "python": platform.python_version(), "data_directory": str(config.data_dir), "api_bind": f"127.0.0.1:{config.port}", "model": asdict(model), "limits": local.limits(), "cloud": await ModelRouter(local, ReadOnlySettings()).statuses(), "vault": Vault().status(), "windows_target_verified": "See audit evidence; doctor does not certify hardware", "voice_enrollment": "PENDING_OWNER_RECORDING", "phase": 4, "release": "PARTIAL"}
+    return {"identity": identity(), "version": __version__, "environment": platform.platform(), "python": platform.python_version(), "data_directory": str(config.data_dir), "api_bind": f"127.0.0.1:{config.port}", "model": asdict(model), "limits": local.limits(), "cloud": await ModelRouter(local, ReadOnlySettings()).statuses(), "vault": Vault().status(), "windows_target_verified": "See audit evidence; doctor does not certify hardware", "voice_enrollment": "PENDING_OWNER_RECORDING", "phase": 4, "release": "PARTIAL"}
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(prog="sight")
+    parser = argparse.ArgumentParser(prog=APP_NAME.lower())
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("doctor")
     commands.add_parser("open")
@@ -85,13 +86,21 @@ def main(argv=None):
     restore = commands.add_parser("restore")
     restore.add_argument("source", type=Path)
     restore.add_argument("destination", type=Path)
-    backup_all = commands.add_parser('backup-all', help='Stop SIGHT first; back up databases, files and artifacts together')
+    backup_all = commands.add_parser('backup-all', help='Stop BEL first; back up databases, files and artifacts together')
     backup_all.add_argument('destination', type=Path)
     restore_all = commands.add_parser('restore-all', help='Restore a verified data bundle to a new directory; cloud remains disabled')
     restore_all.add_argument('source', type=Path)
     restore_all.add_argument('destination', type=Path)
+    migrate = commands.add_parser('migrate', help='Back up existing supported data and record BEL identity in place; stop the server first')
+    migrate.add_argument('--data-directory', type=Path, help='Defaults to BEL_DATA_DIR, legacy SIGHT_DATA_DIR or the existing OS data directory')
+    migrate.add_argument('--backup-directory', type=Path, help='New destination outside the data directory; defaults to a unique sibling backup')
     args = parser.parse_args(argv)
     try:
+        if args.command == 'migrate':
+            from .migration import migrate_identity
+            directory = args.data_directory if args.data_directory is not None else Config.from_env().data_dir
+            print(json.dumps(migrate_identity(directory, args.backup_directory)))
+            return 0
         config = Config.from_env()
         if args.command in {"doctor", "report"}:
             print(json.dumps(asyncio.run(doctor(config)), indent=2))
@@ -113,7 +122,7 @@ def main(argv=None):
             from .security import private_directory
             private_directory(config.data_dir)
             atomic_private_write(config.data_dir / 'local-model.json', json.dumps({'model': args.model, 'thinking':False if args.no_thinking else None}, indent=2).encode('utf-8'))
-            print("Installed model verified and saved. Restart SIGHT to use this selection.")
+            print("Installed model verified and saved. Restart BEL to use this selection.")
         elif args.command == "open":
             import webbrowser
             token = (config.data_dir / "browser-token").read_text().strip()
@@ -132,7 +141,7 @@ def main(argv=None):
             print(json.dumps({"database_sha256": store.backup(args.destination), "scope": "database only; workspace files, credentials and voice samples are excluded"}))
         elif args.command == "restore":
             restore_backup(args.source, args.destination)
-            print("Verified database restored to a new data directory. Set SIGHT_DATA_DIR to that directory before starting SIGHT.")
+            print("Verified database restored to a new data directory. Set BEL_DATA_DIR to that directory before starting BEL; legacy SIGHT_DATA_DIR remains supported.")
         elif args.command == 'backup-all':
             from .recovery import backup_all
             print(json.dumps(backup_all(config.data_dir, args.destination)))

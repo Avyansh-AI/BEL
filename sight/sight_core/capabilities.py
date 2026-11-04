@@ -20,6 +20,7 @@ from .connector_contracts import Simulation,simulate
 from .proactive import Proactive,Reminder,Select,Monitor
 from .security import canonical,TOKEN_PATTERN
 from .tools import StrictModel
+from .runtime import worker_command
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -71,7 +72,7 @@ class Spec:
     reason:str=''
 
 SPECS=[
-    Spec('files.search','files','Find names in the private SIGHT text workspace',local.Search,'sight.workspace.read'),
+    Spec('files.search','files','Find names in the private BEL text workspace',local.Search,'sight.workspace.read'),
     Spec('documents.docx','documents','Create a plain text Word document without macros',local.Document,'artifacts.create','reversible-write'),
     Spec('documents.markdown','documents','Create a Markdown note',local.Document,'artifacts.create','reversible-write'),
     Spec('coding.inspect','coding','Parse Python syntax and list symbols without execution',local.Text),
@@ -134,7 +135,7 @@ class Capabilities:
             row={'id':spec.id,'family':spec.family,'description':spec.description,'status':'approval_required' if spec.available else 'blocked',
                  'available':spec.available,'reason':spec.reason if not spec.available else '', 'permission_scope':spec.permissions,
                  'risk_tier':spec.risk,'dependencies':list(spec.dependencies),'required_network':[],'secrets':[],'timeout':25,
-                 'rollback':'Immutable new artifact or local schedule only; no external rollback claimed','provenance':'Independent SIGHT implementation; reference concepts only',
+                 'rollback':'Immutable new artifact or local schedule only; no external rollback claimed','provenance':'Independent BEL implementation, continuing SIGHT; reference concepts only',
                  'verification':'See reports/latest_test_run.json; runtime availability is not a hardware certification'}
             if schemas:row['input_schema']=spec.schema.model_json_schema()
             rows.append(row)
@@ -163,7 +164,8 @@ class Capabilities:
     async def worker(self,identifier,args):
         # A fresh process per operation recovers from browser crashes; never attaches
         # to the user's browser. Kill the owned process tree on timeout/cancellation.
-        process=await asyncio.create_subprocess_exec(sys.executable,'-I',str(ROOT/'sight_core/capability_worker.py'),stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.DEVNULL,
+        command = worker_command('capability') if getattr(sys, 'frozen', False) else [sys.executable, '-I', str(ROOT / 'sight_core/capability_worker.py')]
+        process=await asyncio.create_subprocess_exec(*command,stdin=asyncio.subprocess.PIPE,stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.DEVNULL,
                                                      **({'creationflags':0x08000000} if os.name=='nt' else {'start_new_session':True}))
         try:
             output,_=await asyncio.wait_for(process.communicate(canonical({'id':identifier,'arguments':args}).encode()),22)

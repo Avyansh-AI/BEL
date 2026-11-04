@@ -14,6 +14,7 @@ import uuid
 from pydantic import Field
 from .security import canonical
 from .tools import StrictModel
+from .runtime import worker_command
 
 
 class Operation(StrictModel):
@@ -69,7 +70,7 @@ def sandbox(text, operations):
     payload=json.dumps({'text':text,'operations':operations},ensure_ascii=True)
     if len(payload.encode())>65536:raise ValueError('Sandbox payload exceeds limit')
     with tempfile.TemporaryDirectory(prefix='sight-skill-') as directory:
-        result=subprocess.run([sys.executable,'-I','-S',str(Path(__file__).with_name('skill_worker.py'))],
+        result=subprocess.run(worker_command('skill'),
             input=payload,capture_output=True,text=True,encoding='utf-8',timeout=2,cwd=directory,
             env={'SYSTEMROOT':os.environ.get('SYSTEMROOT','C:/Windows'),'PYTHONUTF8':'1'},shell=False,
             creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)

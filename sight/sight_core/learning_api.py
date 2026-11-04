@@ -97,7 +97,7 @@ class Learning:
         if key=='restore':
             destination=self.store.root/'restores'/str(uuid.uuid4())
             restored=BrainStore.restore(self.store.root/'backups'/(args['id']+'.sqlite3'),destination)
-            return {'restored':True,'directory':str(restored.root),'activated':False,'instruction':'Inspect the restored data, then launch with SIGHT_DATA_DIR set to this directory; configure the local model separately.'}
+            return {'restored':True,'directory':str(restored.root),'activated':False,'instruction':'Inspect the restored data, then launch with BEL_DATA_DIR set to this directory; configure the local model separately.'}
         raise ValueError('Unknown operation')
 
     def status(self):
@@ -108,7 +108,7 @@ class Learning:
 
     def mount(self,app):
         @app.get('/api/learning/releases')
-        async def releases():self.require();return {'items':self.releases.list(),'activation':'next restart via Phase-4/Start-SIGHT.ps1'}
+        async def releases():self.require();return {'items':self.releases.list(),'activation':'Review first, then restart BEL with the verified source or release; no automatic promotion.'}
 
         @app.get('/api/learning/benchmark')
         async def benchmark():

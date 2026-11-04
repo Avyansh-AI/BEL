@@ -31,7 +31,7 @@ class LocalMCP:
                 self.sessions={key:value for key,value in self.sessions.items() if app.state.sessions.get(key)}
                 if owner not in self.sessions and len(self.sessions)>=256:return error(-32000,'Session capacity reached')
                 self.sessions[owner]='initializing'
-                result={'protocolVersion':VERSION,'capabilities':{'tools':{'listChanged':False}},'serverInfo':{'name':'SIGHT owner-local tools','version':'0.4.0'}}
+                result={'protocolVersion':VERSION,'capabilities':{'tools':{'listChanged':False}},'serverInfo':{'name':'BEL owner-local tools','version':'0.4.1'}}
             elif method=='notifications/initialized':
                 if owner not in self.sessions or 'id' in body:return error(-32600,'Initialize this owner session first')
                 self.sessions[owner]='ready';return Response(status_code=202)

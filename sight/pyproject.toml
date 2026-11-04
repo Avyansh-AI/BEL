@@ -1,7 +1,7 @@
 [project]
-name = "sight-local"
-version = "0.4.0"
-description = "SIGHT local-first core; phased implementation in progress"
+name = "bel-local"
+version = "0.4.1"
+description = "BEL — Behavioral Executive Logic; local-first assistant, partial release"
 requires-python = ">=3.12,<3.13"
 
 [tool.pytest.ini_options]

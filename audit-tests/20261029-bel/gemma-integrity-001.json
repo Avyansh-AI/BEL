@@ -1,0 +1,35 @@
+{
+  "model": "gemma4:e4b-it-qat",
+  "manifest_sha256": "ee665637121887cf3befff38abbb1be4ee117c7db867d97a67e29049ecd7e15f",
+  "files": [
+    {
+      "sha256": "e3b14aa7ca020ed9ee88743916be4c028cc010b775d90487cd05a462f6b041ac",
+      "bytes": 545,
+      "passed": true
+    },
+    {
+      "sha256": "c6398448d84a4836fdedf58f9775979e69ae0cc4dfdf4d697b5597693a555b12",
+      "bytes": 991551904,
+      "passed": true
+    },
+    {
+      "sha256": "e8b6a059ba86947a44ace84d6e5679795bc41862c25c30513142588f0e9dba1d",
+      "bytes": 5154939136,
+      "passed": true
+    },
+    {
+      "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+      "bytes": 10174,
+      "passed": true
+    },
+    {
+      "sha256": "56380ca2ab89f1f68c283f4d50863c0bcab52ae3f1b9a88e4ab5617b176f71a3",
+      "bytes": 42,
+      "passed": true
+    }
+  ],
+  "manifest_layout": "manifests-v2/ollama.com/library/gemma4/e4b-it-qat",
+  "passed": true,
+  "seconds": 6.969,
+  "completed_utc": "2026-10-29T14:35:17.189152+00:00"
+}

@@ -1,40 +1,44 @@
-# SIGHT Phase 4 — audit and hardening
+# BEL — Behavioral Executive Logic
 
-**PARTIAL: the full integrated-release gate has not passed.** Read the [27 October browser follow-up](sight/docs/BROWSER_DIAGNOSTICS_20261027.md) for current verification and the [completion audit](sight/docs/PHASE4_COMPLETION_20261024.md) for the broader capability inventory. Earlier [readiness](sight/docs/PHASE4_READINESS.md), [audit](sight/docs/PHASE4_AUDIT.md), [bug fixes](sight/docs/PHASE4_BUG_FIXES.md), and [test results](sight/docs/PHASE4_TEST_RESULTS.md) remain historical evidence.
+BEL is Avyansh's local-first Windows assistant, migrated from SIGHT using the supplied animated-orb React interface and the existing Python backend. It retains persistent memory, provider policies, durable tasks, reviewed tools, declarative Forge skills and recovery. The selected reasoning model remains **`gemma4:e4b-it-qat` with thinking enabled**.
 
-Local development follow-up: the [repository audit](sight/docs/REPOSITORY_AUDIT_20261023.md) repairs memory transactions, Forge provenance/accounting and Windows installation. The [local-model follow-up](sight/docs/LOCAL_MODEL_AUDIT_20261023.md) restores Ollama and fixes official model identity validation. The [24 October security/profile update](sight/docs/DEPENDENCY_SECURITY_20261024.md) repairs Certifi, Pillow and pip pins and records **60/60 thinking benchmark cases** and **14/14 live model acceptance**. The owner approved enabling that thinking profile for this checkout. The latest browser diagnostics repair passed **379 regressions**, **30/30 actual browser captures** and **57/57 live application checks**. The combined browser/Gemma soak passed **487/487 checks over 3,605.031 seconds**, including full backup/restore. These results describe the SIGHT baseline before the requested BEL migration. The earlier 3,601.906-second soak predates the browser changes and remains historical. An intermittent fresh-install screenshot failure remains unexplained; severe shared-host RAM pressure was previously measured. The downloadable ZIP and publication evidence below describe the earlier published build; they have not been replaced by these local changes.
+**Readiness: PARTIAL.** The migration works, but incomplete speech/wake integration, inconsistent Needle confidence and fresh-account installation prevent a full production verdict. Read the [implementation report](sight/docs/BEL_IMPLEMENTATION.md) for exact tests and limitations. Historical SIGHT results do not qualify BEL.
 
-For a fresh checkout, install Python 3.12 and Ollama, then follow the [official Gemma setup](sight/docs/OFFICIAL_GEMMA.md). The selected model is **`gemma4:e4b-it-qat`**. Weights, Python environments and private data are separate from the source build.
+## Run BEL
 
-After setup, from PowerShell in this folder:
+Follow the [Windows setup guide](sight/docs/BEL_SETUP.md). Keep `BEL.exe`, `BEL-worker.exe` and `_internal` together. The application opens an authenticated local window, supports compact/background modes, and restores from its tray. Ordinary use does not require a terminal.
+
+For the source checkout, after installing pinned backend/desktop requirements and building `frontend/`:
 
 ```powershell
 .\Start-Local-Runtime.ps1
-.\Start-SIGHT.ps1
+.\Start-BEL.ps1
 ```
 
-Leave the server running. In another PowerShell window run `.\Open-SIGHT.ps1`. Phase 4 uses **http://127.0.0.1:8084** and its separate `owner-data` directory. Phase 1–3 remain preserved. No Phase-4 UI files were changed. Open **Systems → Open capabilities** for local tools and **Learning** for memory/Forge/tasks.
+The source launcher reuses this checkout's `owner-data`. The installed application reuses an existing SIGHT OS data directory, otherwise `%LOCALAPPDATA%\BEL`. `BEL_DATA_DIR` or `--data-directory` can select existing data. The [versioned migration utility](sight/docs/BEL_MIGRATION.md) backs up data before recording BEL identity; memories, quota ledgers and legacy credentials are preserved.
 
-The page offers local documents, calendar export, code inspection/diffs, static site drafts, cuboid STL generation, offline browser inspection, Windows information and speech-to-WAV rendering, reminders, and small circuit/geospatial/landmark tools. Every invocation requires review of exact arguments. Remote devices, microphones, cameras and external messages are not activated. Simulations are clearly labeled.
+## Current capabilities
 
-The selected model is the official Gemma 4 E4B QAT build. The prior uncensored model is retained but is not selected. The runtime helper reuses a running local server. For a new server it uses `-ModelsDirectory`, `OLLAMA_MODELS`, the existing legacy `D:\Ollama Models` directory, or the standard `%USERPROFILE%\.ollama\models` location, in that order. Both helpers support the per-user Ollama installation, `PATH`, and an explicit `-OllamaExecutable` path. The helper never downloads weights or stops an existing runtime. The child receives SIGHT's CUDA/context settings; the invoking shell keeps its prior environment.
+- Supplied orb, authenticated HTTP/WebSockets, persistent conversation history, compact view, memory correction/deletion, provider settings, diagnostics and exact-action approval dialogs.
+- Local Gemma reasoning, existing disabled-by-default Groq/Gemini/OpenRouter adapters, and optional ChatGPT compatibility. No paid services or quota resets are enabled by migration.
+- Needle 3 proposes eligible registered calls. Schema, confidence and owner approval checks gate execution. Settings → Tools and undo provides manual review when routing declines.
+- Verified private text-file creation/edit/rename with guarded undo. Application launch/focus is limited to trusted Notepad/Calculator identities and reports observed results.
+- Existing local capabilities, durable jobs with 12 logical roles, declarative Forge validation/promotion/rollback, full-data backups and reviewed recovery.
+- Windows speech-to-WAV and opt-in playback/stop. Microphone recognition and trained BEL wake detection are **unavailable**, not simulated.
 
-SIGHT's approved profile uses the same official model with thinking enabled and temperature 0.2. Existing explicit non-thinking settings remain respected; that mode produced arithmetic errors in repeated tests. To test directly in Ollama, run `.\Run-Gemma.ps1 -Thinking` after starting the runtime. The standalone CLI helper does not apply SIGHT's system prompt or sampling profile, so its results are not interchangeable with the SIGHT acceptance tests. Ollama was absent at the earlier ZIP's publication; its evidence remains historical. [Current model status](sight/docs/OFFICIAL_GEMMA.md), [historical uncensored report](sight/docs/GEMMA_REPAIR.md).
+The `/legacy/` interface and SIGHT launchers remain for compatibility. Historical pages, `sight_core`, database filenames, vault namespaces and protocol identifiers deliberately retain their names. New application identity is BEL. This migration did not rename the remote repository.
 
-For offline installation, provision the matching Python installer, wheel directory and Playwright Chromium cache before disconnecting, then use `sight\scripts\install.ps1 -Offline -Wheelhouse <path> -BrowserCache <path>`. The source handoff excludes wheels and external runtimes. Current-account offline installation was tested, not a new Windows account.
+## Verify and build
 
-Run `.\Verify-SIGHT.ps1` for the full regression suite. For the separate live local smoke, run `.\sight\.venv\Scripts\python.exe .\sight\scripts\phase4_smoke.py` from this folder. Run live model tests sequentially; each uses an isolated test-data directory.
+```powershell
+.\Verify-BEL.ps1
+.\sight\scripts\build_windows.ps1 -OutputDirectory .\.cache\windows-release
+```
 
-Cloud policies are disabled by default and startup forces local-only mode. Phase 4 made **zero cloud inference requests**. Previous free-provider results and rolling quota ledgers remain untouched. Do not reset those ledgers to rerun tests. The existing $0/free-tier limits still apply; paid billing was not authorized.
+The [setup guide](sight/docs/BEL_SETUP.md) covers pinned Needle provisioning, actual Windows verification, data paths and offline prerequisites. Builds use a fresh work directory and verify packaged Python code against source. Gemma weights, Chromium, private data and credentials are separate from Git. Microphone capture, auto-start, remote access and cloud inference remain opt-in or unavailable.
 
-Artifacts are private immutable files under `owner-data/artifacts`, with a cap of 200 files / 128 MiB. Download/export them and remove unneeded files locally when full. Windows voice output is a downloadable WAV, with no automatic playback or recording. Reminder delivery is inside SIGHT only; recurrence and quiet hours use UTC. Missed intervals combine into one notice after restart.
+## Evidence and history
 
-The [local MCP bridge](sight/docs/ARCHITECTURE.md) requires an owner session, CSRF proof and a separate one-use approval for each tool call. External MCP transports and cross-device listeners are disabled. Hermes guidance is indexed without executing or installing its instructions.
+[Implementation report](sight/docs/BEL_IMPLEMENTATION.md) · [Migration and rollback](sight/docs/BEL_MIGRATION.md) · [Plan](PLAN.md) · [Publication](PUBLICATION.md)
 
-The new full-data backup/restore commands are documented in [security and recovery](sight/docs/SECURITY_AND_RECOVERY.md). Owner data, test databases, model weights, credentials, wheels, external browsers and `.venv` are excluded from the source ZIP. Personal wake-word enrollment has not begun. Earlier phase reports remain historical evidence.
-
-## Download and verification
-
-[Download the current source branch](https://github.com/Avyansh-AI/BEL/archive/refs/heads/main.zip) or clone this repository. GitHub now names the original repository `Avyansh-AI/BEL`; the SIGHT application and its history are preserved. See [publication details](PUBLICATION.md) for the current source update and its limitations.
-
-The [22 October source build ZIP](dist/SIGHT-Phase4-Partial.zip) and its [SHA-256 checksum](dist/SIGHT-Phase4-Partial.zip.sha256) are historical. That package recorded 314 regression passes and predated restored Ollama, the approved thinking profile and the later repairs. It has not been replaced or certified as the current build. Overall readiness remains **PARTIAL**.
+The [27 October SIGHT audit](sight/docs/BROWSER_DIAGNOSTICS_20261027.md), [Phase 4 report](sight/docs/PHASE4_COMPLETION_20261024.md), and [22 October ZIP](dist/SIGHT-Phase4-Partial.zip) remain historical. The old `UPLOAD_MANIFEST.json` describes that earlier ZIP, not BEL. Arbitrary executable Forge skills, broader computer control, mobile pairing and autonomous self-modification are not claimed as working integrations.

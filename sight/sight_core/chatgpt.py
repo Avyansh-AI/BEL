@@ -118,7 +118,7 @@ class ChatGPT:
                 'ext_agent_host_id':host}
         if saved:
             if saved.get('id_token'):params['id_token_hint']=saved['id_token']
-        else:params['agent_name_hint']='SIGHT'
+        else:params['agent_name_hint']='BEL'
         if not self.opener(AUTH+'/api/accounts/authorize?'+urlencode(params)):raise ValueError('Could not open the system browser')
         return {'started':True,'expires_in':600,'message':'Finish sign-in in the system browser, then return to Systems.'}
 
@@ -200,7 +200,7 @@ class ChatGPT:
             self.vault.set(data)
             self.pending=None
             policy=self.policy.model_dump();policy['enabled']=False;self.store.set_setting('chatgpt.policy',policy)
-            return {'disconnected':True,'remote_revocation_confirmed':confirmed,'message':'Signed out.' if confirmed else 'Local tokens cleared. Remote revocation was not confirmed; disconnect SIGHT in ChatGPT Settings.'}
+            return {'disconnected':True,'remote_revocation_confirmed':confirmed,'message':'Signed out.' if confirmed else 'Local tokens cleared. Remote revocation was not confirmed; disconnect BEL (or its legacy SIGHT connection) in ChatGPT Settings.'}
 
     async def generate(self,text):
         p=self.policy

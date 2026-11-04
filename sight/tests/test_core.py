@@ -30,7 +30,7 @@ def test_local_first_boot(client, monkeypatch):
     result = client.post("/api/utterance", json={"text": "Hello", "requestId": "offline-test"})
     assert result.status_code == 200
     assert result.json()["status"] == "needs_model"
-    assert "SIGHT_OLLAMA_MODEL" in result.json()["say"]
+    assert "BEL_OLLAMA_MODEL" in result.json()["say"]
     assert client.get("/api/ready").status_code == 503
 
 

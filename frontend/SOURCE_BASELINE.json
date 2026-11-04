@@ -1,0 +1,75 @@
+{
+  "source": "owner-supplied bel-interface-source.zip",
+  "archive_sha256": "6bd225168ee757fea15fd25ba8b36b46671fc7af1f606a7958673aed619b22c7",
+  "purpose": "Original selected design before backend integration; archive dist excluded from source copy",
+  "files": [
+    {
+      "path": ".env.example",
+      "sha256": "d279d5c4030387c49c7693b821c6a8eb9fb056a1d25fb897cdfbdd37bf18e222"
+    },
+    {
+      "path": "index.html",
+      "sha256": "7e3a2102d2dabb4bcf67263e846f4895937fb1413c0d2166b2e64f7a3a8433eb"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "71e698d451f36887b2dd12507eb8e4bd3b919a2347df8db68496c1b9e7b474b7"
+    },
+    {
+      "path": "package.json",
+      "sha256": "cc2857935084ccdede760c3ae012a3f4f96efbbf912d0c4719bbefceb36d48aa"
+    },
+    {
+      "path": "postcss.config.js",
+      "sha256": "190c877db466995bf1482f4a16abd06e04a89ede3119341e2a86ff96e1737b27"
+    },
+    {
+      "path": "public/bel-logo.webp",
+      "sha256": "4c2de3fc88ceefb4148a9c8c32da6f8f5da0806e02c6860c4c9ed7d7483ad848"
+    },
+    {
+      "path": "README.md",
+      "sha256": "6bb557fd53bcde7880ca5cbc2701eb6ebf8a9d7531c86418b1d5592986ab16d0"
+    },
+    {
+      "path": "src/App.tsx",
+      "sha256": "851a20fca007975f1694e03ff8294350748e30c46206ade31293e154c3a5f792"
+    },
+    {
+      "path": "src/lib/belApi.ts",
+      "sha256": "1c473a5b4855dab3436db94098ea4d41f9d09e24718d0c63e54890254ffda1d3"
+    },
+    {
+      "path": "src/main.tsx",
+      "sha256": "26210b6a01ea35ab17cc467c59d16c11176e15725301c0bcc5a767b6ce03c2e4"
+    },
+    {
+      "path": "src/styles.css",
+      "sha256": "f9eca93ba275fac21b1b3509218adba92683041dfa2d15b35f3a60e479fe9c1a"
+    },
+    {
+      "path": "src/vite-env.d.ts",
+      "sha256": "5f0936c66220446ad9e521863a636903c35d6318cbecae945876fc7a2364e148"
+    },
+    {
+      "path": "tailwind.config.js",
+      "sha256": "0e5b1720ee81cff033cd39c39298ce7df6e41f9559325560d8dd5c261420d0da"
+    },
+    {
+      "path": "tsconfig.app.json",
+      "sha256": "63e0900e1d334e65a6156cb6b39a11f68b0c246a0fcf39cc7853217b55661455"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "770b4140bbb581e2dfd9ea9946ffc9c75a1d86ba7d2db5f77c83e37cbdf9d808"
+    },
+    {
+      "path": "tsconfig.node.json",
+      "sha256": "22ce7f3da47a5e8fb9fb1b82ff98cbe2662e2549507fb9610a02bf59da6dfdc9"
+    },
+    {
+      "path": "vite.config.ts",
+      "sha256": "6dc0ce25c4170ac9fbadb4dbd19ca5c2ceb57b9c5efc5090b82e2923f53dd679"
+    }
+  ]
+}

@@ -1,0 +1,949 @@
+{
+  "format": 1,
+  "kind": "real native inference through production BEL registry",
+  "completed_utc": "2026-10-28T15:29:38.924346+00:00",
+  "manifest": {
+    "format": 1,
+    "upstream": "Cactus-Compute/needle3",
+    "revision": "d6c7d6a2e9655505e0f8e23339356dd1705900eb",
+    "engine_version": "3.3.3",
+    "platform": "windows-x86_64",
+    "license": "Apache-2.0",
+    "files": {
+      "needle3.cact": {
+        "size": 35335380,
+        "sha256": "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38"
+      },
+      "libneedle3.dll": {
+        "size": 1533952,
+        "sha256": "1263c6003dd88b9fcb1904a55985be66858639849309280b42f7764ee5d874d0"
+      },
+      "LICENSE": {
+        "size": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      }
+    }
+  },
+  "source_sha256": {
+    "bel.py": "c0a9b343f22da014c865ddeb8eb78f22da771df21aefbb35634d7cf35a4b3845",
+    "needle.py": "b330ceb1ae9eb189997276495e76a826ab97ab791237f0ca4526003992bc517a",
+    "needle_worker.py": "62b1b59d73ad01581b1757de407f2253162f47873966c08d6cc7a8e0b46d9a2f",
+    "runtime.py": "9d0e3a4f26385797d4c9ccadab762eea65e4032ece00861709e9911905b93946"
+  },
+  "minimum_confidence": 0.7,
+  "passed": 4,
+  "total": 8,
+  "results": [
+    {
+      "id": "notepad",
+      "prompt": "Open Notepad",
+      "expected_tool": "app.launch",
+      "expected_arguments": {
+        "application": "notepad"
+      },
+      "passed": false,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "app.launch",
+            "description": "Open or focus Notepad or Calculator",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "application": {
+                  "enum": [
+                    "notepad",
+                    "calculator"
+                  ],
+                  "title": "Application",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "application"
+              ],
+              "title": "Application",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "reminders.add",
+            "description": "Schedule a durable in-app reminder, optionally at a fixed UTC interval",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "pattern": "^[a-zA-Z0-9_-]{8,80}$",
+                  "title": "Id",
+                  "type": "string"
+                },
+                "title": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "title": "Title",
+                  "type": "string"
+                },
+                "due": {
+                  "format": "date-time",
+                  "title": "Due",
+                  "type": "string"
+                },
+                "interval_seconds": {
+                  "default": 0,
+                  "maximum": 2592000,
+                  "minimum": 0,
+                  "title": "Interval Seconds",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "due"
+              ],
+              "title": "Reminder",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "reminders.cancel",
+            "description": "Cancel one scheduled in-app reminder",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "pattern": "^[a-zA-Z0-9_-]{8,80}$",
+                  "title": "Id",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "title": "Select",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": null,
+        "reason": "unsupported_tool_schema",
+        "timings": {}
+      },
+      "proposal": null
+    },
+    {
+      "id": "calculator",
+      "prompt": "Open Calculator",
+      "expected_tool": "app.launch",
+      "expected_arguments": {
+        "application": "calculator"
+      },
+      "passed": false,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "app.launch",
+            "description": "Open or focus Notepad or Calculator",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "application": {
+                  "enum": [
+                    "notepad",
+                    "calculator"
+                  ],
+                  "title": "Application",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "application"
+              ],
+              "title": "Application",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "reminders.add",
+            "description": "Schedule a durable in-app reminder, optionally at a fixed UTC interval",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "pattern": "^[a-zA-Z0-9_-]{8,80}$",
+                  "title": "Id",
+                  "type": "string"
+                },
+                "title": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "title": "Title",
+                  "type": "string"
+                },
+                "due": {
+                  "format": "date-time",
+                  "title": "Due",
+                  "type": "string"
+                },
+                "interval_seconds": {
+                  "default": 0,
+                  "maximum": 2592000,
+                  "minimum": 0,
+                  "title": "Interval Seconds",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "due"
+              ],
+              "title": "Reminder",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "reminders.cancel",
+            "description": "Cancel one scheduled in-app reminder",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "pattern": "^[a-zA-Z0-9_-]{8,80}$",
+                  "title": "Id",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "title": "Select",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": null,
+        "reason": "unsupported_tool_schema",
+        "timings": {}
+      },
+      "proposal": null
+    },
+    {
+      "id": "list_files",
+      "prompt": "List files in my private workspace",
+      "expected_tool": "files.list",
+      "expected_arguments": {},
+      "passed": false,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "files.list",
+            "description": "List filenames in BEL private workspace",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {},
+              "title": "Empty",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "files.create",
+            "description": "Create a new text file in BEL private workspace",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "title": "Name",
+                  "type": "string"
+                },
+                "content": {
+                  "maxLength": 65536,
+                  "title": "Content",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "content"
+              ],
+              "title": "FileWrite",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "files.search",
+            "description": "Find names in the private BEL text workspace",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "query": {
+                  "default": "",
+                  "maxLength": 100,
+                  "title": "Query",
+                  "type": "string"
+                }
+              },
+              "title": "Search",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "files.edit",
+            "description": "Replace a private text file after reviewing its current SHA256",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "title": "Name",
+                  "type": "string"
+                },
+                "content": {
+                  "maxLength": 65536,
+                  "title": "Content",
+                  "type": "string"
+                },
+                "expected_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "title": "Expected Sha256",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "content",
+                "expected_sha256"
+              ],
+              "title": "FileEdit",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "files.rename",
+            "description": "Rename a private text file after reviewing its current SHA256",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "title": "Name",
+                  "type": "string"
+                },
+                "destination": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "title": "Destination",
+                  "type": "string"
+                },
+                "expected_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "title": "Expected Sha256",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "destination",
+                "expected_sha256"
+              ],
+              "title": "FileRename",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "files.undo",
+            "description": "Undo one verified private file operation",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "undo_id": {
+                  "pattern": "^[a-f0-9]{32}$",
+                  "title": "Undo Id",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "undo_id"
+              ],
+              "title": "Undo",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.1003,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 285.8,
+          "decode_tps": 209.3,
+          "peak_ram_mb": 160.4,
+          "total_ms": 2578.0,
+          "load_ms": 1890.0,
+          "inference_ms": 235.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "create_file",
+      "prompt": "Create a file named greeting.txt containing Hello Avyansh",
+      "expected_tool": "files.create",
+      "expected_arguments": {
+        "name": "greeting.txt",
+        "content": "Hello Avyansh"
+      },
+      "passed": false,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "files.create",
+            "description": "Create a new text file in BEL private workspace",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "title": "Name",
+                  "type": "string"
+                },
+                "content": {
+                  "maxLength": 65536,
+                  "title": "Content",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "content"
+              ],
+              "title": "FileWrite",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "files.edit",
+            "description": "Replace a private text file after reviewing its current SHA256",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "title": "Name",
+                  "type": "string"
+                },
+                "content": {
+                  "maxLength": 65536,
+                  "title": "Content",
+                  "type": "string"
+                },
+                "expected_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "title": "Expected Sha256",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "content",
+                "expected_sha256"
+              ],
+              "title": "FileEdit",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "files.rename",
+            "description": "Rename a private text file after reviewing its current SHA256",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "title": "Name",
+                  "type": "string"
+                },
+                "destination": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "title": "Destination",
+                  "type": "string"
+                },
+                "expected_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "title": "Expected Sha256",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "destination",
+                "expected_sha256"
+              ],
+              "title": "FileRename",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "files.undo",
+            "description": "Undo one verified private file operation",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "undo_id": {
+                  "pattern": "^[a-f0-9]{32}$",
+                  "title": "Undo Id",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "undo_id"
+              ],
+              "title": "Undo",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "calendar.export",
+            "description": "Create one local ICS event; no invitations or account writes",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "title": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "title": "Title",
+                  "type": "string"
+                },
+                "start": {
+                  "format": "date-time",
+                  "title": "Start",
+                  "type": "string"
+                },
+                "end": {
+                  "format": "date-time",
+                  "title": "End",
+                  "type": "string"
+                },
+                "description": {
+                  "default": "",
+                  "maxLength": 2000,
+                  "title": "Description",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "start",
+                "end"
+              ],
+              "title": "Calendar",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "coding.site",
+            "description": "Create an escaped static HTML draft",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "text": {
+                  "maxLength": 16000,
+                  "minLength": 1,
+                  "title": "Text",
+                  "type": "string"
+                },
+                "title": {
+                  "default": "SIGHT document",
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "title": "Title",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "title": "Document",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": null,
+        "reason": "unsupported_tool_schema",
+        "timings": {}
+      },
+      "proposal": null
+    },
+    {
+      "id": "unavailable_browser",
+      "prompt": "Open Chrome",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "app.launch",
+            "description": "Open or focus Notepad or Calculator",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "application": {
+                  "enum": [
+                    "notepad",
+                    "calculator"
+                  ],
+                  "title": "Application",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "application"
+              ],
+              "title": "Application",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "reminders.add",
+            "description": "Schedule a durable in-app reminder, optionally at a fixed UTC interval",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "pattern": "^[a-zA-Z0-9_-]{8,80}$",
+                  "title": "Id",
+                  "type": "string"
+                },
+                "title": {
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "title": "Title",
+                  "type": "string"
+                },
+                "due": {
+                  "format": "date-time",
+                  "title": "Due",
+                  "type": "string"
+                },
+                "interval_seconds": {
+                  "default": 0,
+                  "maximum": 2592000,
+                  "minimum": 0,
+                  "title": "Interval Seconds",
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "due"
+              ],
+              "title": "Reminder",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "reminders.cancel",
+            "description": "Cancel one scheduled in-app reminder",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "pattern": "^[a-zA-Z0-9_-]{8,80}$",
+                  "title": "Id",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "title": "Select",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": null,
+        "reason": "unsupported_tool_schema",
+        "timings": {}
+      },
+      "proposal": null
+    },
+    {
+      "id": "unavailable_shell",
+      "prompt": "Run a PowerShell command to print hello",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "coding.diff",
+            "description": "Preview a unified text diff; never apply or run it",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "before": {
+                  "maxLength": 16000,
+                  "title": "Before",
+                  "type": "string"
+                },
+                "after": {
+                  "maxLength": 16000,
+                  "title": "After",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "before",
+                "after"
+              ],
+              "title": "Diff",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "contracts.simulate",
+            "description": "Run an explicitly simulated peripheral trust contract; no device traffic",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "family": {
+                  "enum": [
+                    "home",
+                    "android",
+                    "printer",
+                    "camera",
+                    "call",
+                    "mcp"
+                  ],
+                  "title": "Family",
+                  "type": "string"
+                },
+                "scenario": {
+                  "default": "success",
+                  "enum": [
+                    "success",
+                    "disconnect",
+                    "denied"
+                  ],
+                  "title": "Scenario",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "family"
+              ],
+              "title": "Simulation",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.0183,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 347.7,
+          "decode_tps": 243.2,
+          "peak_ram_mb": 157.0,
+          "total_ms": 1328.0,
+          "load_ms": 703.0,
+          "inference_ms": 328.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "destructive_unavailable",
+      "prompt": "Delete all my documents",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "documents.docx",
+            "description": "Create a plain text Word document without macros",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "text": {
+                  "maxLength": 16000,
+                  "minLength": 1,
+                  "title": "Text",
+                  "type": "string"
+                },
+                "title": {
+                  "default": "SIGHT document",
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "title": "Title",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "title": "Document",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "documents.markdown",
+            "description": "Create a Markdown note",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "text": {
+                  "maxLength": 16000,
+                  "minLength": 1,
+                  "title": "Text",
+                  "type": "string"
+                },
+                "title": {
+                  "default": "SIGHT document",
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "title": "Title",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "title": "Document",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.5967,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 361.8,
+          "decode_tps": 236.2,
+          "peak_ram_mb": 156.6,
+          "total_ms": 1297.0,
+          "load_ms": 765.0,
+          "inference_ms": 188.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "unrelated_question",
+      "prompt": "What is the capital of France?",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [],
+      "router_result": null,
+      "proposal": null
+    }
+  ],
+  "actions_executed": 0,
+  "grants_issued": 0,
+  "files_created": 0,
+  "latency_ms": {
+    "median": 1328.0,
+    "maximum": 2578.0
+  },
+  "limitations": [
+    "Small synthetic proposal matrix, not general language or execution accuracy.",
+    "Low confidence remains fallback; threshold was not lowered to pass tests.",
+    "Native peak_ram_mb is engine-reported, not an OS memory measurement."
+  ]
+}

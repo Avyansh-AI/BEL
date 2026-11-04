@@ -1,4 +1,10 @@
-# Published SIGHT build
+# BEL publication and historical SIGHT builds
+
+## BEL source update
+
+The current project is BEL — Behavioral Executive Logic, version 0.4.1. The existing repository retains its SIGHT history. The approved reasoning model is `gemma4:e4b-it-qat` with thinking enabled. Release readiness is **PARTIAL**. The [implementation report](sight/docs/BEL_IMPLEMENTATION.md) and [Windows setup guide](sight/docs/BEL_SETUP.md) describe this source and how to reproduce the one-folder application.
+
+The source update includes the official supplied React frontend, Python changes, exact dependency locks, Windows build recipe and reviewed synthetic verification evidence. Runtime caches, owner data, recordings and credentials are private. Historical SIGHT packages below retain their original dates and scope. The rollback source is `b859f5690e97e584975e0a5d17d6bca5aa190dd3`.
 
 ## 27 October source update
 

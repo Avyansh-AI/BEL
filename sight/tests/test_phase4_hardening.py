@@ -135,7 +135,7 @@ def test_gemma_reasoning_mode_has_context_and_output_budget(tmp_path,supported,o
     assert payload['think'] is expected and payload['options']['num_ctx']==4096 and payload['options']['use_mmap'] is True
     assert payload['options']['num_predict']==(1536 if expected else 512)
     assert payload['options']['temperature']==.7 and payload['options']['repeat_penalty']==1.1
-    assert 'professional language' in payload['messages'][0]['content']
+    assert 'professional' in payload['messages'][0]['content'] and 'without slang' in payload['messages'][0]['content']
 
 
 @pytest.mark.parametrize('body,status', [

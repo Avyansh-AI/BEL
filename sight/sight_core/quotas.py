@@ -101,7 +101,7 @@ class QuotaLedger:
         return {'allowed': not reason, 'status': status, 'reason': reason, 'retry_after_seconds': math.ceil(max(0, retry)),
                 'requests_used_24h': len(attempts), 'requests_remaining_24h': max(0, policy.daily_request_limit-len(attempts)),
                 'tokens_reserved_24h': used, 'reserved_usd_24h': sum(a['usd'] for a in attempts),
-                'window': 'rolling_24_hours', 'scope': 'all models and keys for this provider in this SIGHT data directory',
+                'window': 'rolling_24_hours', 'scope': 'all models and keys for this provider in this BEL data directory',
                 'provider_observation': state.get('observation', {})}
 
     def status(self, policy):

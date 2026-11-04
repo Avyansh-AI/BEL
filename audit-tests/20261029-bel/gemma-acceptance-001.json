@@ -1,0 +1,542 @@
+{
+  "started_utc": "2026-10-29T09:17:59.917514+00:00",
+  "model": "gemma4:e4b-it-qat",
+  "thinking": true,
+  "cloud_requests": 0,
+  "test_data": "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\Sight\\test-data\\official-acceptance-20261029T091759Z-98f9a6",
+  "complete": true,
+  "cases": [
+    [
+      "exact_instruction",
+      "Return exactly SIGHT_READY and nothing else.",
+      "SIGHT_READY"
+    ],
+    [
+      "arithmetic",
+      "Reply only the number: 2 plus 2?",
+      "4"
+    ],
+    [
+      "discount",
+      "A price of 250 is reduced by 20%, then 10% tax is added to the reduced price. Reply only the final number.",
+      "220"
+    ],
+    [
+      "schedule",
+      "I have 35 minutes. Download takes 10 minutes, installation then takes 15 minutes, and testing then takes 12 minutes. Can all three finish in time? Reply only YES or NO.",
+      "NO"
+    ],
+    [
+      "non_entailment",
+      "Every red block is heavy. Some heavy blocks are wooden. Must some red blocks be wooden? Reply only YES or NO.",
+      "NO"
+    ],
+    [
+      "entailment",
+      "Every sparrow is a bird. Every bird is warm-blooded. Must every sparrow be warm-blooded? Reply only YES or NO.",
+      "YES"
+    ],
+    [
+      "python_instruction",
+      "Return only a Python expression that returns a sorted copy of items without changing items.",
+      "sorted(items)"
+    ],
+    [
+      "hindi_comprehension",
+      "17 में 25 जोड़ने पर कितना होगा? केवल अंक लिखें।",
+      "42"
+    ]
+  ],
+  "json_schema": {
+    "type": "object",
+    "properties": {
+      "city": {
+        "type": "string"
+      },
+      "count": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "city",
+      "count"
+    ],
+    "additionalProperties": false
+  },
+  "rows": [
+    {
+      "case": "exact_instruction",
+      "prompt": "Return exactly SIGHT_READY and nothing else.",
+      "expected": "SIGHT_READY",
+      "answer": {
+        "status": "ok",
+        "say": "SIGHT_READY",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 152,
+          "output_tokens": 229
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 23.141,
+      "passed": true
+    },
+    {
+      "case": "arithmetic",
+      "prompt": "Reply only the number: 2 plus 2?",
+      "expected": "4",
+      "answer": {
+        "status": "ok",
+        "say": "4",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 153,
+          "output_tokens": 183
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 3.609,
+      "passed": true
+    },
+    {
+      "case": "discount",
+      "prompt": "A price of 250 is reduced by 20%, then 10% tax is added to the reduced price. Reply only the final number.",
+      "expected": "220",
+      "answer": {
+        "status": "ok",
+        "say": "220",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 175,
+          "output_tokens": 357
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 6.204,
+      "passed": true
+    },
+    {
+      "case": "schedule",
+      "prompt": "I have 35 minutes. Download takes 10 minutes, installation then takes 15 minutes, and testing then takes 12 minutes. Can all three finish in time? Reply only YES or NO.",
+      "expected": "NO",
+      "answer": {
+        "status": "ok",
+        "say": "NO",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 186,
+          "output_tokens": 348
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 6.187,
+      "passed": true
+    },
+    {
+      "case": "non_entailment",
+      "prompt": "Every red block is heavy. Some heavy blocks are wooden. Must some red blocks be wooden? Reply only YES or NO.",
+      "expected": "NO",
+      "answer": {
+        "status": "ok",
+        "say": "NO",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 167,
+          "output_tokens": 463
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 7.766,
+      "passed": true
+    },
+    {
+      "case": "entailment",
+      "prompt": "Every sparrow is a bird. Every bird is warm-blooded. Must every sparrow be warm-blooded? Reply only YES or NO.",
+      "expected": "YES",
+      "answer": {
+        "status": "ok",
+        "say": "YES",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 169,
+          "output_tokens": 432
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 7.203,
+      "passed": true
+    },
+    {
+      "case": "python_instruction",
+      "prompt": "Return only a Python expression that returns a sorted copy of items without changing items.",
+      "expected": "sorted(items)",
+      "answer": {
+        "status": "ok",
+        "say": "`sorted(items)`",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 158,
+          "output_tokens": 286
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 4.984,
+      "passed": true
+    },
+    {
+      "case": "hindi_comprehension",
+      "prompt": "17 में 25 जोड़ने पर कितना होगा? केवल अंक लिखें।",
+      "expected": "42",
+      "answer": {
+        "status": "ok",
+        "say": "42",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 157,
+          "output_tokens": 262
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 4.672,
+      "passed": true
+    },
+    {
+      "case": "structured_json",
+      "prompt": "Return JSON with city equal to Jaipur and count equal to 3. No additional fields.",
+      "expected": {
+        "city": "Jaipur",
+        "count": 3
+      },
+      "answer": {
+        "status": "ok",
+        "say": "{\n  \"city\": \"Jaipur\",\n  \"count\": 3\n}",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 160,
+          "output_tokens": 243
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 4.734,
+      "passed": true
+    },
+    {
+      "case": "tone_screen",
+      "prompt": "Explain in three sentences why a laptop slows down when RAM is full. Use professional language.",
+      "expected": null,
+      "answer": {
+        "status": "ok",
+        "say": "When Random Access Memory (RAM) reaches its capacity, the operating system must manage the overflow by utilizing virtual memory. This process involves paging, where the system moves less frequently accessed data from the high-speed volatile RAM onto the significantly slower persistent storage, such as the SSD or hard drive. This constant transfer of data between the fast memory and the slow storage creates substantial Input/Output (I/O) bottlenecks, which directly translates to increased system latency and noticeable performance degradation.",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 160,
+          "output_tokens": 562
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 10.141,
+      "passed": true
+    },
+    {
+      "case": "persisted_memory_recall",
+      "prompt": "What is my saved favorite_color? Reply only the color, or UNKNOWN if no saved color appears.",
+      "expected": "cobalt",
+      "answer": {
+        "status": "ok",
+        "say": "cobalt",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 223,
+          "output_tokens": 167
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 3.984,
+      "passed": true
+    },
+    {
+      "case": "corrected_memory_recall",
+      "prompt": "What is my saved favorite_color? Reply only the color, or UNKNOWN if no saved color appears.",
+      "expected": "jade",
+      "answer": {
+        "status": "ok",
+        "say": "jade",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 223,
+          "output_tokens": 170
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 3.985,
+      "passed": true
+    },
+    {
+      "case": "deleted_memory_not_recalled",
+      "prompt": "What is my saved favorite_color? Reply only the color, or UNKNOWN if no saved color appears.",
+      "expected": "UNKNOWN",
+      "answer": {
+        "status": "ok",
+        "say": "UNKNOWN",
+        "offline": true,
+        "model": "gemma4:e4b-it-qat",
+        "usage": {
+          "input_tokens": 164,
+          "output_tokens": 297
+        },
+        "attempts": [
+          {
+            "provider": "local",
+            "status": "ok"
+          }
+        ]
+      },
+      "seconds": 5.485,
+      "passed": true
+    },
+    {
+      "case": "live_declarative_forge_lifecycle",
+      "passed": true
+    }
+  ],
+  "grading": "Exact visible answers (outer whitespace/backticks and one trailing period ignored). JSON equality. Tone screen is not a semantic quality proof.",
+  "source_hashes": {
+    "sight_core/__init__.py": "ba90670254fe47f418ab14be3b3be9504f17d926353794588fc52ee42faa745d",
+    "sight_core/api.py": "0fc179bd0d59e9829e64eb844d32b925db84142c59b7484b353399779d825609",
+    "sight_core/artifacts.py": "63a3cda1a3aab2ec384cf976e13eabb3a94ee982db53e5cf63fad18fc9e763c6",
+    "sight_core/bel.py": "81201ada7ec9dad55ac818d3d927c92a302811c76ec65145ebb5473eab1c8f18",
+    "sight_core/brain_store.py": "fcaa29228b8986e8aa86fac9bcf069a1561b4e85f1217936dd79d07db407f5ff",
+    "sight_core/capabilities.py": "295ad92772dcc34eb4460d64e4aa0712dee6b79d152abf3a5dd33987ac517f30",
+    "sight_core/capability_worker.py": "940ccd09dde38a61fb23818d814c6249a953bd184cb0d18a825267df2d0d111b",
+    "sight_core/chatgpt.py": "71d352e1bd876a1f789d0a069c8863400777f1c5acd0c23062d8fcc6b82c845b",
+    "sight_core/cli.py": "334d59042213819262af7fe7497c3dffa3920a2e45ce2e2ecebc777220120487",
+    "sight_core/config.py": "bf1a39842d1c0fa5893156944344c9f527ce9e9a0765e3995a95e2b7e52877e3",
+    "sight_core/connector_contracts.py": "be01f06176268207823c2187da324cbe4c76ec3e260012948d55935c99f1f143",
+    "sight_core/desktop.py": "e41e1ab3acf634738bcc6645e8129ffa356e5e9d603f4b423133c6631e0b5dbb",
+    "sight_core/forge.py": "7f0c9c200ecc1a28e4a32de5a826dbe71548f60dd64193c11b321d76d1141571",
+    "sight_core/identity.py": "6a68712b81010dc40eb9fd4cb606e65bc50d15ddde531387f2a7456c0b49e3e4",
+    "sight_core/jobs.py": "28f02fb59809c6fd120f1b14ffda218a913ce9817ce3a5008e7ea4d7ffe69719",
+    "sight_core/learning_api.py": "d0c7c2f37fb10d211e3f8cfdde8c9ab8a4f9da329c22de0bbeba985f22b06336",
+    "sight_core/local_adapters.py": "eae42f13db3415b19666d89ca8911808500eedb0819e79c74bef1d54601af52a",
+    "sight_core/mcp_bridge.py": "49d6c1e6e9e326dc4188ec81c976ca62ba1d260918dc59a53b98d9e28ef69460",
+    "sight_core/memory.py": "a2ea70e715c60d672a220c465cdce1ff29a17000e99a38a5b16d1423c1f178c9",
+    "sight_core/migration.py": "7cbe0aad350d67fb19e2ca5bbfdc12e6ae1605e88fa068c0fdab97d69a438f33",
+    "sight_core/models.py": "ebff053b6448e6d677acfc05db38797546fa09d0824d14d813ef7a5ecd7f2e82",
+    "sight_core/needle.py": "b330ceb1ae9eb189997276495e76a826ab97ab791237f0ca4526003992bc517a",
+    "sight_core/needle_worker.py": "62b1b59d73ad01581b1757de407f2253162f47873966c08d6cc7a8e0b46d9a2f",
+    "sight_core/private_files.py": "2ba52fe0d61bd7903b0d37309b2e5381061b614c811acd24a2f97fec06727f20",
+    "sight_core/proactive.py": "8a2862d1198608a1c90eda2ae983bdfe2dae3b7d7bbf1ca0dda0fdf3e7c375cf",
+    "sight_core/quotas.py": "2a674f9fa940a3a94a4a1988aeb78f66ccdaa39fce15268028ce070fbf2b1162",
+    "sight_core/recovery.py": "90031d470fe5759074210f1ce4a7965ae131a0777c1858079e2f92f68f2ea9bf",
+    "sight_core/releases.py": "fffc22da8bf3596c1d9f3e116b9e253573c0e106042a74a36afb1066880503c6",
+    "sight_core/routing.py": "4e27f6a0f66a19974f717c825b5adf8b9ef93036478fe4635eb68ca1e6b84759",
+    "sight_core/runtime.py": "9d0e3a4f26385797d4c9ccadab762eea65e4032ece00861709e9911905b93946",
+    "sight_core/security.py": "1b2eeb4442fae466f87ca2a94c1705b69d7577f269f1f28fe24403a302712ec3",
+    "sight_core/skill_worker.py": "111825fb41aa4e9623e08a962457982ba446eeb1dfc2c13fbca4fc5777690eff",
+    "sight_core/store.py": "6e89a62392497bbaf6a2618aa1154c82309b6a68a375867f8066cf95f089c9ab",
+    "sight_core/tools.py": "b1c55091f94234e14ec6241c6b6c8d636400aaa1df247ee297cfece6b73efb38",
+    "sight_core/windows_apps.py": "4886fbd4b804c9d49f15f177627db44628ddb8a230e10d2445565f6a5c85adb1"
+  },
+  "health": {
+    "status": "ready",
+    "message": "Installed quantized Gemma 4 E4B metadata verified; target VRAM measurement remains pending.",
+    "model": "gemma4:e4b-it-qat",
+    "configured": true,
+    "supports_tools": true,
+    "supports_vision": true,
+    "inference_verified": false,
+    "last_error": "",
+    "supports_thinking": true
+  },
+  "runtime": {
+    "version": "0.40.9"
+  },
+  "tag": {
+    "name": "gemma4:e4b-it-qat",
+    "model": "gemma4:e4b-it-qat",
+    "modified_at": "2026-10-21T22:24:58.5417783+05:30",
+    "size": 6146501801,
+    "digest": "ee665637121887cf3befff38abbb1be4ee117c7db867d97a67e29049ecd7e15f",
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "gemma4",
+      "families": [
+        "gemma4"
+      ],
+      "parameter_size": "7.5B",
+      "quantization_level": "Q4_0",
+      "context_length": 131072,
+      "embedding_length": 2560,
+      "runner": "ggml"
+    },
+    "capabilities": [
+      "completion",
+      "vision",
+      "audio",
+      "tools",
+      "thinking"
+    ]
+  },
+  "live_forge": {
+    "candidate_id": "4ebfc586-9ff2-40a2-adbe-2db287e5029c",
+    "digest": "4ce14701f7d2cafa1f9eed91eb0e7b84f4e523ff1e0d41dbe032f010582f674b",
+    "state": "tested",
+    "tests": [
+      {
+        "passed": true,
+        "actual": "a\nb",
+        "expected": "a\nb"
+      },
+      {
+        "passed": true,
+        "actual": "x\nz",
+        "expected": "x\nz"
+      }
+    ],
+    "manifest": {
+      "id": "text.liveclean",
+      "title": "Remove duplicate lines then sort the remaining lines alphabetically.",
+      "description": "Remove duplicate lines then sort the remaining lines alphabetically.",
+      "project_id": "default",
+      "operations": [
+        {
+          "op": "dedupe_lines",
+          "value": "",
+          "old": "",
+          "new": ""
+        },
+        {
+          "op": "sort_lines",
+          "value": "",
+          "old": "",
+          "new": ""
+        }
+      ],
+      "tests": [
+        {
+          "text": "b\na\nb",
+          "expected": "a\nb"
+        },
+        {
+          "text": "z\nx\nz",
+          "expected": "x\nz"
+        }
+      ],
+      "license": "owner-generated",
+      "permissions": [
+        "text.transform"
+      ],
+      "network_required": false,
+      "secrets": [],
+      "dependencies": [],
+      "timeout_seconds": 2,
+      "rollback": "immutable_version"
+    },
+    "generation_method": "model:local",
+    "dependency_policy": "No external dependencies"
+  },
+  "forge_lifecycle": {
+    "promoted": {
+      "id": "text.liveclean",
+      "version": 1,
+      "rollback_target": null
+    },
+    "invoked": {
+      "text": "b\nc",
+      "skill_invocation_id": "ca3f8b52-d848-4880-8ed6-f9b4a35d1771",
+      "skill_id": "text.liveclean",
+      "version": 1,
+      "source_event_id": "model-draft-bce08ceb-a76c-4bd3-b471-86f742fc834f"
+    },
+    "reused": {
+      "text": "d\ne",
+      "skill_invocation_id": "d8695b47-3580-4892-975b-03a113d8d15e",
+      "skill_id": "text.liveclean",
+      "version": 1,
+      "source_event_id": "model-draft-bce08ceb-a76c-4bd3-b471-86f742fc834f"
+    },
+    "rollback_invoked": {
+      "text": "a\nc",
+      "skill_invocation_id": "e9d36112-b40a-4ad6-aa34-5bfbf91eb246",
+      "skill_id": "text.liveclean",
+      "version": 1,
+      "source_event_id": "model-draft-bce08ceb-a76c-4bd3-b471-86f742fc834f"
+    },
+    "authority": "Explicit synthetic acceptance harness promotion of declarative text transforms only; no owner skill or executable code activated"
+  },
+  "passed": true,
+  "finished_utc": "2026-10-29T09:19:40.647091+00:00"
+}

@@ -1,0 +1,74 @@
+{
+  "kind": "actual_windows_release",
+  "executable_sha256": "264450eb0db2975a4eaf7bf9b0cd6d906a1b901484baa83d019a084aed4c49ca",
+  "worker_sha256": "4948a31bdde91cabf504a54cb7a9a7c5fc9c602bc8f86fe2908b8ff237afa05c",
+  "checks": {
+    "declarative_worker": true,
+    "executable_operation_rejected": true,
+    "local_sapi_wav": true,
+    "offline_chromium_capture": false,
+    "native_needle_worker": true,
+    "authenticated_http_1": true,
+    "settings_saved": true,
+    "clean_exit_1": false,
+    "native_lifecycle_1": false,
+    "backend_stopped_1": true,
+    "writable_log_directory": true,
+    "authenticated_http_2": true,
+    "settings_survive_restart": true,
+    "clean_exit_2": true,
+    "native_lifecycle_2": true,
+    "backend_stopped_2": true,
+    "harness_completed": true
+  },
+  "timings": {
+    "skill_worker_seconds": 0.234,
+    "speech_worker_seconds": 0.656,
+    "browser_worker_seconds": 0.625,
+    "needle_worker_seconds": 0.813,
+    "desktop_process_seconds_1": 35.281,
+    "desktop_process_seconds_2": 5.375
+  },
+  "native": [
+    {
+      "kind": "real_windows_desktop",
+      "checks": {
+        "frontend_loaded": false,
+        "bridge_loaded": true,
+        "tray_ready": true,
+        "authenticated_api": true,
+        "compact": true,
+        "background_backend_running": true,
+        "native_window_hidden": true,
+        "restore": true,
+        "no_console": true
+      },
+      "packaged": true,
+      "startup_seconds": 32.297,
+      "status": "FAIL"
+    },
+    {
+      "kind": "real_windows_desktop",
+      "checks": {
+        "frontend_loaded": true,
+        "bridge_loaded": true,
+        "tray_ready": true,
+        "authenticated_api": true,
+        "compact": true,
+        "background_backend_running": true,
+        "native_window_hidden": true,
+        "restore": true,
+        "no_console": true
+      },
+      "packaged": true,
+      "startup_seconds": 2.141,
+      "status": "PASS"
+    }
+  ],
+  "limitations": [
+    "Installed WebView2 and Chromium reused; this is not a fresh Windows account test.",
+    "No microphone capture, owner wake model or cloud inference exercised."
+  ],
+  "elapsed_seconds": 47.328,
+  "status": "FAIL"
+}

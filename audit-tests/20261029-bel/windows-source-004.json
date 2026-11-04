@@ -1,0 +1,17 @@
+{
+  "kind": "real_windows_desktop",
+  "checks": {
+    "frontend_loaded": true,
+    "bridge_loaded": true,
+    "tray_ready": true,
+    "authenticated_api": true,
+    "compact": true,
+    "background_backend_running": true,
+    "native_window_hidden": true,
+    "restore": true,
+    "no_console": true
+  },
+  "packaged": false,
+  "startup_seconds": 1.828,
+  "status": "PASS"
+}

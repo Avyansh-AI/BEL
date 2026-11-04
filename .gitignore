@@ -10,6 +10,13 @@ sight/reports/ui_visual_diffs/
 owner-data/
 test-data/
 *.zip
+frontend/node_modules/
+frontend/test-results/
+frontend/dist/
+frontend/*.tsbuildinfo
+build/
+dist/BEL/
+dist/BEL-worker/
 
 # Keep runtime state and raw server output local; retain audit summaries/manifests.
 audit-tests/**/server.log
@@ -18,3 +25,10 @@ audit-tests/**/backup/*
 !audit-tests/**/backup/manifest.json
 audit-tests/**/*.sqlite3
 audit-tests/**/*.sqlite3-*
+audit-tests/**/*.log
+audit-tests/**/*.jsonl
+audit-tests/**/*.progress.json
+audit-tests/**/soak_progress.json
+# Failed test tracebacks include temporary browser session values; publish summaries only.
+audit-tests/20261029-bel/regression-001.xml
+audit-tests/20261030-bel/regression-final.xml

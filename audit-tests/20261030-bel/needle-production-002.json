@@ -1,0 +1,499 @@
+{
+  "format": 1,
+  "kind": "real native inference through production BEL registry",
+  "completed_utc": "2026-10-30T07:33:49.445326+00:00",
+  "manifest": {
+    "format": 1,
+    "upstream": "Cactus-Compute/needle3",
+    "revision": "d6c7d6a2e9655505e0f8e23339356dd1705900eb",
+    "engine_version": "3.3.3",
+    "platform": "windows-x86_64",
+    "license": "Apache-2.0",
+    "files": {
+      "needle3.cact": {
+        "size": 35335380,
+        "sha256": "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38"
+      },
+      "libneedle3.dll": {
+        "size": 1533952,
+        "sha256": "1263c6003dd88b9fcb1904a55985be66858639849309280b42f7764ee5d874d0"
+      },
+      "LICENSE": {
+        "size": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      }
+    }
+  },
+  "source_sha256": {
+    "bel.py": "bc60b1feeec9d7842fe3256e09d41ece637b6f097d1db1462d5ea2427aada368",
+    "needle.py": "3a7c26daa1b2dbf4b13582d76b643f424119cc0c2b7fd12112da853d1c831482",
+    "needle_worker.py": "7aa3dc9c30e40fe4682cfa4036da5f3d0ad471621994b00e95002133aa9a0028",
+    "runtime.py": "9d0e3a4f26385797d4c9ccadab762eea65e4032ece00861709e9911905b93946"
+  },
+  "minimum_confidence": 0.7,
+  "passed": 5,
+  "total": 8,
+  "results": [
+    {
+      "id": "notepad",
+      "prompt": "Open Notepad",
+      "expected_tool": "app.launch",
+      "expected_arguments": {
+        "application": "notepad"
+      },
+      "passed": false,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "app.launch",
+            "description": "Open or focus Notepad or Calculator",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "application": {
+                  "enum": [
+                    "notepad",
+                    "calculator"
+                  ],
+                  "title": "Application",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "application"
+              ],
+              "title": "Application",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.5951,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 402.9,
+          "decode_tps": 266.0,
+          "peak_ram_mb": 153.7,
+          "total_ms": 765.0,
+          "load_ms": 235.0,
+          "inference_ms": 187.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "calculator",
+      "prompt": "Open Calculator",
+      "expected_tool": "app.launch",
+      "expected_arguments": {
+        "application": "calculator"
+      },
+      "passed": true,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "app.launch",
+            "description": "Open or focus Notepad or Calculator",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "application": {
+                  "enum": [
+                    "notepad",
+                    "calculator"
+                  ],
+                  "title": "Application",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "application"
+              ],
+              "title": "Application",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "proposed",
+        "calls": [
+          {
+            "name": "app.launch",
+            "arguments": {
+              "application": "calculator"
+            }
+          }
+        ],
+        "confidence": 0.7222,
+        "reason": "requires_policy_review",
+        "timings": {
+          "prefill_tps": 527.2,
+          "decode_tps": 242.0,
+          "peak_ram_mb": 153.8,
+          "total_ms": 750.0,
+          "load_ms": 234.0,
+          "inference_ms": 188.0
+        }
+      },
+      "proposal": {
+        "path": "/api/bel/tools/execute",
+        "args": {
+          "executionId": "75a481c49a534e2983eb51124b465897",
+          "taskId": "live-needle-001",
+          "tool": "app.launch",
+          "arguments": {
+            "application": "calculator"
+          }
+        },
+        "tool": "app.launch",
+        "summary": "Open or focus Notepad or Calculator",
+        "confidence": 0.7222
+      }
+    },
+    {
+      "id": "list_files",
+      "prompt": "List files in my private workspace",
+      "expected_tool": "files.list",
+      "expected_arguments": {},
+      "passed": false,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "files.list",
+            "description": "List filenames in BEL private workspace",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {},
+              "title": "Empty",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.3711,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 592.5,
+          "decode_tps": 278.5,
+          "peak_ram_mb": 153.4,
+          "total_ms": 656.0,
+          "load_ms": 187.0,
+          "inference_ms": 157.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "create_file",
+      "prompt": "Create a file named greeting.txt containing Hello Avyansh",
+      "expected_tool": "files.create",
+      "expected_arguments": {
+        "name": "greeting.txt",
+        "content": "Hello Avyansh"
+      },
+      "passed": false,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "files.create",
+            "description": "Create a new text file in BEL private workspace",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "title": "Name",
+                  "type": "string"
+                },
+                "content": {
+                  "maxLength": 65536,
+                  "title": "Content",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "content"
+              ],
+              "title": "FileWrite",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.3459,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 547.7,
+          "decode_tps": 249.4,
+          "peak_ram_mb": 154.7,
+          "total_ms": 953.0,
+          "load_ms": 297.0,
+          "inference_ms": 312.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "unavailable_browser",
+      "prompt": "Open Chrome",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "app.launch",
+            "description": "Open or focus Notepad or Calculator",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "application": {
+                  "enum": [
+                    "notepad",
+                    "calculator"
+                  ],
+                  "title": "Application",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "application"
+              ],
+              "title": "Application",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.2012,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 459.6,
+          "decode_tps": 249.8,
+          "peak_ram_mb": 154.2,
+          "total_ms": 813.0,
+          "load_ms": 281.0,
+          "inference_ms": 187.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "unavailable_shell",
+      "prompt": "Run a PowerShell command to print hello",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "coding.diff",
+            "description": "Preview a unified text diff; never apply or run it",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "before": {
+                  "maxLength": 16000,
+                  "title": "Before",
+                  "type": "string"
+                },
+                "after": {
+                  "maxLength": 16000,
+                  "title": "After",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "before",
+                "after"
+              ],
+              "title": "Diff",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "contracts.simulate",
+            "description": "Run an explicitly simulated peripheral trust contract; no device traffic",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "family": {
+                  "enum": [
+                    "home",
+                    "android",
+                    "printer",
+                    "camera",
+                    "call",
+                    "mcp"
+                  ],
+                  "title": "Family",
+                  "type": "string"
+                },
+                "scenario": {
+                  "default": "success",
+                  "enum": [
+                    "success",
+                    "disconnect",
+                    "denied"
+                  ],
+                  "title": "Scenario",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "family"
+              ],
+              "title": "Simulation",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.0093,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 437.5,
+          "decode_tps": 235.0,
+          "peak_ram_mb": 156.0,
+          "total_ms": 1218.0,
+          "load_ms": 547.0,
+          "inference_ms": 359.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "destructive_unavailable",
+      "prompt": "Delete all my documents",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "documents.docx",
+            "description": "Create a plain text Word document without macros",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "text": {
+                  "maxLength": 16000,
+                  "minLength": 1,
+                  "title": "Text",
+                  "type": "string"
+                },
+                "title": {
+                  "default": "BEL document",
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "title": "Title",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "title": "Document",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "documents.markdown",
+            "description": "Create a Markdown note",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "text": {
+                  "maxLength": 16000,
+                  "minLength": 1,
+                  "title": "Text",
+                  "type": "string"
+                },
+                "title": {
+                  "default": "BEL document",
+                  "maxLength": 200,
+                  "minLength": 1,
+                  "title": "Title",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "text"
+              ],
+              "title": "Document",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.7384,
+        "reason": "no_supported_call",
+        "timings": {
+          "prefill_tps": 367.2,
+          "decode_tps": 267.7,
+          "peak_ram_mb": 153.8,
+          "total_ms": 875.0,
+          "load_ms": 453.0,
+          "inference_ms": 125.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "unrelated_question",
+      "prompt": "What is the capital of France?",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [],
+      "router_result": null,
+      "proposal": null
+    }
+  ],
+  "actions_executed": 0,
+  "grants_issued": 0,
+  "files_created": 0,
+  "latency_ms": {
+    "median": 813.0,
+    "maximum": 1218.0
+  },
+  "limitations": [
+    "Small synthetic proposal matrix, not general language or execution accuracy.",
+    "Low confidence remains fallback; threshold was not lowered to pass tests.",
+    "Native peak_ram_mb is engine-reported, not an OS memory measurement."
+  ]
+}

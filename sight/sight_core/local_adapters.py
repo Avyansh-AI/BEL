@@ -16,7 +16,7 @@ class Empty(StrictModel):pass
 class Text(StrictModel):
     text:str=Field(min_length=1,max_length=16000)
 class Document(Text):
-    title:str=Field(default='SIGHT document',min_length=1,max_length=200)
+    title:str=Field(default='BEL document',min_length=1,max_length=200)
 class Search(StrictModel):
     query:str=Field(default='',max_length=100)
 class Diff(StrictModel):
@@ -83,7 +83,7 @@ def calendar(value:Calendar):
             line+=char
         return '\r\n'.join([*lines,line])
     stamp=lambda dt:dt.astimezone(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
-    lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//SIGHT//Local Calendar//EN','BEGIN:VEVENT','UID:'+uuid.uuid4().hex+'@sight.local',
+    lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//BEL//Local Calendar//EN','BEGIN:VEVENT','UID:'+uuid.uuid4().hex+'@bel.local',
            'DTSTAMP:'+stamp(datetime.now(timezone.utc)),'DTSTART:'+stamp(value.start),'DTEND:'+stamp(value.end),
            'SUMMARY:'+escape(value.title),'DESCRIPTION:'+escape(value.description),'END:VEVENT','END:VCALENDAR']
     return '\r\n'.join(fold(s) for s in lines)+'\r\n'
@@ -92,7 +92,7 @@ def box_stl(value:Box):
     x,y,z=value.x,value.y,value.z
     vertices=[(0,0,0),(x,0,0),(x,y,0),(0,y,0),(0,0,z),(x,0,z),(x,y,z),(0,y,z)]
     faces=[(0,2,1),(0,3,2),(4,5,6),(4,6,7),(0,1,5),(0,5,4),(1,2,6),(1,6,5),(2,3,7),(2,7,6),(3,0,4),(3,4,7)]
-    result=bytearray(b'SIGHT cuboid in millimetres'.ljust(80,b'\0')+struct.pack('<I',len(faces)))
+    result=bytearray(b'BEL cuboid in millimetres'.ljust(80,b'\0')+struct.pack('<I',len(faces)))
     for indices in faces:
         a,b,c=[vertices[i] for i in indices];u=[b[i]-a[i] for i in range(3)];v=[c[i]-a[i] for i in range(3)]
         n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];length=math.sqrt(sum(t*t for t in n))

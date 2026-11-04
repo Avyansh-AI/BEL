@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-30",
+  "verdict": "PASS for source desktop lifecycle; packaged release must be rebuilt and retested",
+  "regression_tests": 18,
+  "native_lifecycle_runs": 2,
+  "native_checks_per_run": 9,
+  "stress_processes": 3,
+  "stress_cycles_per_process": 30,
+  "native_mode_transitions": 270,
+  "timed_out_traces": 0,
+  "reproduced_failure": "Before repair, actual source own-window diagnostic hung in pywebview6.2.1 winforms.py set_on_top assigning Form.TopMost from a worker thread; faulthandler captured the native transition stack after15seconds.",
+  "repair": "All lifecycle mutations post to the owning WinForms GUI thread; no Python state lock spans native calls; UI mode notifications submit asynchronously; queued operations expire; failed close retains tray and restores lifecycle controls.",
+  "evidence": [
+    "desktop-regressions.xml",
+    "desktop-regressions.log",
+    "desktop-mode-stress.json",
+    "desktop-native-1.json",
+    "desktop-native-2.json"
+  ],
+  "limits": [
+    "Native tests used existing Windows/WebView2 runtime and source Pythonw, not the final packaged release.",
+    "No microphone, cloud inference or unrelated owner applications accessed."
+  ],
+  "files": [
+    {
+      "path": "sight/sight_core/desktop.py",
+      "sha256": "cc0580a006c995cbdff208ff8973081e56ef8c5cb16e1af1dac5231d2cecee8f"
+    },
+    {
+      "path": "sight/tests/test_bel_desktop.py",
+      "sha256": "98c7da5724e88749f4d195bbe4c45a49b47738e788fe8b36c7a46d932a61e6f8"
+    },
+    {
+      "path": "sight/scripts/diagnose_desktop_modes.py",
+      "sha256": "8fd5f817d570791c90a970d042dd57ba84bd9744dd19e4da2097f10a95e7babb"
+    }
+  ]
+}

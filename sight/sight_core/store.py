@@ -20,7 +20,7 @@ class Store:
         with self.connect() as db:
             version = db.execute("PRAGMA user_version").fetchone()[0]
             if version > 1:
-                raise RuntimeError("Database is newer than this SIGHT version; refusing downgrade")
+                raise RuntimeError("Database is newer than this BEL version; refusing downgrade")
             if version == 0:
                 db.executescript("""
                     BEGIN IMMEDIATE;

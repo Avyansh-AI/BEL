@@ -1,0 +1,631 @@
+{
+  "completed_utc": "2026-10-29T02:08:55.552886+00:00",
+  "kind": "actual native inference schema experiment",
+  "minimum_confidence": 0.7,
+  "actions_executed": 0,
+  "rows": [
+    {
+      "prompt": "Open Notepad",
+      "variant": "original",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open or focus Notepad or Calculator",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "title": "Application",
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "title": "Application",
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.483,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 348.7,
+          "decode_tps": 197.0,
+          "peak_ram_mb": 155.1,
+          "total_ms": 1141.0,
+          "load_ms": 453.0,
+          "inference_ms": 266.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Notepad",
+      "variant": "compact",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open or focus Notepad or Calculator",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.5079,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 385.0,
+          "decode_tps": 205.4,
+          "peak_ram_mb": 154.8,
+          "total_ms": 1094.0,
+          "load_ms": 454.0,
+          "inference_ms": 250.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Notepad",
+      "variant": "underscores",
+      "tools": [
+        {
+          "name": "app_launch",
+          "description": "Open or focus Notepad or Calculator",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.5079,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 397.3,
+          "decode_tps": 197.5,
+          "peak_ram_mb": 154.9,
+          "total_ms": 1062.0,
+          "load_ms": 437.0,
+          "inference_ms": 266.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Notepad",
+      "variant": "simple_description",
+      "tools": [
+        {
+          "name": "app_launch",
+          "description": "Open an application.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "proposed",
+        "calls": [
+          {
+            "name": "app_launch",
+            "arguments": {
+              "application": "notepad"
+            }
+          }
+        ],
+        "confidence": 0.7644,
+        "reason": "requires_policy_review",
+        "timings": {
+          "prefill_tps": 401.9,
+          "decode_tps": 205.8,
+          "peak_ram_mb": 154.8,
+          "total_ms": 1047.0,
+          "load_ms": 422.0,
+          "inference_ms": 234.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Calculator",
+      "variant": "original",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open or focus Notepad or Calculator",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "title": "Application",
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "title": "Application",
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.4915,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 425.3,
+          "decode_tps": 188.1,
+          "peak_ram_mb": 155.1,
+          "total_ms": 1125.0,
+          "load_ms": 485.0,
+          "inference_ms": 281.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Calculator",
+      "variant": "compact",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open or focus Notepad or Calculator",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.4599,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 458.6,
+          "decode_tps": 192.0,
+          "peak_ram_mb": 154.7,
+          "total_ms": 1141.0,
+          "load_ms": 532.0,
+          "inference_ms": 234.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Calculator",
+      "variant": "underscores",
+      "tools": [
+        {
+          "name": "app_launch",
+          "description": "Open or focus Notepad or Calculator",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.4599,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 357.4,
+          "decode_tps": 174.7,
+          "peak_ram_mb": 155.2,
+          "total_ms": 1188.0,
+          "load_ms": 531.0,
+          "inference_ms": 266.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Calculator",
+      "variant": "simple_description",
+      "tools": [
+        {
+          "name": "app_launch",
+          "description": "Open an application.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6845,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 357.4,
+          "decode_tps": 154.6,
+          "peak_ram_mb": 154.7,
+          "total_ms": 1406.0,
+          "load_ms": 625.0,
+          "inference_ms": 297.0
+        }
+      }
+    },
+    {
+      "prompt": "List files in my private workspace",
+      "variant": "original",
+      "tools": [
+        {
+          "name": "files.list",
+          "description": "List filenames in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {},
+            "title": "Empty",
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.2939,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 318.3,
+          "decode_tps": 195.5,
+          "peak_ram_mb": 154.6,
+          "total_ms": 1297.0,
+          "load_ms": 531.0,
+          "inference_ms": 219.0
+        }
+      }
+    },
+    {
+      "prompt": "List files in my private workspace",
+      "variant": "compact",
+      "tools": [
+        {
+          "name": "files.list",
+          "description": "List filenames in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.3282,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 388.4,
+          "decode_tps": 214.5,
+          "peak_ram_mb": 154.9,
+          "total_ms": 1125.0,
+          "load_ms": 437.0,
+          "inference_ms": 204.0
+        }
+      }
+    },
+    {
+      "prompt": "List files in my private workspace",
+      "variant": "underscores",
+      "tools": [
+        {
+          "name": "files_list",
+          "description": "List filenames in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.3282,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 388.2,
+          "decode_tps": 193.1,
+          "peak_ram_mb": 154.4,
+          "total_ms": 1063.0,
+          "load_ms": 390.0,
+          "inference_ms": 235.0
+        }
+      }
+    },
+    {
+      "prompt": "List files in my private workspace",
+      "variant": "simple_description",
+      "tools": [
+        {
+          "name": "files_list",
+          "description": "List files.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {},
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.132,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 403.8,
+          "decode_tps": 184.6,
+          "peak_ram_mb": 154.2,
+          "total_ms": 1046.0,
+          "load_ms": 421.0,
+          "inference_ms": 204.0
+        }
+      }
+    },
+    {
+      "prompt": "Create a file named greeting.txt containing Hello Avyansh",
+      "variant": "original",
+      "tools": [
+        {
+          "name": "files.create",
+          "description": "Create a new text file in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content"
+            ],
+            "title": "FileWrite",
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.1533,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 370.0,
+          "decode_tps": 215.5,
+          "peak_ram_mb": 155.6,
+          "total_ms": 1391.0,
+          "load_ms": 578.0,
+          "inference_ms": 359.0
+        }
+      }
+    },
+    {
+      "prompt": "Create a file named greeting.txt containing Hello Avyansh",
+      "variant": "compact",
+      "tools": [
+        {
+          "name": "files.create",
+          "description": "Create a new text file in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.1308,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 360.8,
+          "decode_tps": 198.3,
+          "peak_ram_mb": 155.1,
+          "total_ms": 1344.0,
+          "load_ms": 500.0,
+          "inference_ms": 407.0
+        }
+      }
+    },
+    {
+      "prompt": "Create a file named greeting.txt containing Hello Avyansh",
+      "variant": "underscores",
+      "tools": [
+        {
+          "name": "files_create",
+          "description": "Create a new text file in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.1308,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 411.3,
+          "decode_tps": 212.5,
+          "peak_ram_mb": 155.1,
+          "total_ms": 1235.0,
+          "load_ms": 485.0,
+          "inference_ms": 375.0
+        }
+      }
+    },
+    {
+      "prompt": "Create a file named greeting.txt containing Hello Avyansh",
+      "variant": "simple_description",
+      "tools": [
+        {
+          "name": "files_create",
+          "description": "Create a text file with the given name and content.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.2578,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 424.9,
+          "decode_tps": 198.9,
+          "peak_ram_mb": 154.9,
+          "total_ms": 1344.0,
+          "load_ms": 515.0,
+          "inference_ms": 391.0
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+[
+  {
+    "run": "audit-tests/20261029-bel/regression-001.xml",
+    "tests": 506,
+    "failures": 9,
+    "errors": 0,
+    "seconds": 210.462,
+    "failed_tests": [
+      "tests.test_browser.test_capabilities_page_actual_approval_artifact_and_mobile",
+      "tests.test_browser.test_learning_page_real_memory_forge_and_task_flow",
+      "tests.test_browser.test_actual_browser_chat_ring_consent_and_xss",
+      "tests.test_browser.test_actual_browser_websocket_reconnect",
+      "tests.test_browser.test_each_lost_socket_request_gets_its_own_http_recovery",
+      "tests.test_browser.test_systems_page_review_and_decline_preserves_policy",
+      "tests.test_phase4_hardening.test_gemma_reasoning_mode_has_context_and_output_budget[True-None-True]",
+      "tests.test_phase4_hardening.test_gemma_reasoning_mode_has_context_and_output_budget[True-False-False]",
+      "tests.test_phase4_hardening.test_gemma_reasoning_mode_has_context_and_output_budget[False-None-False]"
+    ]
+  },
+  {
+    "run": "audit-tests/20261030-bel/regression-final.xml",
+    "tests": 516,
+    "failures": 2,
+    "errors": 0,
+    "seconds": 131.066,
+    "failed_tests": [
+      "tests.test_browser.test_actual_browser_chat_ring_consent_and_xss",
+      "tests.test_core.test_local_first_boot"
+    ]
+  }
+]

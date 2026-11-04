@@ -1,0 +1,554 @@
+{
+  "format": 1,
+  "kind": "real native inference through production BEL registry",
+  "completed_utc": "2026-10-30T07:35:07.035650+00:00",
+  "manifest": {
+    "format": 1,
+    "upstream": "Cactus-Compute/needle3",
+    "revision": "d6c7d6a2e9655505e0f8e23339356dd1705900eb",
+    "engine_version": "3.3.3",
+    "platform": "windows-x86_64",
+    "license": "Apache-2.0",
+    "files": {
+      "needle3.cact": {
+        "size": 35335380,
+        "sha256": "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38"
+      },
+      "libneedle3.dll": {
+        "size": 1533952,
+        "sha256": "1263c6003dd88b9fcb1904a55985be66858639849309280b42f7764ee5d874d0"
+      },
+      "LICENSE": {
+        "size": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      }
+    }
+  },
+  "source_sha256": {
+    "bel.py": "bc60b1feeec9d7842fe3256e09d41ece637b6f097d1db1462d5ea2427aada368",
+    "needle.py": "3a7c26daa1b2dbf4b13582d76b643f424119cc0c2b7fd12112da853d1c831482",
+    "needle_worker.py": "7aa3dc9c30e40fe4682cfa4036da5f3d0ad471621994b00e95002133aa9a0028",
+    "runtime.py": "9d0e3a4f26385797d4c9ccadab762eea65e4032ece00861709e9911905b93946"
+  },
+  "minimum_confidence": 0.7,
+  "held_out": true,
+  "passed": 6,
+  "total": 10,
+  "results": [
+    {
+      "id": "calculator_polite",
+      "prompt": "Could you bring up the calculator for me?",
+      "expected_tool": "app.launch",
+      "expected_arguments": {
+        "application": "calculator"
+      },
+      "passed": false,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "app.launch",
+            "description": "Open or focus Notepad or Calculator",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "application": {
+                  "enum": [
+                    "notepad",
+                    "calculator"
+                  ],
+                  "title": "Application",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "application"
+              ],
+              "title": "Application",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.5523,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 571.7,
+          "decode_tps": 253.1,
+          "peak_ram_mb": 154.2,
+          "total_ms": 843.0,
+          "load_ms": 265.0,
+          "inference_ms": 204.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "notepad_notes",
+      "prompt": "Start Notepad so I can take notes.",
+      "expected_tool": "app.launch",
+      "expected_arguments": {
+        "application": "notepad"
+      },
+      "passed": false,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "app.launch",
+            "description": "Open or focus Notepad or Calculator",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "application": {
+                  "enum": [
+                    "notepad",
+                    "calculator"
+                  ],
+                  "title": "Application",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "application"
+              ],
+              "title": "Application",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6396,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 597.1,
+          "decode_tps": 262.1,
+          "peak_ram_mb": 154.0,
+          "total_ms": 797.0,
+          "load_ms": 282.0,
+          "inference_ms": 187.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "saved_text_files",
+      "prompt": "List the text files I have saved.",
+      "expected_tool": "files.list",
+      "expected_arguments": {},
+      "passed": false,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "files.list",
+            "description": "List filenames in BEL private workspace",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {},
+              "title": "Empty",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.4271,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 528.7,
+          "decode_tps": 266.5,
+          "peak_ram_mb": 153.3,
+          "total_ms": 719.0,
+          "load_ms": 219.0,
+          "inference_ms": 156.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "quoted_file_text",
+      "prompt": "Create note.txt with the exact text \"Meeting at noon\"",
+      "expected_tool": "files.create",
+      "expected_arguments": {
+        "name": "note.txt",
+        "content": "Meeting at noon"
+      },
+      "passed": false,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "files.create",
+            "description": "Create a new text file in BEL private workspace",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "title": "Name",
+                  "type": "string"
+                },
+                "content": {
+                  "maxLength": 65536,
+                  "title": "Content",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "content"
+              ],
+              "title": "FileWrite",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.2722,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 407.1,
+          "decode_tps": 200.8,
+          "peak_ram_mb": 154.8,
+          "total_ms": 1093.0,
+          "load_ms": 344.0,
+          "inference_ms": 360.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "missing_file_hash",
+      "prompt": "Rename note.txt to plan.txt",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "files.rename",
+            "description": "Rename a private text file after reviewing its current SHA256",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "title": "Name",
+                  "type": "string"
+                },
+                "destination": {
+                  "maxLength": 100,
+                  "minLength": 1,
+                  "title": "Destination",
+                  "type": "string"
+                },
+                "expected_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "title": "Expected Sha256",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "destination",
+                "expected_sha256"
+              ],
+              "title": "FileRename",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.0,
+        "reason": "model_error",
+        "timings": {
+          "prefill_tps": 331.9,
+          "decode_tps": 166.6,
+          "peak_ram_mb": 156.1,
+          "total_ms": 2781.0,
+          "load_ms": 594.0,
+          "inference_ms": 1718.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "unsupported_firefox",
+      "prompt": "Launch Firefox.",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "app.launch",
+            "description": "Open or focus Notepad or Calculator",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "application": {
+                  "enum": [
+                    "notepad",
+                    "calculator"
+                  ],
+                  "title": "Application",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "application"
+              ],
+              "title": "Application",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6692,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 518.4,
+          "decode_tps": 232.8,
+          "peak_ram_mb": 154.1,
+          "total_ms": 812.0,
+          "load_ms": 281.0,
+          "inference_ms": 203.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "unsupported_shutdown",
+      "prompt": "Shut down my computer.",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [],
+      "router_result": null,
+      "proposal": null
+    },
+    {
+      "id": "negated_app",
+      "prompt": "Don't open Calculator.",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "app.launch",
+            "description": "Open or focus Notepad or Calculator",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "application": {
+                  "enum": [
+                    "notepad",
+                    "calculator"
+                  ],
+                  "title": "Application",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "application"
+              ],
+              "title": "Application",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.3543,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 297.1,
+          "decode_tps": 149.3,
+          "peak_ram_mb": 153.8,
+          "total_ms": 984.0,
+          "load_ms": 281.0,
+          "inference_ms": 328.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "question_about_app",
+      "prompt": "Tell me why Notepad has tabs.",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "app.launch",
+            "description": "Open or focus Notepad or Calculator",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "application": {
+                  "enum": [
+                    "notepad",
+                    "calculator"
+                  ],
+                  "title": "Application",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "application"
+              ],
+              "title": "Application",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.7434,
+        "reason": "no_supported_call",
+        "timings": {
+          "prefill_tps": 362.7,
+          "decode_tps": 166.5,
+          "peak_ram_mb": 150.4,
+          "total_ms": 938.0,
+          "load_ms": 343.0,
+          "inference_ms": 157.0
+        }
+      },
+      "proposal": null
+    },
+    {
+      "id": "unsupported_command",
+      "prompt": "Run this command: whoami.",
+      "expected_tool": null,
+      "expected_arguments": null,
+      "passed": true,
+      "selected_tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "coding.diff",
+            "description": "Preview a unified text diff; never apply or run it",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "before": {
+                  "maxLength": 16000,
+                  "title": "Before",
+                  "type": "string"
+                },
+                "after": {
+                  "maxLength": 16000,
+                  "title": "After",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "before",
+                "after"
+              ],
+              "title": "Diff",
+              "type": "object"
+            }
+          }
+        },
+        {
+          "type": "function",
+          "function": {
+            "name": "contracts.simulate",
+            "description": "Run an explicitly simulated peripheral trust contract; no device traffic",
+            "parameters": {
+              "additionalProperties": false,
+              "properties": {
+                "family": {
+                  "enum": [
+                    "home",
+                    "android",
+                    "printer",
+                    "camera",
+                    "call",
+                    "mcp"
+                  ],
+                  "title": "Family",
+                  "type": "string"
+                },
+                "scenario": {
+                  "default": "success",
+                  "enum": [
+                    "success",
+                    "disconnect",
+                    "denied"
+                  ],
+                  "title": "Scenario",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "family"
+              ],
+              "title": "Simulation",
+              "type": "object"
+            }
+          }
+        }
+      ],
+      "router_result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.0197,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 411.8,
+          "decode_tps": 228.4,
+          "peak_ram_mb": 155.6,
+          "total_ms": 1562.0,
+          "load_ms": 781.0,
+          "inference_ms": 281.0
+        }
+      },
+      "proposal": null
+    }
+  ],
+  "actions_executed": 0,
+  "grants_issued": 0,
+  "files_created": 0,
+  "latency_ms": {
+    "median": 938.0,
+    "maximum": 2781.0
+  },
+  "limitations": [
+    "Small synthetic proposal matrix, not general language or execution accuracy.",
+    "Low confidence remains fallback; threshold was not lowered to pass tests.",
+    "Native peak_ram_mb is engine-reported, not an OS memory measurement."
+  ]
+}

@@ -7,11 +7,7 @@ import json
 from typing import AsyncIterator, Protocol
 
 import httpx
-
-SYSTEM_PROMPT = (
-    "You are SIGHT, an AI assistant. Answer the user's question accurately and directly, using their language. "
-    'Use clear, professional language without slang, memes or emojis. Tools are unavailable in this chat.'
-)
+from .identity import SYSTEM_PROMPT
 
 OFFICIAL_GEMMA = 'gemma4:e4b-it-qat'
 # Exact owner-selected artifact, verified against all installed blobs. Official
@@ -99,7 +95,7 @@ class OllamaProvider:
 
     async def _metadata_health(self):
         if not self.config.model:
-            return ModelStatus("needs_model", "Select an installed Gemma 4 E4B Ollama tag with SIGHT_OLLAMA_MODEL; no model is configured.")
+            return ModelStatus("needs_model", "Select an installed Gemma 4 E4B Ollama tag with BEL_OLLAMA_MODEL; no model is configured.")
         try:
             async with asyncio.timeout(5), self.client(2) as client:
                 code, response = await self.request_json(client, 'GET', '/api/tags')

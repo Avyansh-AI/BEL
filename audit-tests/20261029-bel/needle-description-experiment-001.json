@@ -1,0 +1,662 @@
+{
+  "completed_utc": "2026-10-29T02:10:18.097252+00:00",
+  "kind": "actual native inference schema experiment",
+  "minimum_confidence": 0.7,
+  "actions_executed": 0,
+  "rows": [
+    {
+      "prompt": "Open Notepad",
+      "variant": "Open an application.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open an application.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "proposed",
+        "calls": [
+          {
+            "name": "app.launch",
+            "arguments": {
+              "application": "notepad"
+            }
+          }
+        ],
+        "confidence": 0.7644,
+        "reason": "requires_policy_review",
+        "timings": {
+          "prefill_tps": 270.6,
+          "decode_tps": 128.8,
+          "peak_ram_mb": 154.7,
+          "total_ms": 1657.0,
+          "load_ms": 625.0,
+          "inference_ms": 375.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Calculator",
+      "variant": "Open an application.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open an application.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6845,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 246.3,
+          "decode_tps": 118.4,
+          "peak_ram_mb": 154.9,
+          "total_ms": 1656.0,
+          "load_ms": 609.0,
+          "inference_ms": 407.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Notepad",
+      "variant": "Launch a desktop application by name.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Launch a desktop application by name.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6957,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 259.0,
+          "decode_tps": 138.2,
+          "peak_ram_mb": 154.9,
+          "total_ms": 1828.0,
+          "load_ms": 703.0,
+          "inference_ms": 359.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Calculator",
+      "variant": "Launch a desktop application by name.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Launch a desktop application by name.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6207,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 260.5,
+          "decode_tps": 136.0,
+          "peak_ram_mb": 154.7,
+          "total_ms": 1609.0,
+          "load_ms": 625.0,
+          "inference_ms": 344.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Notepad",
+      "variant": "Open the specified desktop application.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open the specified desktop application.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.544,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 274.3,
+          "decode_tps": 127.6,
+          "peak_ram_mb": 154.7,
+          "total_ms": 1672.0,
+          "load_ms": 672.0,
+          "inference_ms": 391.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Calculator",
+      "variant": "Open the specified desktop application.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open the specified desktop application.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6724,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 414.5,
+          "decode_tps": 170.5,
+          "peak_ram_mb": 154.5,
+          "total_ms": 1391.0,
+          "load_ms": 531.0,
+          "inference_ms": 266.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Notepad",
+      "variant": "Open an app on the computer.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open an app on the computer.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6112,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 364.3,
+          "decode_tps": 174.9,
+          "peak_ram_mb": 155.1,
+          "total_ms": 1281.0,
+          "load_ms": 500.0,
+          "inference_ms": 281.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Calculator",
+      "variant": "Open an app on the computer.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open an app on the computer.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6674,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 351.3,
+          "decode_tps": 175.9,
+          "peak_ram_mb": 154.9,
+          "total_ms": 1219.0,
+          "load_ms": 484.0,
+          "inference_ms": 266.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Notepad",
+      "variant": "Launch applications including Notepad and Calculator.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Launch applications including Notepad and Calculator.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.4215,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 299.5,
+          "decode_tps": 187.0,
+          "peak_ram_mb": 154.9,
+          "total_ms": 1281.0,
+          "load_ms": 516.0,
+          "inference_ms": 281.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Calculator",
+      "variant": "Launch applications including Notepad and Calculator.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Launch applications including Notepad and Calculator.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.4851,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 424.2,
+          "decode_tps": 165.1,
+          "peak_ram_mb": 154.7,
+          "total_ms": 1234.0,
+          "load_ms": 500.0,
+          "inference_ms": 281.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Notepad",
+      "variant": "Launch an application on Windows.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Launch an application on Windows.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "proposed",
+        "calls": [
+          {
+            "name": "app.launch",
+            "arguments": {
+              "application": "notepad"
+            }
+          }
+        ],
+        "confidence": 0.7148,
+        "reason": "requires_policy_review",
+        "timings": {
+          "prefill_tps": 357.4,
+          "decode_tps": 187.0,
+          "peak_ram_mb": 155.1,
+          "total_ms": 1235.0,
+          "load_ms": 516.0,
+          "inference_ms": 266.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Calculator",
+      "variant": "Launch an application on Windows.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Launch an application on Windows.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6388,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 435.5,
+          "decode_tps": 193.5,
+          "peak_ram_mb": 154.9,
+          "total_ms": 1234.0,
+          "load_ms": 516.0,
+          "inference_ms": 250.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Notepad",
+      "variant": "Open Notepad or Calculator.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open Notepad or Calculator.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.5218,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 433.9,
+          "decode_tps": 169.5,
+          "peak_ram_mb": 154.9,
+          "total_ms": 1188.0,
+          "load_ms": 469.0,
+          "inference_ms": 281.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Calculator",
+      "variant": "Open Notepad or Calculator.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open Notepad or Calculator.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6353,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 214.6,
+          "decode_tps": 135.1,
+          "peak_ram_mb": 155.1,
+          "total_ms": 1593.0,
+          "load_ms": 672.0,
+          "inference_ms": 375.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Notepad",
+      "variant": "Launch a Windows application.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Launch a Windows application.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6831,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 307.2,
+          "decode_tps": 157.7,
+          "peak_ram_mb": 154.8,
+          "total_ms": 1438.0,
+          "load_ms": 579.0,
+          "inference_ms": 312.0
+        }
+      }
+    },
+    {
+      "prompt": "Open Calculator",
+      "variant": "Launch a Windows application.",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Launch a Windows application.",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "type": "object"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6368,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 254.4,
+          "decode_tps": 136.7,
+          "peak_ram_mb": 154.9,
+          "total_ms": 1672.0,
+          "load_ms": 640.0,
+          "inference_ms": 344.0
+        }
+      }
+    }
+  ]
+}

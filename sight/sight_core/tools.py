@@ -36,7 +36,7 @@ class LocalFiles:
         # Flat, user-selected text files only: excludes traversal, ADS, executable types,
         # Windows device names and hidden credential files on either supported OS.
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 _.-]{0,90}\.(?:txt|md|csv|json)", name):
-            raise ValueError("Use a plain .txt, .md, .csv or .json filename in SIGHT's workspace")
+            raise ValueError("Use a plain .txt, .md, .csv or .json filename in BEL's workspace")
         if name.split(".")[0].upper() in {"CON", "PRN", "AUX", "NUL", *(f"COM{i}" for i in range(10)), *(f"LPT{i}" for i in range(10))}:
             raise ValueError("Reserved filename")
         target = self.root / name
@@ -60,7 +60,7 @@ class LocalFiles:
     def write_new(self, name, content):
         target = self.path(name)
         fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o600)
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="") as f:
             f.write(content)
         return {"ok": True, "name": name, "bytes": len(content.encode())}
 
@@ -72,12 +72,8 @@ def desktop_invoke(args: DesktopAction, runner=subprocess.run):
     if args.action == "clipboard.read":
         result = runner([str(system_root / "System32/WindowsPowerShell/v1.0/powershell.exe"), "-NoProfile", "-NonInteractive", "-Command", "Get-Clipboard -Raw"], capture_output=True, text=True, timeout=5, check=True, shell=False)
         return {"ok": True, "text": result.stdout[:65536], "stored": False}
-    executable = {"notepad": "notepad.exe", "calculator": "calc.exe"}.get(args.application)
-    if not executable:
-        raise ValueError("Select an allowlisted application")
-    # A launch is acknowledged only when the executable starts; GUI readiness is separate.
-    process = subprocess.Popen([str(system_root / "System32" / executable)], shell=False)
-    return {"ok": True, "pid": process.pid, "gui_verified": False}
+    from .windows_apps import open_application
+    return open_application(args.application)
 
 
 def registry():

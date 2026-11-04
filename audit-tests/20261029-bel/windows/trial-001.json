@@ -1,0 +1,39 @@
+{
+  "kind": "actual_windows_release",
+  "executable_sha256": "606026c368b2af06ad39bec7f24ccc51a7688ef39347a42429d12c9bba0d6277",
+  "worker_sha256": "30f1137c957282e0b866b93ad1959292fc17ab878ec266ab4eb642d3ffd6d2ac",
+  "checks": {
+    "declarative_worker": true,
+    "executable_operation_rejected": true,
+    "local_sapi_wav": true,
+    "offline_chromium_capture": false,
+    "native_needle_worker": true,
+    "authenticated_http_1": true,
+    "settings_saved": true,
+    "clean_exit_1": false,
+    "native_lifecycle_1": false,
+    "backend_stopped_1": true,
+    "writable_log_directory": true,
+    "authenticated_http_2": true,
+    "settings_survive_restart": true,
+    "clean_exit_2": false,
+    "native_lifecycle_2": false,
+    "backend_stopped_2": true,
+    "harness_completed": true
+  },
+  "timings": {
+    "skill_worker_seconds": 0.547,
+    "speech_worker_seconds": 0.969,
+    "browser_worker_seconds": 2.187,
+    "needle_worker_seconds": 1.094,
+    "desktop_process_seconds_1": 66.781,
+    "desktop_process_seconds_2": 67.25
+  },
+  "native": [],
+  "limitations": [
+    "Installed WebView2 and Chromium reused; this is not a fresh Windows account test.",
+    "No microphone capture, owner wake model or cloud inference exercised."
+  ],
+  "elapsed_seconds": 143.219,
+  "status": "FAIL"
+}

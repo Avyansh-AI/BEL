@@ -74,7 +74,7 @@ def test_memory_backup_restore_full_data_and_safe_start(seeded, tmp_path):
 
 def test_backup_refuses_running_server_lock(seeded, tmp_path):
     with single_instance(seeded[0]):
-        with pytest.raises(RuntimeError, match='Another SIGHT'):
+        with pytest.raises(RuntimeError, match='Another BEL'):
             backup_all(seeded[0], tmp_path / 'bundle')
     assert not (tmp_path / 'bundle').exists()
 

@@ -1,0 +1,1299 @@
+{
+  "completed_utc": "2026-10-29T14:48:05.352689+00:00",
+  "kind": "real native system-facts experiment",
+  "profiles": {
+    "instructions": "Select a registered tool only when the user's request directly requires it. Use only arguments explicitly supplied by the user. Never invent facts, dates, paths, application names or permissions. If no registered tool fits, return no call. The tools propose actions for owner review; they never grant authorization.",
+    "empty": "",
+    "facts": "locale: en-US; device: Windows computer; assistant: BEL"
+  },
+  "minimum_confidence": 0.7,
+  "actions_executed": 0,
+  "held_out": false,
+  "bel_sha256": "9f1805f088364f241106fefac6907e5d1d5e0e590dc3f1786f2d12abce058359",
+  "passed": 1,
+  "total": 12,
+  "rows": [
+    {
+      "profile": "instructions",
+      "prompt": "Open Notepad",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open or focus Notepad or Calculator",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "title": "Application",
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "title": "Application",
+            "type": "object"
+          }
+        }
+      ],
+      "expected_calls": [
+        {
+          "name": "app.launch",
+          "arguments": {
+            "application": "notepad"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.483,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 392.4,
+          "decode_tps": 161.9,
+          "peak_ram_mb": 171.3
+        }
+      },
+      "passed": false,
+      "seconds": 1.953
+    },
+    {
+      "profile": "instructions",
+      "prompt": "Open Calculator",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open or focus Notepad or Calculator",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "title": "Application",
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "title": "Application",
+            "type": "object"
+          }
+        }
+      ],
+      "expected_calls": [
+        {
+          "name": "app.launch",
+          "arguments": {
+            "application": "calculator"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.4915,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 337.1,
+          "decode_tps": 153.9,
+          "peak_ram_mb": 171.6
+        }
+      },
+      "passed": false,
+      "seconds": 1.688
+    },
+    {
+      "profile": "instructions",
+      "prompt": "List files in my private workspace",
+      "tools": [
+        {
+          "name": "files.list",
+          "description": "List filenames in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {},
+            "title": "Empty",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.create",
+          "description": "Create a new text file in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content"
+            ],
+            "title": "FileWrite",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.edit",
+          "description": "Replace a private text file after reviewing its current SHA256",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              },
+              "expected_sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "title": "Expected Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content",
+              "expected_sha256"
+            ],
+            "title": "FileEdit",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.rename",
+          "description": "Rename a private text file after reviewing its current SHA256",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "destination": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Destination",
+                "type": "string"
+              },
+              "expected_sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "title": "Expected Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "destination",
+              "expected_sha256"
+            ],
+            "title": "FileRename",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.search",
+          "description": "Find names in the private BEL text workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "query": {
+                "default": "",
+                "maxLength": 100,
+                "title": "Query",
+                "type": "string"
+              }
+            },
+            "title": "Search",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.undo",
+          "description": "Undo one verified private file operation",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "undo_id": {
+                "pattern": "^[a-f0-9]{32}$",
+                "title": "Undo Id",
+                "type": "string"
+              }
+            },
+            "required": [
+              "undo_id"
+            ],
+            "title": "Undo",
+            "type": "object"
+          }
+        }
+      ],
+      "expected_calls": [
+        {
+          "name": "files.list",
+          "arguments": {}
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.0911,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 218.2,
+          "decode_tps": 146.0,
+          "peak_ram_mb": 177.2
+        }
+      },
+      "passed": false,
+      "seconds": 3.125
+    },
+    {
+      "profile": "instructions",
+      "prompt": "Create a file named greeting.txt containing Hello Avyansh",
+      "tools": [
+        {
+          "name": "files.create",
+          "description": "Create a new text file in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content"
+            ],
+            "title": "FileWrite",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.edit",
+          "description": "Replace a private text file after reviewing its current SHA256",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              },
+              "expected_sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "title": "Expected Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content",
+              "expected_sha256"
+            ],
+            "title": "FileEdit",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.rename",
+          "description": "Rename a private text file after reviewing its current SHA256",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "destination": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Destination",
+                "type": "string"
+              },
+              "expected_sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "title": "Expected Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "destination",
+              "expected_sha256"
+            ],
+            "title": "FileRename",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.undo",
+          "description": "Undo one verified private file operation",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "undo_id": {
+                "pattern": "^[a-f0-9]{32}$",
+                "title": "Undo Id",
+                "type": "string"
+              }
+            },
+            "required": [
+              "undo_id"
+            ],
+            "title": "Undo",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.list",
+          "description": "List filenames in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {},
+            "title": "Empty",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.search",
+          "description": "Find names in the private BEL text workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "query": {
+                "default": "",
+                "maxLength": 100,
+                "title": "Query",
+                "type": "string"
+              }
+            },
+            "title": "Search",
+            "type": "object"
+          }
+        }
+      ],
+      "expected_calls": [
+        {
+          "name": "files.create",
+          "arguments": {
+            "name": "greeting.txt",
+            "content": "Hello Avyansh"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.0945,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 265.8,
+          "decode_tps": 125.7,
+          "peak_ram_mb": 177.7
+        }
+      },
+      "passed": false,
+      "seconds": 3.641
+    },
+    {
+      "profile": "empty",
+      "prompt": "Open Notepad",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open or focus Notepad or Calculator",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "title": "Application",
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "title": "Application",
+            "type": "object"
+          }
+        }
+      ],
+      "expected_calls": [
+        {
+          "name": "app.launch",
+          "arguments": {
+            "application": "notepad"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.5951,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 449.5,
+          "decode_tps": 224.7,
+          "peak_ram_mb": 170.3
+        }
+      },
+      "passed": false,
+      "seconds": 1.203
+    },
+    {
+      "profile": "empty",
+      "prompt": "Open Calculator",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open or focus Notepad or Calculator",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "title": "Application",
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "title": "Application",
+            "type": "object"
+          }
+        }
+      ],
+      "expected_calls": [
+        {
+          "name": "app.launch",
+          "arguments": {
+            "application": "calculator"
+          }
+        }
+      ],
+      "result": {
+        "status": "proposed",
+        "calls": [
+          {
+            "name": "app.launch",
+            "arguments": {
+              "application": "calculator"
+            }
+          }
+        ],
+        "confidence": 0.7222,
+        "reason": "requires_policy_review",
+        "timings": {
+          "prefill_tps": 348.4,
+          "decode_tps": 183.7,
+          "peak_ram_mb": 170.7
+        }
+      },
+      "passed": true,
+      "seconds": 1.484
+    },
+    {
+      "profile": "empty",
+      "prompt": "List files in my private workspace",
+      "tools": [
+        {
+          "name": "files.list",
+          "description": "List filenames in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {},
+            "title": "Empty",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.create",
+          "description": "Create a new text file in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content"
+            ],
+            "title": "FileWrite",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.edit",
+          "description": "Replace a private text file after reviewing its current SHA256",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              },
+              "expected_sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "title": "Expected Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content",
+              "expected_sha256"
+            ],
+            "title": "FileEdit",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.rename",
+          "description": "Rename a private text file after reviewing its current SHA256",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "destination": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Destination",
+                "type": "string"
+              },
+              "expected_sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "title": "Expected Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "destination",
+              "expected_sha256"
+            ],
+            "title": "FileRename",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.search",
+          "description": "Find names in the private BEL text workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "query": {
+                "default": "",
+                "maxLength": 100,
+                "title": "Query",
+                "type": "string"
+              }
+            },
+            "title": "Search",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.undo",
+          "description": "Undo one verified private file operation",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "undo_id": {
+                "pattern": "^[a-f0-9]{32}$",
+                "title": "Undo Id",
+                "type": "string"
+              }
+            },
+            "required": [
+              "undo_id"
+            ],
+            "title": "Undo",
+            "type": "object"
+          }
+        }
+      ],
+      "expected_calls": [
+        {
+          "name": "files.list",
+          "arguments": {}
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.2357,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 262.2,
+          "decode_tps": 171.4,
+          "peak_ram_mb": 175.8
+        }
+      },
+      "passed": false,
+      "seconds": 3.015
+    },
+    {
+      "profile": "empty",
+      "prompt": "Create a file named greeting.txt containing Hello Avyansh",
+      "tools": [
+        {
+          "name": "files.create",
+          "description": "Create a new text file in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content"
+            ],
+            "title": "FileWrite",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.edit",
+          "description": "Replace a private text file after reviewing its current SHA256",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              },
+              "expected_sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "title": "Expected Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content",
+              "expected_sha256"
+            ],
+            "title": "FileEdit",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.rename",
+          "description": "Rename a private text file after reviewing its current SHA256",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "destination": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Destination",
+                "type": "string"
+              },
+              "expected_sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "title": "Expected Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "destination",
+              "expected_sha256"
+            ],
+            "title": "FileRename",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.undo",
+          "description": "Undo one verified private file operation",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "undo_id": {
+                "pattern": "^[a-f0-9]{32}$",
+                "title": "Undo Id",
+                "type": "string"
+              }
+            },
+            "required": [
+              "undo_id"
+            ],
+            "title": "Undo",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.list",
+          "description": "List filenames in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {},
+            "title": "Empty",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.search",
+          "description": "Find names in the private BEL text workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "query": {
+                "default": "",
+                "maxLength": 100,
+                "title": "Query",
+                "type": "string"
+              }
+            },
+            "title": "Search",
+            "type": "object"
+          }
+        }
+      ],
+      "expected_calls": [
+        {
+          "name": "files.create",
+          "arguments": {
+            "name": "greeting.txt",
+            "content": "Hello Avyansh"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.107,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 286.2,
+          "decode_tps": 139.5,
+          "peak_ram_mb": 176.3
+        }
+      },
+      "passed": false,
+      "seconds": 3.516
+    },
+    {
+      "profile": "facts",
+      "prompt": "Open Notepad",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open or focus Notepad or Calculator",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "title": "Application",
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "title": "Application",
+            "type": "object"
+          }
+        }
+      ],
+      "expected_calls": [
+        {
+          "name": "app.launch",
+          "arguments": {
+            "application": "notepad"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6282,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 507.4,
+          "decode_tps": 241.0,
+          "peak_ram_mb": 170.6
+        }
+      },
+      "passed": false,
+      "seconds": 1.266
+    },
+    {
+      "profile": "facts",
+      "prompt": "Open Calculator",
+      "tools": [
+        {
+          "name": "app.launch",
+          "description": "Open or focus Notepad or Calculator",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "application": {
+                "enum": [
+                  "notepad",
+                  "calculator"
+                ],
+                "title": "Application",
+                "type": "string"
+              }
+            },
+            "required": [
+              "application"
+            ],
+            "title": "Application",
+            "type": "object"
+          }
+        }
+      ],
+      "expected_calls": [
+        {
+          "name": "app.launch",
+          "arguments": {
+            "application": "calculator"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.6601,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 521.1,
+          "decode_tps": 232.9,
+          "peak_ram_mb": 170.7
+        }
+      },
+      "passed": false,
+      "seconds": 1.203
+    },
+    {
+      "profile": "facts",
+      "prompt": "List files in my private workspace",
+      "tools": [
+        {
+          "name": "files.list",
+          "description": "List filenames in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {},
+            "title": "Empty",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.create",
+          "description": "Create a new text file in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content"
+            ],
+            "title": "FileWrite",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.edit",
+          "description": "Replace a private text file after reviewing its current SHA256",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              },
+              "expected_sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "title": "Expected Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content",
+              "expected_sha256"
+            ],
+            "title": "FileEdit",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.rename",
+          "description": "Rename a private text file after reviewing its current SHA256",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "destination": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Destination",
+                "type": "string"
+              },
+              "expected_sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "title": "Expected Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "destination",
+              "expected_sha256"
+            ],
+            "title": "FileRename",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.search",
+          "description": "Find names in the private BEL text workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "query": {
+                "default": "",
+                "maxLength": 100,
+                "title": "Query",
+                "type": "string"
+              }
+            },
+            "title": "Search",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.undo",
+          "description": "Undo one verified private file operation",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "undo_id": {
+                "pattern": "^[a-f0-9]{32}$",
+                "title": "Undo Id",
+                "type": "string"
+              }
+            },
+            "required": [
+              "undo_id"
+            ],
+            "title": "Undo",
+            "type": "object"
+          }
+        }
+      ],
+      "expected_calls": [
+        {
+          "name": "files.list",
+          "arguments": {}
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.3069,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 275.9,
+          "decode_tps": 125.5,
+          "peak_ram_mb": 176.2
+        }
+      },
+      "passed": false,
+      "seconds": 3.484
+    },
+    {
+      "profile": "facts",
+      "prompt": "Create a file named greeting.txt containing Hello Avyansh",
+      "tools": [
+        {
+          "name": "files.create",
+          "description": "Create a new text file in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content"
+            ],
+            "title": "FileWrite",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.edit",
+          "description": "Replace a private text file after reviewing its current SHA256",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "content": {
+                "maxLength": 65536,
+                "title": "Content",
+                "type": "string"
+              },
+              "expected_sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "title": "Expected Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "content",
+              "expected_sha256"
+            ],
+            "title": "FileEdit",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.rename",
+          "description": "Rename a private text file after reviewing its current SHA256",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Name",
+                "type": "string"
+              },
+              "destination": {
+                "maxLength": 100,
+                "minLength": 1,
+                "title": "Destination",
+                "type": "string"
+              },
+              "expected_sha256": {
+                "pattern": "^[a-f0-9]{64}$",
+                "title": "Expected Sha256",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "destination",
+              "expected_sha256"
+            ],
+            "title": "FileRename",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.undo",
+          "description": "Undo one verified private file operation",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "undo_id": {
+                "pattern": "^[a-f0-9]{32}$",
+                "title": "Undo Id",
+                "type": "string"
+              }
+            },
+            "required": [
+              "undo_id"
+            ],
+            "title": "Undo",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.list",
+          "description": "List filenames in BEL private workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {},
+            "title": "Empty",
+            "type": "object"
+          }
+        },
+        {
+          "name": "files.search",
+          "description": "Find names in the private BEL text workspace",
+          "parameters": {
+            "additionalProperties": false,
+            "properties": {
+              "query": {
+                "default": "",
+                "maxLength": 100,
+                "title": "Query",
+                "type": "string"
+              }
+            },
+            "title": "Search",
+            "type": "object"
+          }
+        }
+      ],
+      "expected_calls": [
+        {
+          "name": "files.create",
+          "arguments": {
+            "name": "greeting.txt",
+            "content": "Hello Avyansh"
+          }
+        }
+      ],
+      "result": {
+        "status": "fallback",
+        "calls": [],
+        "confidence": 0.0506,
+        "reason": "low_confidence",
+        "timings": {
+          "prefill_tps": 322.3,
+          "decode_tps": 182.5,
+          "peak_ram_mb": 177.0
+        }
+      },
+      "passed": false,
+      "seconds": 2.968
+    }
+  ]
+}

@@ -85,7 +85,7 @@ Production transports remain disabled pending owner configuration and validation
         if response.get('jsonrpc')!='2.0' or response.get('id')!=identifier or 'error' in response or 'result' not in response:raise ValueError('Invalid MCP response')
         return response['result']
     async def initialize(self):
-        value=await self.request('initialize',{'protocolVersion':'2025-06-18','capabilities':{},'clientInfo':{'name':'SIGHT-contract','version':'0.3.0'}})
+        value=await self.request('initialize',{'protocolVersion':'2025-06-18','capabilities':{},'clientInfo':{'name':'BEL-contract','version':'0.4.1'}})
         if value.get('protocolVersion')!='2025-06-18' or 'tools' not in value.get('capabilities',{}):raise ValueError('Unsupported MCP negotiation')
         import asyncio
         await asyncio.wait_for(self.transport({'jsonrpc':'2.0','method':'notifications/initialized'}),timeout=5)

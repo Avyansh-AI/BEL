@@ -1,4 +1,15 @@
-# Phase 4 test plan and scope
+# BEL release gates
+
+The current handoff uses the supplied React orb, the existing Python backend, official Gemma with thinking, the reviewed Needle adapter and the Windows desktop host. The [implementation report](sight/docs/BEL_IMPLEMENTATION.md) records each gate and its evidence. The [setup guide](sight/docs/BEL_SETUP.md) covers the executable and the source build.
+
+1. Preserve existing data and the tagged source rollback, integrate identity and UI, and exercise exact owner-approved tools through real HTTP and WebSockets. Completed.
+2. Verify packaged workers, tray lifecycle, compact and background modes on Windows. Build 005 passed all 17 checks. A clean Windows account remains a separate gate.
+3. Run the full backend suite, real UI, native Needle and local Gemma. Backend 516/516 and UI 34/34 passed. Needle positive-intent coverage remains partial.
+4. Exercise the frozen BEL build with Gemma, approved tools, browser captures, controlled crashes and a verified restore for at least 3,600 seconds. Record the actual outcome in the implementation report.
+5. Publish the reviewed source and evidence after the private-data scan. Retain local model data and model caches outside Git.
+6. Subsequent development covers local speech recognition and valid wake enrollment, routing accuracy, clean installation, broader bounded tools and separately secured Forge development.
+
+## Historical SIGHT Phase 4 test plan and scope
 
 27 October follow-up: repair the browser failure diagnostic boundary, preserve exact approval/sandbox/network/retry behavior, verify with real worker processes and Chromium, then run a new hour with periodic offline browser captures immediately after actual Gemma inference. Completed so far: **379 regressions, 30/30 real browser captures, 57/57 live application checks**. The combined soak passed **487/487 checks over 3,605.031 seconds**; independent review verified every restored artifact and both databases. The requested BEL migration follows this baseline. See [current browser audit](sight/docs/BROWSER_DIAGNOSTICS_20261027.md). Earlier evidence below predates these worker changes.
 

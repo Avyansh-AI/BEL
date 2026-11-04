@@ -1,0 +1,29 @@
+[
+  {
+    "attempt": 1,
+    "exited": true,
+    "exit_code": 0,
+    "cycles": 30,
+    "status": "PASS",
+    "trace_bytes": 0,
+    "steps": 630
+  },
+  {
+    "attempt": 2,
+    "exited": true,
+    "exit_code": 0,
+    "cycles": 30,
+    "status": "PASS",
+    "trace_bytes": 0,
+    "steps": 630
+  },
+  {
+    "attempt": 3,
+    "exited": true,
+    "exit_code": 0,
+    "cycles": 30,
+    "status": "PASS",
+    "trace_bytes": 0,
+    "steps": 630
+  }
+]

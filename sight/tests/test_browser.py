@@ -74,7 +74,7 @@ def test_capabilities_page_actual_approval_artifact_and_mobile(browser,live_serv
     url,token=live_server
     context=browser.new_context(viewport={'width':1440,'height':1000});page=context.new_page();errors=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
-    page.goto(url+'/#sight-session='+token)
+    page.goto(url+'/legacy/#sight-session='+token)
     expect(page.locator('#hubChip')).to_have_class(re.compile(r'\bon\b'))
     page.goto(url+'/capabilities.html');expect(page.locator('#notice')).to_contain_text('Ready')
     page.locator('#tool').select_option('documents.markdown');expect(page.locator('#description')).to_contain_text('Markdown')
@@ -99,7 +99,7 @@ def test_learning_page_real_memory_forge_and_task_flow(browser,live_server):
     url,token=live_server
     context=browser.new_context(viewport={'width':1440,'height':900})
     page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
-    page.goto(url+'/#sight-session='+token)
+    page.goto(url+'/legacy/#sight-session='+token)
     expect(page.locator('#hubChip')).to_have_class(re.compile(r'\bon\b'))
     page.goto(url+'/learning.html');expect(page.locator('#notice')).to_contain_text('Ready')
     page.locator('#memoryKey').fill('text.case');page.locator('#memoryContent').fill('upper')
@@ -137,13 +137,13 @@ def test_actual_browser_chat_ring_consent_and_xss(browser, live_server):
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.add_init_script("""sessionStorage.setItem('maxGreeted','1');window.deviceRequests=0;
       if(navigator.mediaDevices)navigator.mediaDevices.getUserMedia=()=>{window.deviceRequests++;throw Error('Real device access is forbidden in this test');};""")
-    page.goto(url + "/#sight-session=" + token)
+    page.goto(url + "/legacy/#sight-session=" + token)
     expect(page.locator("#hubChip")).to_have_class(re.compile(r"\bon\b"))
     expect(page.locator("#needBannerText")).to_contain_text("no model is configured")
     page.locator("#typeBtn").click()
     page.locator("#chatInput").fill("Hello SIGHT")
     page.locator("#chatForm").evaluate("form=>form.requestSubmit()")
-    expect(page.locator("#chatLog")).to_contain_text("SIGHT_OLLAMA_MODEL")
+    expect(page.locator("#chatLog")).to_contain_text("BEL_OLLAMA_MODEL")
     expect(page.locator("#ringWrap")).to_have_class(re.compile(r"\bstandby\b"))
     # Untrusted user text must render as text and never execute.
     page.locator("#chatInput").fill('<img src=x onerror="window.xssExecuted=true">')
@@ -224,7 +224,7 @@ def test_actual_browser_websocket_reconnect(browser, live_server):
     context = browser.new_context()
     page = context.new_page()
     page.add_init_script("""sessionStorage.setItem('maxGreeted','1');window.sockets=[];const NativeWS=WebSocket;window.WebSocket=class extends NativeWS{constructor(...args){super(...args);window.sockets.push(this);}};""")
-    page.goto(url + "/#sight-session=" + token)
+    page.goto(url + "/legacy/#sight-session=" + token)
     expect(page.locator("#hubChip")).to_have_class(re.compile(r"\bon\b"))
     initial = page.evaluate("sockets.length")
     page.evaluate("sockets.forEach(s=>s.close())")
@@ -246,7 +246,7 @@ def test_each_lost_socket_request_gets_its_own_http_recovery(browser,live_server
       const originalSend=WebSocket.prototype.send;
       WebSocket.prototype.send=function(data){const msg=JSON.parse(data);if(msg.type==='utterance'){window.lostRequests.push(msg);return;}return originalSend.call(this,data);};
     """)
-    page.goto(url+'/#sight-session='+token)
+    page.goto(url+'/legacy/#sight-session='+token)
     expect(page.locator('#hubChip')).to_have_class(re.compile(r'\bon\b'))
     page.locator('#typeBtn').click()
     for prompt in ['first lost request','second lost request']:
@@ -264,7 +264,7 @@ def test_each_lost_socket_request_gets_its_own_http_recovery(browser,live_server
 def test_systems_page_review_and_decline_preserves_policy(browser,live_server):
     url,token=live_server
     context=browser.new_context();page=context.new_page()
-    page.goto(url+'/#sight-session='+token)
+    page.goto(url+'/legacy/#sight-session='+token)
     expect(page.locator('#hubChip')).to_have_class(re.compile(r'\bon\b'))
     page.goto(url+'/systems.html')
     expect(page.locator('#models')).to_contain_text('local_only')

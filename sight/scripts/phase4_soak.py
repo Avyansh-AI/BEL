@@ -35,6 +35,14 @@ def source_hashes():
     for name in ('requirements.lock', 'requirements-bootstrap.lock', 'scripts/launch.py',
                  'scripts/soak_worker.py', 'scripts/phase4_soak.py'):
         result[name] = hashlib.sha256((ROOT/name).read_bytes()).hexdigest()
+    for folder in ('src', 'dist'):
+        for path in sorted((ROOT.parent/'frontend'/folder).rglob('*')):
+            if path.is_file():
+                result['../'+path.relative_to(ROOT.parent).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+    for name in ('package.json', 'package-lock.json'):
+        path = ROOT.parent/'frontend'/name
+        if path.is_file():
+            result['../frontend/'+name] = hashlib.sha256(path.read_bytes()).hexdigest()
     return result
 
 def dependency_versions():
@@ -86,6 +94,7 @@ def main():
     parser.add_argument('--thinking',action='store_true',help='Explicit comparison run; default uses the selected non-thinking configuration')
     parser.add_argument('--evidence-directory',type=Path,help='Save a new audit run without replacing historical latest reports')
     parser.add_argument('--browser-checks',action='store_true',help='Inspect synthetic offline HTML once every ten cycles after real local inference; no retries')
+    parser.add_argument('--bel',action='store_true',help='Verify the current React entry, BEL chat, tool receipts, undo and restored history in addition to legacy coverage')
     args=parser.parse_args()
     if not 10<=args.seconds<=7200:raise ValueError('Duration must be 10..7200 real seconds')
     stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')+'-'+uuid.uuid4().hex[:6]
@@ -97,7 +106,7 @@ def main():
     url=f'http://127.0.0.1:{port}';process=None;client=None;log=(evidence_dir/'server.log').open('w',encoding='utf-8')
     control=data/'test-transport-fault';control.write_text('')
     result={'started_utc':datetime.now(timezone.utc).isoformat(),'requested_seconds':args.seconds,'model':args.model,'thinking':args.thinking,'data_dir':str(data),'checks':[],
-            'cloud_requests':0,'fault_scope':'Test-process loopback model transport; host network unchanged','source_hashes':source_hashes(),'dependency_versions':dependency_versions(),'complete':False,'cycles':0,'model_calls':[],'browser_checks':args.browser_checks,'browser_calls':[],'planned_server_crashes':0,'unplanned_server_exits':0}
+            'cloud_requests':0,'product':'BEL' if args.bel else 'SIGHT baseline','fault_scope':'Test-process loopback model transport; host network unchanged','source_hashes':source_hashes(),'dependency_versions':dependency_versions(),'complete':False,'cycles':0,'model_calls':[],'browser_checks':args.browser_checks,'browser_calls':[],'planned_server_crashes':0,'unplanned_server_exits':0}
     checks=result['checks'];ws_ids=[];job_ids=[];telemetry=Telemetry(evidence_dir/'telemetry.jsonl',data/'soak-server.pid')
     thread=threading.Thread(target=telemetry.run,daemon=True);thread.start();start=time.monotonic()
     def save():
@@ -109,7 +118,7 @@ def main():
         checks.append({'name':name,'passed':bool(passed),'elapsed_seconds':round(time.monotonic()-start,3),'detail':detail})
         if not passed:save();raise AssertionError(name)
     def launch():
-        return subprocess.Popen([sys.executable,'-B',str(ROOT/'scripts/soak_worker.py')],cwd=ROOT,env=dict(os.environ,SIGHT_DATA_DIR=str(data),SIGHT_PORT=str(port),SIGHT_OLLAMA_MODEL=args.model),stdout=log,stderr=subprocess.STDOUT,creationflags=0x08000000)
+        return subprocess.Popen([sys.executable,'-B',str(ROOT/'scripts/soak_worker.py')],cwd=ROOT,env=dict(os.environ,BEL_DATA_DIR=str(data),BEL_PORT=str(port),BEL_OLLAMA_MODEL=args.model,SIGHT_DATA_DIR=str(data),SIGHT_PORT=str(port),SIGHT_OLLAMA_MODEL=args.model),stdout=log,stderr=subprocess.STDOUT,creationflags=0x08000000)
     def stop():
         if process is not None and process.poll() is None:
             subprocess.run([str(Path(os.environ['SystemRoot'])/'System32/taskkill.exe'),'/PID',str(process.pid),'/T','/F'],capture_output=True,timeout=15,creationflags=0x08000000)
@@ -138,7 +147,10 @@ def main():
                 if response.get('type')=='response':return response
     try:
         process=launch();client=connect()
-        check('home HTML exact bytes',client.get('/').content==(ROOT/'apps/ui/index.html').read_bytes())
+        entry = ROOT.parent/'frontend/dist/index.html' if args.bel else ROOT/'apps/ui/index.html'
+        check('home HTML exact bytes',client.get('/').content==entry.read_bytes())
+        if args.bel:
+            check('BEL status available',client.get('/api/bel/status').json()['name']=='BEL')
         due=datetime.now(timezone.utc).isoformat()
         action('/api/capability/invoke',{'id':'reminders.add','arguments':{'id':'soak-reminder','title':'Synthetic soak notification','due':due}})
         cycle=0
@@ -158,9 +170,19 @@ def main():
                 if job['state'] in ('complete','failed','needs_review'):break
                 time.sleep(.1)
             check('durable task completes once',job['state']=='complete' and len(job['receipts'])==1)
+            if args.bel and cycle%10==0:
+                task_key='bel-soak-'+uuid.uuid4().hex
+                create={'executionId':uuid.uuid4().hex,'taskId':task_key,'tool':'files.create','arguments':{'name':f'undo-{cycle}.txt','content':'Synthetic reversible file'}}
+                created=action('/api/bel/tools/execute',create)
+                check('BEL approved file creation verified',created['status']=='done' and (data/'files'/f'undo-{cycle}.txt').read_text()=='Synthetic reversible file')
+                duplicate=action('/api/bel/tools/execute',create)
+                check('BEL duplicate action returns durable receipt',duplicate.get('duplicate') and duplicate['status']=='done')
+                undo={'executionId':uuid.uuid4().hex,'taskId':task_key,'tool':'files.undo','arguments':{'undo_id':created['evidence']['undo_id']}}
+                undone=action('/api/bel/tools/execute',undo)
+                check('BEL approved undo verified',undone['status']=='done' and not (data/'files'/f'undo-{cycle}.txt').exists())
             if cycle%5==0:
                 request={'text':'What is 17 plus 25? Reply with the number only.','requestId':uuid.uuid4().hex}
-                tick=time.monotonic();answer=client.post('/api/utterance',json=request).json()
+                tick=time.monotonic();answer=client.post('/api/bel/chat' if args.bel else '/api/utterance',json=request).json()
                 result['model_calls'].append({'cycle':cycle,'seconds':round(time.monotonic()-tick,3),'status':answer.get('status'),'answer':answer.get('say'),'expected_answer':'42','answer_correct':answer.get('say','').strip().strip('.')=='42','recovery':answer.get('recovery'),'local_inference_requests':answer.get('local_inference_requests',1)})
                 check('real Gemma inference completes',answer.get('status')=='ok' and bool(answer.get('say','').strip()) and answer.get('offline'))
             if args.browser_checks and cycle%10==0:
@@ -209,6 +231,11 @@ def main():
         bundle=evidence_dir/'backup';recovered=data.parent/(data.name+'-restored')
         backup_all(data,bundle);restore_all(bundle,recovered)
         check('soak output files survive full restore',all((recovered/'files'/f'cycle-{i}.txt').read_text()==f'cycle {i}' for i in range(result['cycles'])))
+        if args.bel:
+            with sqlite3.connect(data/'sight.sqlite3') as original, sqlite3.connect(recovered/'sight.sqlite3') as restored:
+                for table in ('bel_history','bel_executions','bel_undo'):
+                    rows=original.execute('SELECT * FROM '+table+' ORDER BY 1').fetchall()
+                    check(table+' survives full restore',bool(rows) and rows==restored.execute('SELECT * FROM '+table+' ORDER BY 1').fetchall())
         if args.browser_checks:
             check('browser artifacts survive full restore',all((recovered/'artifacts'/row['artifact_id']).is_file() and hashlib.sha256((recovered/'artifacts'/row['artifact_id']).read_bytes()).hexdigest()==row['sha256'] for row in result['browser_calls']))
         result['source_unchanged_during_run']=source_hashes()==result['source_hashes'];check('runtime source unchanged during soak',result['source_unchanged_during_run'])

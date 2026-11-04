@@ -1,3 +1,3 @@
-"""SIGHT: one local coordinator. See docs/PHASE3_READINESS.md for release status."""
+"""BEL: one local coordinator, retaining the sight_core compatibility package."""
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
