@@ -1,0 +1,116 @@
+{
+  "reviewed_utc": "2026-11-05T09:52:24.244587+00:00",
+  "reviewer_sha256": "423ccda08ef78c92370029f8d9fd631960c6be186c1bcdff44db9a3bcdead095",
+  "evidence": "audit-tests/20261104-bel/soak-20261104T164946Z-bb5f24",
+  "checks": {
+    "one_hour_qualified": true,
+    "at_least_60_cycles": true,
+    "at_least_12_real_model_calls": true,
+    "every_model_answer_correct": true,
+    "all_recorded_checks_passed": true,
+    "all_three_planned_crashes_exercised": true,
+    "no_unplanned_backend_exits": true,
+    "no_two_minute_activity_gap": true,
+    "source_still_matches_tested_hashes": true,
+    "soak_harness_in_source_manifest": true,
+    "dependencies_still_match_tested_versions": true,
+    "same_owner_selected_model_and_thinking": true,
+    "cloud_requests_zero": true,
+    "six_browser_checks_at_expected_cycles": true,
+    "every_browser_image_verified": true,
+    "six_distinct_png_artifacts": true,
+    "browser_call_hash_multiplicities_match_artifacts": true,
+    "exact_artifact_names_and_hashes_match_backup_and_restore": true,
+    "backup_bundle_manifest_verified": true,
+    "restored_files_exactly_match_manifest_plus_restore_record": true,
+    "every_non_database_manifest_entry_restored_exactly": true,
+    "restore_record_references_verified_manifest_and_policy": true,
+    "restored_databases_match_expected_recovery_policy": true,
+    "all_bel_extension_tables_preserved_original_to_backup_to_restore": true,
+    "exact_claimed_509_checks_observed": true,
+    "current_source_and_frontend_71_hashes_verified": true,
+    "declared_in_run_source_and_dependency_stability": true
+  },
+  "passed": true,
+  "elapsed_seconds": 3607.64,
+  "cycles": 60,
+  "check_count": 509,
+  "model_calls": 12,
+  "correct_answers": 12,
+  "browser_calls": 6,
+  "browser_hash_multiplicities": {
+    "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793": 6
+  },
+  "artifact_names_and_hashes": {
+    "3351d43482a2434a86fa77ce85334314.png": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793",
+    "551f15f03bd4477789f353ee7221b159.png": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793",
+    "5e1a7e7f40ed44f2b4530e83e7682cab.png": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793",
+    "6dd216041b6441089946b7acfd88aea9.png": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793",
+    "cd3f89b66d4b4e3ab64404065cbe28ce.png": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793",
+    "e3bd3d38ac5b4316b2964219088ad2b5.png": "b287d2d77214b35658ad96106fe2dc36a3399487f07a3a6d48f07784cce75793"
+  },
+  "backup_manifest_entries": 69,
+  "restored_non_database_entries_checked": 67,
+  "restored_database_checks": {
+    "brain.sqlite3": {
+      "integrity_ok": true,
+      "supported_schema_version": true,
+      "schema_matches": true,
+      "tables_compared": 18,
+      "mismatched_tables": [],
+      "logical_data_matches_expected_restore": true
+    },
+    "sight.sqlite3": {
+      "integrity_ok": true,
+      "supported_schema_version": true,
+      "schema_matches": true,
+      "tables_compared": 11,
+      "mismatched_tables": [],
+      "logical_data_matches_expected_restore": true
+    }
+  },
+  "max_health_check_gap_seconds": 60.937,
+  "max_telemetry_gap_seconds": 5.181,
+  "telemetry": {
+    "samples": 708,
+    "peak_gpu_mib": 4405.0,
+    "peak_gpu_temperature_c": 86.0,
+    "minimum_available_host_ram_mib": 91.52,
+    "peak_host_cpu_percent": 59.04,
+    "peak_server_working_set_mib": 74.29,
+    "cpu_temperature": "not available from the standard interfaces used"
+  },
+  "model_latency": {
+    "median_seconds": 6.6015,
+    "max_seconds": 7.094,
+    "sample_count": 12
+  },
+  "scope": "Current-profile serial shared-host workload with six real offline browser calls; no guarantee for future prompts, long contexts or parallel models. Restore databases are compared logically after documented policy changes, not byte-for-byte. BEL extension tables were additionally compared verbatim across original, backup and restored data. No application startup against restored data or new model call was performed by this review.",
+  "bel_extension_tables": {
+    "bel_meta": {
+      "rows": 2,
+      "original_backup_restored_match": true,
+      "nonempty": true
+    },
+    "bel_history": {
+      "rows": 36,
+      "original_backup_restored_match": true,
+      "nonempty": true
+    },
+    "bel_executions": {
+      "rows": 12,
+      "original_backup_restored_match": true,
+      "nonempty": true
+    },
+    "bel_undo": {
+      "rows": 6,
+      "original_backup_restored_match": true,
+      "nonempty": true
+    }
+  },
+  "source_files_checked": 71,
+  "installed_distribution_versions_checked": 50,
+  "total_review_checks": 27,
+  "input_result_sha256": "eb9f07da4c1bcd9a16c8dd6f6c27ca795f9f2b47a91356ddc82c47665424c050",
+  "manifest_sha256": "8cdf329c17ecdb364eb0f6f95d0d419ce9574d7a11668ecff93496135fafa594"
+}

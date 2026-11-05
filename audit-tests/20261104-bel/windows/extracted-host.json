@@ -1,0 +1,8 @@
+{
+  "initial_available_ram_mib": 731.45,
+  "minimum_available_ram_mib": 687.2,
+  "samples": 12,
+  "final_available_ram_mib": 1054.51,
+  "prior_soak_cycles": 6,
+  "process_exit": 0
+}

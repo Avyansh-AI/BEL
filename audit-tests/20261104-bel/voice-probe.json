@@ -1,0 +1,72 @@
+{
+  "kind": "Synthetic offline general-dictation probe using Windows System.Speech",
+  "completed_utc": "2026-11-04T16:55:26.1852766Z",
+  "dictionary": "Unconstrained DictationGrammar; no phrase lists or expectations supplied to recognizer",
+  "source": "SAPI text-to-file. No microphone device opened and no audible playback.",
+  "microphone_access": false,
+  "playback": false,
+  "requested_network": false,
+  "cases": [
+    {
+      "number": 1,
+      "state": "attempted",
+      "free_before_mib": 702,
+      "voice": "Microsoft David Desktop",
+      "expected": "The blue notebook is on the library desk.",
+      "observed": "The blue note bogeys on the library desk",
+      "confidence": 0.6117,
+      "exact_normalized": false,
+      "audio_bytes": 99726,
+      "requested_pcm_format": "16000Hz mono signed 16-bit",
+      "synth_seconds": 0.044,
+      "recognition_seconds": 0.339,
+      "verified_pcm": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 16000,
+        "frames": 49840,
+        "duration_seconds": 3.115
+      },
+      "reference_words": 8,
+      "word_edits": 2
+    },
+    {
+      "number": 2,
+      "state": "attempted",
+      "free_before_mib": 601,
+      "voice": "Microsoft Zira Desktop",
+      "expected": "A quiet train crossed the valley early this morning.",
+      "observed": "acquired train crossed the valley early this morning",
+      "confidence": 0.4578,
+      "exact_normalized": false,
+      "audio_bytes": 108366,
+      "requested_pcm_format": "16000Hz mono signed 16-bit",
+      "synth_seconds": 0.036,
+      "recognition_seconds": 0.15,
+      "verified_pcm": {
+        "channels": 1,
+        "sample_width_bytes": 2,
+        "sample_rate": 16000,
+        "frames": 54160,
+        "duration_seconds": 3.385
+      },
+      "reference_words": 9,
+      "word_edits": 2
+    }
+  ],
+  "recognizers": [
+    {
+      "id": "MS-1033-80-DESK",
+      "locale": "en-US",
+      "description": "Microsoft Speech Recognizer 8.0 for Windows (English - US)"
+    }
+  ],
+  "minimum_free_mib_required": 300,
+  "free_before_mib": 734,
+  "wall_seconds": 2.656,
+  "reference_words": 17,
+  "word_edits": 4,
+  "word_error_rate": 0.2353,
+  "probe_source_sha256": "45ab2b7f65a619b72bfce52bcead49c4d5bcfea57ceb2ec0b753f36d58e219af",
+  "interpretation": "2/2 nonempty transcripts, 0/2 exact sentences. Synthetic general English dictation only. Editable owner review required for any potential integration. Accuracy on owner speech, Hindi, wake detection and microphone capture remain unverified. No change to the packaged release."
+}

@@ -6,6 +6,10 @@ The current project is BEL — Behavioral Executive Logic, version 0.4.1. The ex
 
 The source update includes the official supplied React frontend, Python changes, exact dependency locks, Windows build recipe and reviewed synthetic verification evidence. Runtime caches, owner data, recordings and credentials are private. Historical SIGHT packages below retain their original dates and scope. The rollback source is `b859f5690e97e584975e0a5d17d6bca5aa190dd3`.
 
+Source commit `2a8e2ae3294ebf56cc3b7d125a27cd39562514d9` was pushed and verified on the repository's main branch on 4 November. GitHub redirects the original Sight URL to the existing `Avyansh-AI/BEL` repository. Final verification includes 516 backend tests, 34 real UI checks, 17 packaged Windows checks and 509 stability checks over 3,607.640 seconds. The source scan found zero matches for the eleven supplied credentials. [Soak evidence](audit-tests/20261104-bel/soak-20261104T164946Z-bb5f24/result.json)
+
+The verified Windows ZIP has SHA-256 `6b3c30c5028c51555f5afadde8babd477e49bc07342043b2ae87ace3f7abf2ee`. The owner handoff is a draft preview release while the readiness verdict remains PARTIAL. It includes the whole one-folder application and licenses. The selected Gemma weights, Ollama, WebView2 and matching Chromium cache remain separate prerequisites. [Artifact verification](audit-tests/20261104-bel/windows/artifact-integrity.json)
+
 ## 27 October source update
 
 The owner authorized updating the existing GitHub repository on 27 October. GitHub now identifies the former `Avyansh-AI/Sight` URL as **`Avyansh-AI/BEL`**; both URLs resolve to the same SIGHT history. This update retains the SIGHT project name and **PARTIAL** readiness verdict. No release tag or production deployment is included.

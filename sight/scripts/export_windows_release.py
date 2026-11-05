@@ -167,6 +167,12 @@ def export(directory, output):
         with zipfile.ZipFile(candidate) as archive:
             if len(archive.namelist()) != len(hashes) + 1:
                 raise ValueError("Unexpected ZIP membership")
+            packed_manifest = archive.read(FOLDER + "/BEL-manifest.json")
+            if hashlib.sha256(packed_manifest).hexdigest() != checks["build_manifest_sha256"]:
+                raise ValueError("Build manifest changed during export")
+            for row in json.loads(packed_manifest.decode("utf-8-sig"))["files"]:
+                if hashes[relative(row["path"])] != row["sha256"]:
+                    raise ValueError("Payload changed during export: " + row["path"])
             for name, expected in hashes.items():
                 with archive.open(FOLDER + "/" + name) as member:
                     if hashlib.file_digest(member, "sha256").hexdigest() != expected:

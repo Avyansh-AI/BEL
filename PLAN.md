@@ -5,8 +5,8 @@ The current handoff uses the supplied React orb, the existing Python backend, of
 1. Preserve existing data and the tagged source rollback, integrate identity and UI, and exercise exact owner-approved tools through real HTTP and WebSockets. Completed.
 2. Verify packaged workers, tray lifecycle, compact and background modes on Windows. Build 005 passed all 17 checks. A clean Windows account remains a separate gate.
 3. Run the full backend suite, real UI, native Needle and local Gemma. Backend 516/516 and UI 34/34 passed. Needle positive-intent coverage remains partial.
-4. Exercise the frozen BEL build with Gemma, approved tools, browser captures, controlled crashes and a verified restore for at least 3,600 seconds. Record the actual outcome in the implementation report.
-5. Publish the reviewed source and evidence after the private-data scan. Retain local model data and model caches outside Git.
+4. Exercise the frozen BEL build with Gemma, approved tools, browser captures, controlled crashes and a verified restore for at least 3,600 seconds. Completed on 4 November with 509/509 checks over 3,607.640 seconds. Host RAM headroom remains a measured constraint.
+5. Publish the reviewed source and evidence after the private-data scan. The source was pushed as 2a8e2ae, with the final soak and handoff evidence following. Retain local model data and model caches outside Git.
 6. Subsequent development covers local speech recognition and valid wake enrollment, routing accuracy, clean installation, broader bounded tools and separately secured Forge development.
 
 ## Historical SIGHT Phase 4 test plan and scope

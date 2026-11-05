@@ -1,0 +1,27 @@
+{
+  "archive": "BEL-0.4.1-Windows-x64.zip",
+  "zip_bytes": 111270507,
+  "zip_sha256": "6b3c30c5028c51555f5afadde8babd477e49bc07342043b2ae87ace3f7abf2ee",
+  "zip_files": 451,
+  "payload_files": 364,
+  "payload_bytes": 215433290,
+  "source_hashes_matched": 49,
+  "build_manifest_sha256": "9f463a84a6238c7731698dfd548756f505b243bbb832d0e21df394c26f639d78",
+  "matching_embedded_modules": {
+    "desktop": 35,
+    "worker": 6
+  },
+  "verified_entry_points": [
+    "bel_desktop",
+    "bel_worker"
+  ],
+  "known_credentials_scanned": 11,
+  "exact_matches": 0,
+  "privacy_scope": "ZIP members, uncompressed BEL modules and both entry points",
+  "accompanying_distributions": 55,
+  "isolated_extraction": true,
+  "verified_utc": "2026-11-04T16:53:53.264173+00:00",
+  "build_payload_confirmed_after_execution": 364,
+  "all_handoff_file_hashes_confirmed_after_execution": 450,
+  "added_installation_files": 0
+}
