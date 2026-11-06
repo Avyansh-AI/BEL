@@ -1,0 +1,177 @@
+{
+  "format": 1,
+  "kind": "Real Windows System.Speech over authenticated loopback HTTP",
+  "run_id": "20261105T153005Z-229ab5",
+  "started_utc": "2026-11-05T15:30:05.580642+00:00",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "python": "3.12.5",
+  "microphone_access": false,
+  "audible_playback": false,
+  "cloud_inference_requests": 0,
+  "speech_input": "Existing SAPI synthetic PCM WAV fixtures",
+  "grammar": "Unconstrained DictationGrammar; expected phrases never sent to recognizer",
+  "source_sha256": {
+    "api.py": "ebe93541325ca26af0d42d3dcb584452c4b6df119ac92283a651f0c66017339c",
+    "config.py": "5bca885ab05ecb83771cdd8e4b97fe409c57e621e9b9e1c1f5dd84ce9a05a09f",
+    "local_speech.py": "33152f87fa03793ca898cd45bafdde9437a8632c6481cb5d53b2f5f94904d0fa",
+    "speech_worker.py": "efe2d47f5c932ef8bab974732625e143d69c91ccd0b89dbd656e828c9107d351"
+  },
+  "checks": [
+    {
+      "id": "backend_started",
+      "passed": true
+    },
+    {
+      "id": "unauthenticated_audio_rejected",
+      "passed": true
+    },
+    {
+      "id": "real_english_recognizer_available",
+      "passed": true
+    },
+    {
+      "id": "consent_defaults_off_and_wake_unavailable",
+      "passed": true
+    },
+    {
+      "id": "no_consent_no_recognition",
+      "passed": true
+    },
+    {
+      "id": "consent_requires_csrf",
+      "passed": true
+    },
+    {
+      "id": "explicit_session_consent",
+      "passed": true
+    },
+    {
+      "id": "cancel_before_delayed_upload",
+      "passed": true
+    },
+    {
+      "id": "consent_not_shared_between_sessions",
+      "passed": true
+    },
+    {
+      "id": "malformed_wav_rejected",
+      "passed": true
+    },
+    {
+      "id": "absent_hindi_recognizer_reported",
+      "passed": true,
+      "status_code": 503
+    },
+    {
+      "id": "synthetic_1_real_recognition_and_review",
+      "passed": true
+    },
+    {
+      "id": "synthetic_1_replay_rejected",
+      "passed": true
+    },
+    {
+      "id": "synthetic_2_real_recognition_and_review",
+      "passed": true
+    },
+    {
+      "id": "synthetic_2_replay_rejected",
+      "passed": true
+    },
+    {
+      "id": "cancel_running_real_worker_and_drain",
+      "passed": true
+    },
+    {
+      "id": "cancellation_keeps_session_consent",
+      "passed": true
+    },
+    {
+      "id": "tcp_disconnect_cancels_real_worker",
+      "passed": true
+    },
+    {
+      "id": "disconnected_upload_cannot_replay",
+      "passed": true
+    },
+    {
+      "id": "new_dictation_works_after_cancellation_and_disconnect",
+      "passed": true
+    },
+    {
+      "id": "transcripts_not_added_to_conversation",
+      "passed": true
+    },
+    {
+      "id": "transcription_did_not_run_model_or_tools",
+      "passed": true,
+      "row_counts": {
+        "requests": 0,
+        "bel_executions": 0,
+        "bel_history": 0,
+        "bel_undo": 0
+      }
+    },
+    {
+      "id": "revocation_updates_status",
+      "passed": true
+    },
+    {
+      "id": "revoked_consent_rejects_audio",
+      "passed": true
+    },
+    {
+      "id": "backend_shutdown",
+      "passed": true
+    },
+    {
+      "id": "no_audio_or_transcript_persisted_by_backend",
+      "passed": true
+    },
+    {
+      "id": "audited_source_unchanged_during_run",
+      "passed": true
+    }
+  ],
+  "recognition": [
+    {
+      "id": 1,
+      "audio_bytes": 99726,
+      "audio_sha256": "f1c1039985d49a09f0118d49a26d4747aa855fc33a14fa3fec5495c5986dd58d",
+      "seconds": 0.641,
+      "reference_words": 8,
+      "word_edits": 1,
+      "exact_normalized": false,
+      "confidence": 0.5486128926277161
+    },
+    {
+      "id": 2,
+      "audio_bytes": 108366,
+      "audio_sha256": "6a89a38d22f4e28a67ed3369a737dc0e43b979fad05b3398f52bc20ea176d818",
+      "seconds": 0.609,
+      "reference_words": 9,
+      "word_edits": 4,
+      "exact_normalized": false,
+      "confidence": 0.5386186838150024
+    }
+  ],
+  "limitations": [
+    "Synthetic audio is not validation of a human voice, accent or physical microphone.",
+    "This harness does not validate browser capture, native permission prompts or audio devices.",
+    "Recognition quality is measured separately from protocol and permission acceptance.",
+    "No wake-word detector or Hindi recognizer is installed by this test."
+  ],
+  "installed_locales": [
+    "en-US"
+  ],
+  "completed_utc": "2026-11-05T15:30:10.597398+00:00",
+  "elapsed_seconds": 5.016,
+  "passed": 27,
+  "total": 27,
+  "quality": {
+    "exact_matches": 0,
+    "samples": 2,
+    "reference_words": 17,
+    "word_edits": 5
+  }
+}

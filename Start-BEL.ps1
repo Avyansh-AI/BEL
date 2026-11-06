@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([string]$DataDirectory, [switch]$Background)
+param([string]$DataDirectory, [switch]$Background, [switch]$LocalDictation)
 $ErrorActionPreference = 'Stop'
 $belPython = Join-Path $PSScriptRoot 'sight\.venv\Scripts\pythonw.exe'
 $belEntry = Join-Path $PSScriptRoot 'sight\scripts\bel_desktop.py'
@@ -14,4 +14,5 @@ $DataDirectory = [IO.Path]::GetFullPath($DataDirectory)
 if ($DataDirectory.Contains('"') -or $DataDirectory -eq [IO.Path]::GetPathRoot($DataDirectory)) { throw 'Select a data folder below the drive root.' }
 $belArguments = @(('"' + $belEntry + '"'), '--data-directory', ('"' + $DataDirectory.TrimEnd('\') + '"'))
 if ($Background) { $belArguments += '--background' }
+if ($LocalDictation) { $belArguments += '--local-dictation' }
 Start-Process -FilePath $belPython -ArgumentList $belArguments -WorkingDirectory $PSScriptRoot -WindowStyle Hidden | Out-Null

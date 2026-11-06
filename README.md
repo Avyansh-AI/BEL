@@ -2,7 +2,7 @@
 
 BEL is Avyansh's local-first Windows assistant, migrated from SIGHT using the supplied animated-orb React interface and the existing Python backend. It retains persistent memory, provider policies, durable tasks, reviewed tools, declarative Forge skills and recovery. The selected reasoning model remains **`gemma4:e4b-it-qat` with thinking enabled**.
 
-**Readiness: PARTIAL.** The migration works, but incomplete speech/wake integration, inconsistent Needle confidence and fresh-account installation prevent a full production verdict. Read the [implementation report](sight/docs/BEL_IMPLEMENTATION.md) for exact tests and limitations. Historical SIGHT results do not qualify BEL.
+**Readiness: PARTIAL.** This branch adds an opt-in local-dictation development preview (0.4.2.dev1). Recognition accuracy, physical-device qualification, wake detection, inconsistent Needle confidence and fresh-account installation remain incomplete. Read the [dictation report](sight/docs/BEL_DICTATION_PREVIEW.md) for current tests and the [0.4.1 implementation report](sight/docs/BEL_IMPLEMENTATION.md) for the preserved release. Earlier stability evidence does not qualify this preview.
 
 ## Run BEL
 
@@ -24,7 +24,7 @@ The source launcher reuses this checkout's `owner-data`. The installed applicati
 - Needle 3 proposes eligible registered calls. Schema, confidence and owner approval checks gate execution. Settings → Tools and undo provides manual review when routing declines.
 - Verified private text-file creation/edit/rename with guarded undo. Application launch/focus is limited to trusted Notepad/Calculator identities and reports observed results.
 - Existing local capabilities, durable jobs with 12 logical roles, declarative Forge validation/promotion/rollback, full-data backups and reviewed recovery.
-- Windows speech-to-WAV and opt-in playback/stop. Microphone recognition and trained BEL wake detection are **unavailable**, not simulated.
+- Windows speech-to-WAV and opt-in playback/stop. Optional offline Windows dictation places speech in an editable draft; it requires startup opt-in, session consent and hold-to-talk. Only installed languages are offered. Recognition can be inaccurate. A trained BEL wake detector remains unavailable.
 
 The `/legacy/` interface and SIGHT launchers remain for compatibility. Historical pages, `sight_core`, database filenames, vault namespaces and protocol identifiers deliberately retain their names. New application identity is BEL. This migration did not rename the remote repository.
 

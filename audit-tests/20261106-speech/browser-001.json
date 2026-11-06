@@ -1,0 +1,116 @@
+{
+  "format": 1,
+  "kind": "Real headless Chromium capture and HTTP/Windows speech, synthetic audio device",
+  "run_id": "20261106T093329Z-913050",
+  "started_utc": "2026-11-06T09:33:30.010981+00:00",
+  "physical_microphone_access": false,
+  "audible_playback": false,
+  "input_mode": "Chromium --use-fake-device-for-media-stream plus local synthetic PCM WAV",
+  "source_sha256": {
+    "sight/sight_core/api.py": "ebe93541325ca26af0d42d3dcb584452c4b6df119ac92283a651f0c66017339c",
+    "sight/sight_core/local_speech.py": "33152f87fa03793ca898cd45bafdde9437a8632c6481cb5d53b2f5f94904d0fa",
+    "sight/sight_core/speech_worker.py": "efe2d47f5c932ef8bab974732625e143d69c91ccd0b89dbd656e828c9107d351",
+    "frontend/dist/assets/index-CAMU469U.js": "e81e0737313852ee4785d3e53a433517f164b81f39cbd717a747caf9fd71c313"
+  },
+  "checks": [
+    {
+      "id": "microphone_initially_off",
+      "passed": true
+    },
+    {
+      "id": "no_automatic_capture",
+      "passed": true
+    },
+    {
+      "id": "only_installed_language_offered",
+      "passed": true
+    },
+    {
+      "id": "consent_alone_does_not_capture",
+      "passed": true
+    },
+    {
+      "id": "capture_reaches_real_local_recognizer",
+      "passed": true
+    },
+    {
+      "id": "draft_preserved_and_transcript_editable",
+      "passed": true
+    },
+    {
+      "id": "review_required_and_low_confidence_visible",
+      "passed": true
+    },
+    {
+      "id": "capture_tracks_stop_after_release",
+      "passed": true
+    },
+    {
+      "id": "dictation_never_auto_sends",
+      "passed": true
+    },
+    {
+      "id": "discard_acknowledged_by_backend",
+      "passed": true
+    },
+    {
+      "id": "discarded_transcript_does_not_replace_draft",
+      "passed": true
+    },
+    {
+      "id": "all_synthetic_tracks_closed_after_stop",
+      "passed": true
+    },
+    {
+      "id": "revoking_consent_disables_capture_control",
+      "passed": true
+    },
+    {
+      "id": "compact_ui_still_available",
+      "passed": true
+    },
+    {
+      "id": "no_external_browser_requests",
+      "passed": true,
+      "blocked_count": 0
+    },
+    {
+      "id": "no_browser_runtime_errors",
+      "passed": true,
+      "error_count": 0
+    },
+    {
+      "id": "speech_left_no_chat_or_tool_records",
+      "passed": true,
+      "row_counts": {
+        "requests": 0,
+        "bel_executions": 0,
+        "bel_history": 0
+      }
+    },
+    {
+      "id": "backend_exited",
+      "passed": true
+    },
+    {
+      "id": "source_unchanged",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Synthetic browser device only; physical microphone and accent quality remain unverified.",
+    "Headless Chromium does not validate native WebView2 permission UI.",
+    "Wake-word detection and Hindi voice input are not validated."
+  ],
+  "chromium_version": "156.0.8078.4",
+  "first_transcript": {
+    "characters": 35,
+    "confidence": 0.04203974828124046,
+    "engine": "Windows System.Speech",
+    "review_required": true
+  },
+  "passed": 19,
+  "total": 19,
+  "elapsed_seconds": 37.063,
+  "completed_utc": "2026-11-06T09:34:07.081775+00:00"
+}

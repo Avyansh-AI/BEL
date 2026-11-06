@@ -1,4 +1,23 @@
 /** Opt-in bounded PCM capture. Audio stays in this page until sent to the local STT endpoint. */
+export type Transcript = { text: string; confidence: number; locale: string; engine: string; review_required: true }
+
+export function appendTranscript(draft: string, transcript: string): string {
+  const merged = draft.trimEnd() ? draft.trimEnd() + '\n' + transcript : transcript
+  if (merged.length > 8000) throw new Error('The draft and transcript exceed 8,000 characters. Shorten the draft before dictating again.')
+  return merged
+}
+
+export function parseTranscript(value: unknown, locale: string): Transcript {
+  if (!value || typeof value !== 'object') throw new Error('Local transcription returned an invalid result.')
+  const result = value as Partial<Transcript>
+  if (typeof result.text !== 'string' || !result.text.trim() || result.text.length > 8000 || result.text.includes('\0') ||
+      typeof result.confidence !== 'number' || !Number.isFinite(result.confidence) || result.confidence < 0 || result.confidence > 1 ||
+      result.locale !== locale || typeof result.engine !== 'string' || !result.engine || result.engine.length > 80 || result.review_required !== true) {
+    throw new Error('Local transcription returned an invalid result.')
+  }
+  return result as Transcript
+}
+
 export function encodeWav(samples: Float32Array, sampleRate: number): Uint8Array {
   if (!Number.isFinite(sampleRate) || sampleRate < 8000 || sampleRate > 192000 || samples.length > sampleRate * 21) throw new Error('Invalid audio capture.')
   const count = Math.floor(samples.length * 16000 / sampleRate)
@@ -36,11 +55,14 @@ export class LocalCapture {
   private rate = 48000
   private timer: ReturnType<typeof setTimeout> | null = null
 
-  async start(deviceId: string, onLevel: (level: number) => void, onLimit: () => void) {
+  async start(deviceId: string, onLevel: (level: number) => void, onLimit: () => void, onInterrupted?: () => void) {
     if (this.stopped) return false
     const stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true, ...(deviceId ? { deviceId: { exact: deviceId } } : {}) }, video: false })
     if (this.stopped) { stream.getTracks().forEach(t => t.stop()); return false }
     this.stream = stream
+    stream.getTracks().forEach(track => {
+      track.onended = () => { if (!this.stopped) { this.stop(false); onInterrupted?.() } }
+    })
     try {
       const context = new AudioContext()
       this.context = context
@@ -74,7 +96,7 @@ export class LocalCapture {
     this.timer = null
     if (this.processor) { this.processor.onaudioprocess = null; this.processor.disconnect() }
     this.processor = null
-    this.stream?.getTracks().forEach(t => t.stop()); this.stream = null
+    this.stream?.getTracks().forEach(t => { t.onended = null; t.stop() }); this.stream = null
     if (this.context) void this.context.close().catch(() => undefined)
     this.context = null
     if (!keep || this.count < this.rate * 0.15) { this.samples = []; this.count = 0; return null }

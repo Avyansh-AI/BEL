@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="11.770" timestamp="2026-11-06T15:03:31.095180+05:30" hostname="Avyansh-PC"><testcase classname="tests.test_browser" name="test_actual_browser_chat_ring_consent_and_xss" time="11.573" /></testsuite></testsuites>

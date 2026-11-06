@@ -1,5 +1,7 @@
 # BEL implementation and verification — 5 November 2026
 
+This report qualifies the preserved **0.4.1** build. Subsequent opt-in dictation work is documented separately in the [0.4.2 preview report](BEL_DICTATION_PREVIEW.md); the older hour-long test does not qualify the preview.
+
 **Verdict: PARTIAL.** BEL migrates the existing Python application and supplied React source. This report distinguishes observed behavior, regression coverage and unfinished acceptance gates.
 
 ## Baseline and scope

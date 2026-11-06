@@ -1,5 +1,7 @@
 # BEL release gates
 
+The `bel/local-dictation-preview` branch adds a default-off 0.4.2 development preview. See the [dictation verification report](sight/docs/BEL_DICTATION_PREVIEW.md). Its physical-microphone, native permission, speech-quality and fresh stability gates are separate from the completed 0.4.1 gates below.
+
 The current handoff uses the supplied React orb, the existing Python backend, official Gemma with thinking, the reviewed Needle adapter and the Windows desktop host. The [implementation report](sight/docs/BEL_IMPLEMENTATION.md) records each gate and its evidence. The [setup guide](sight/docs/BEL_SETUP.md) covers the executable and the source build.
 
 1. Preserve existing data and the tagged source rollback, integrate identity and UI, and exercise exact owner-approved tools through real HTTP and WebSockets. Completed.

@@ -16,7 +16,7 @@ from PyInstaller.archive.readers import CArchiveReader
 from verify_frozen_source import verify
 
 ROOT = Path(__file__).resolve().parents[2]
-FOLDER = "BEL-0.4.1-Windows-x64"
+FOLDER = "BEL-0.4.2-preview1-Windows-x64"
 NOTICE_PREFIXES = ("license", "licence", "copying", "copyright", "notice", "thirdpartynotice")
 
 
@@ -114,7 +114,7 @@ def notices(packages):
     return files, inventory
 
 
-README = """BEL 0.4.1 for Windows x64
+README = """BEL 0.4.2 development preview 1 for Windows x64
 
 Extract this entire directory to a writable location and open BEL.exe. Keep
 BEL-worker.exe and _internal alongside it. The system tray restores the
@@ -123,7 +123,16 @@ interface or exits the app. Auto-start requires an explicit opt-in.
 This partial build supports reviewed local tools, guarded private-file undo,
 the supplied orb UI and Windows speech-to-WAV. Routine Needle proposals can
 fall below the confidence floor. Settings > Tools and undo offers manual review.
-Microphone input and a trained BEL wake model are unavailable.
+Optional local Windows dictation is disabled by default. Launch with
+--local-dictation, then enable Microphone consent in Settings and hold to talk.
+The operating system/browser must also grant microphone access. Recognized text
+is placed in an editable draft for review; it never sends or runs tools itself.
+Synthetic recordings passed the local integration checks, but speech accuracy
+is limited. Physical microphone quality and native permission prompts remain
+unverified. Only installed recognition languages appear. A trained BEL wake
+model remains unavailable. Closing or hiding the window stops dictation capture.
+This preview has not passed a fresh hour-long stability test; the earlier
+0.4.1 soak does not qualify these changes. Production readiness remains PARTIAL.
 
 Requires Microsoft Edge WebView2. Gemma inference uses a separately installed
 local Ollama service and the owner's selected gemma4:e4b-it-qat model. The

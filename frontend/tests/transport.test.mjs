@@ -137,3 +137,18 @@ test('HTTP errors and deadline failures never replay an action or fabricate an a
   globalThis.fetch = async () => { throw new TypeError('fetch failed') }
   await assert.rejects(client.chat('hello', 'request-001'), /No simulated reply/)
 })
+
+test('explicit dictation cancellation aborts the pending fetch once and is distinct from a deadline', async () => {
+  const { client } = setup()
+  let attempts = 0; let fetchSignal
+  globalThis.fetch = async (_path, options) => {
+    attempts++; fetchSignal = options.signal
+    return new Promise((_, reject) => options.signal.addEventListener('abort', () => reject(new Error('aborted'))))
+  }
+  const controller = new AbortController()
+  const pending = client.request('/api/speech/transcribe', { audio: 'synthetic' }, 1000, controller.signal)
+  controller.abort()
+  await assert.rejects(pending, error => error.name === 'AbortError' && error.message === 'Request cancelled.')
+  assert.equal(fetchSignal.aborted, true)
+  assert.equal(attempts, 1)
+})

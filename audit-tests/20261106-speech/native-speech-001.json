@@ -1,0 +1,134 @@
+{
+  "format": 1,
+  "kind": "Frozen BEL, actual native WebView2 and Windows System.Speech",
+  "run_id": "20261106T093651Z-d37400",
+  "started_utc": "2026-11-06T09:36:51.658100+00:00",
+  "executable_sha256": "3e694413366c466f2eb27e35e577883de2ebc232138158ef6cc1a8ff6f194c51",
+  "fixture_sha256": "f1c1039985d49a09f0118d49a26d4747aa855fc33a14fa3fec5495c5986dd58d",
+  "physical_microphone_access": false,
+  "audible_playback": false,
+  "cloud_inference_requests": 0,
+  "checks": [
+    {
+      "id": "frozen_python_matches_current_source",
+      "passed": true,
+      "matched_modules": {
+        "BEL.exe": 37,
+        "BEL-worker.exe": 6
+      }
+    },
+    {
+      "id": "frozen_authenticated_backend_started",
+      "passed": true
+    },
+    {
+      "id": "frozen_english_recognizer_available",
+      "passed": true
+    },
+    {
+      "id": "consent_defaults_off_and_wake_unavailable",
+      "passed": true
+    },
+    {
+      "id": "frozen_no_consent_rejects_audio",
+      "passed": true
+    },
+    {
+      "id": "frozen_explicit_consent",
+      "passed": true
+    },
+    {
+      "id": "frozen_actual_recognition_requires_review",
+      "passed": true
+    },
+    {
+      "id": "frozen_no_transcript_in_history",
+      "passed": true
+    },
+    {
+      "id": "frozen_consent_revoked",
+      "passed": true
+    },
+    {
+      "id": "frozen_revocation_rejects_audio",
+      "passed": true
+    },
+    {
+      "id": "test_debug_listener_is_loopback_only",
+      "passed": true,
+      "addresses": [
+        "127.0.0.1"
+      ]
+    },
+    {
+      "id": "native_background_and_tray",
+      "passed": true
+    },
+    {
+      "id": "native_frontend_loaded",
+      "passed": true
+    },
+    {
+      "id": "native_renderer_session_still_muted",
+      "passed": true
+    },
+    {
+      "id": "native_compact",
+      "passed": true
+    },
+    {
+      "id": "native_background_keeps_backend_alive",
+      "passed": true
+    },
+    {
+      "id": "native_restore",
+      "passed": true
+    },
+    {
+      "id": "native_no_microphone_calls",
+      "passed": true
+    },
+    {
+      "id": "frozen_clean_exit",
+      "passed": true
+    },
+    {
+      "id": "frozen_backend_stopped",
+      "passed": true
+    },
+    {
+      "id": "test_debug_port_stopped",
+      "passed": true
+    },
+    {
+      "id": "frozen_speech_no_model_tool_or_chat_side_effects",
+      "passed": true,
+      "row_counts": {
+        "requests": 0,
+        "bel_executions": 0,
+        "bel_history": 0
+      }
+    },
+    {
+      "id": "frozen_speech_does_not_persist_audio_or_transcript",
+      "passed": true
+    }
+  ],
+  "limitations": [
+    "Prerecorded synthetic WAV sent over HTTP; this does not qualify native microphone permissions or human recognition.",
+    "Installed WebView2 and speech runtime reused; fresh Windows account remains untested.",
+    "A loopback-only debug port was enabled solely in this disposable test process; ordinary launches do not set it.",
+    "No wake-word model or Hindi speech recognizer was provisioned."
+  ],
+  "backend_ready_seconds": 1.594,
+  "recognition_seconds": 1.094,
+  "recognition": {
+    "characters": 38,
+    "confidence": 0.5486128926277161
+  },
+  "webview_version": "156.0.4314.58",
+  "passed": 23,
+  "total": 23,
+  "elapsed_seconds": 17.703,
+  "completed_utc": "2026-11-06T09:37:09.355123+00:00"
+}

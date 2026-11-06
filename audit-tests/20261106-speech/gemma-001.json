@@ -1,0 +1,119 @@
+{
+  "started_utc": "2026-11-06T09:33:47.400047+00:00",
+  "model": "gemma4:e4b-it-qat",
+  "thinking": true,
+  "cloud_requests": 0,
+  "test_data": "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\github-publish\\BEL-local-dictation-preview\\test-data\\official-acceptance-20261106T093347Z-257db4",
+  "complete": false,
+  "cases": [
+    [
+      "exact_instruction",
+      "Return exactly SIGHT_READY and nothing else.",
+      "SIGHT_READY"
+    ],
+    [
+      "arithmetic",
+      "Reply only the number: 2 plus 2?",
+      "4"
+    ],
+    [
+      "discount",
+      "A price of 250 is reduced by 20%, then 10% tax is added to the reduced price. Reply only the final number.",
+      "220"
+    ],
+    [
+      "schedule",
+      "I have 35 minutes. Download takes 10 minutes, installation then takes 15 minutes, and testing then takes 12 minutes. Can all three finish in time? Reply only YES or NO.",
+      "NO"
+    ],
+    [
+      "non_entailment",
+      "Every red block is heavy. Some heavy blocks are wooden. Must some red blocks be wooden? Reply only YES or NO.",
+      "NO"
+    ],
+    [
+      "entailment",
+      "Every sparrow is a bird. Every bird is warm-blooded. Must every sparrow be warm-blooded? Reply only YES or NO.",
+      "YES"
+    ],
+    [
+      "python_instruction",
+      "Return only a Python expression that returns a sorted copy of items without changing items.",
+      "sorted(items)"
+    ],
+    [
+      "hindi_comprehension",
+      "17 में 25 जोड़ने पर कितना होगा? केवल अंक लिखें।",
+      "42"
+    ]
+  ],
+  "json_schema": {
+    "type": "object",
+    "properties": {
+      "city": {
+        "type": "string"
+      },
+      "count": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "city",
+      "count"
+    ],
+    "additionalProperties": false
+  },
+  "rows": [],
+  "grading": "Exact visible answers (outer whitespace/backticks and one trailing period ignored). JSON equality. Tone screen is not a semantic quality proof.",
+  "source_hashes": {
+    "sight_core/__init__.py": "670486dc6bc85a451b8331ec370173c03e164a609d3e235d8fe3a71bb9a73a32",
+    "sight_core/api.py": "ebe93541325ca26af0d42d3dcb584452c4b6df119ac92283a651f0c66017339c",
+    "sight_core/artifacts.py": "63a3cda1a3aab2ec384cf976e13eabb3a94ee982db53e5cf63fad18fc9e763c6",
+    "sight_core/bel.py": "bc60b1feeec9d7842fe3256e09d41ece637b6f097d1db1462d5ea2427aada368",
+    "sight_core/brain_store.py": "fcaa29228b8986e8aa86fac9bcf069a1561b4e85f1217936dd79d07db407f5ff",
+    "sight_core/capabilities.py": "1d1f5f5f9582ed292e6baf9a6959be156a9acb6f0f8db168ca463057b713f868",
+    "sight_core/capability_worker.py": "9c430418a8b13df4a42e87a1cde769eff740375d99109d80d8a1c6c4d84edd09",
+    "sight_core/chatgpt.py": "c8f2202624895c96c83e6f025cdc4c3869a72ffcac7a17779fcd09ae15911215",
+    "sight_core/cli.py": "334d59042213819262af7fe7497c3dffa3920a2e45ce2e2ecebc777220120487",
+    "sight_core/config.py": "5bca885ab05ecb83771cdd8e4b97fe409c57e621e9b9e1c1f5dd84ce9a05a09f",
+    "sight_core/connector_contracts.py": "aced76f1cd43ca7520f82270f3f54a6f7ce435c47bce9325bd81d70d129cee87",
+    "sight_core/desktop.py": "a5d771c76352660ccbbed8682512cd564516c1bc867048825e1e620db9ae029f",
+    "sight_core/forge.py": "7f0c9c200ecc1a28e4a32de5a826dbe71548f60dd64193c11b321d76d1141571",
+    "sight_core/identity.py": "6a68712b81010dc40eb9fd4cb606e65bc50d15ddde531387f2a7456c0b49e3e4",
+    "sight_core/jobs.py": "28f02fb59809c6fd120f1b14ffda218a913ce9817ce3a5008e7ea4d7ffe69719",
+    "sight_core/learning_api.py": "e7b45ea72ce33af5916967e718d20c262025b7cbd26bab86a1428953ab39f701",
+    "sight_core/local_adapters.py": "80621c830200850015b3aaedd89784c3428bde241e089ae678cc30976023354f",
+    "sight_core/local_speech.py": "33152f87fa03793ca898cd45bafdde9437a8632c6481cb5d53b2f5f94904d0fa",
+    "sight_core/mcp_bridge.py": "3c8b1e3ec9301da88684b917180b1be801b623081d6e0c7f2e283a79af462f4c",
+    "sight_core/memory.py": "a2ea70e715c60d672a220c465cdce1ff29a17000e99a38a5b16d1423c1f178c9",
+    "sight_core/migration.py": "7cbe0aad350d67fb19e2ca5bbfdc12e6ae1605e88fa068c0fdab97d69a438f33",
+    "sight_core/models.py": "5320a2a9ad3268b3cd31af8ad5b1d4de42c8c0b57af2701198afa33ee71ecfef",
+    "sight_core/needle.py": "3a7c26daa1b2dbf4b13582d76b643f424119cc0c2b7fd12112da853d1c831482",
+    "sight_core/needle_worker.py": "7aa3dc9c30e40fe4682cfa4036da5f3d0ad471621994b00e95002133aa9a0028",
+    "sight_core/private_files.py": "2ba52fe0d61bd7903b0d37309b2e5381061b614c811acd24a2f97fec06727f20",
+    "sight_core/proactive.py": "8a2862d1198608a1c90eda2ae983bdfe2dae3b7d7bbf1ca0dda0fdf3e7c375cf",
+    "sight_core/quotas.py": "daf50d43f873b2b5ab7277714e04164972c19ae40ccc117c6e6cbcba5efca8cf",
+    "sight_core/recovery.py": "90031d470fe5759074210f1ce4a7965ae131a0777c1858079e2f92f68f2ea9bf",
+    "sight_core/releases.py": "fffc22da8bf3596c1d9f3e116b9e253573c0e106042a74a36afb1066880503c6",
+    "sight_core/routing.py": "4e27f6a0f66a19974f717c825b5adf8b9ef93036478fe4635eb68ca1e6b84759",
+    "sight_core/runtime.py": "9d0e3a4f26385797d4c9ccadab762eea65e4032ece00861709e9911905b93946",
+    "sight_core/security.py": "1b2eeb4442fae466f87ca2a94c1705b69d7577f269f1f28fe24403a302712ec3",
+    "sight_core/skill_worker.py": "111825fb41aa4e9623e08a962457982ba446eeb1dfc2c13fbca4fc5777690eff",
+    "sight_core/speech_worker.py": "efe2d47f5c932ef8bab974732625e143d69c91ccd0b89dbd656e828c9107d351",
+    "sight_core/store.py": "a9d8dbe352b4c99724ebfe1d42a75f0ae8115f7ce12c9b41da7baf454437934e",
+    "sight_core/tools.py": "394af016a7e02b29fe7b3dab13dc40c0fadcbdd5a1d1e25973fd1821a7c61043",
+    "sight_core/windows_apps.py": "4886fbd4b804c9d49f15f177627db44628ddb8a230e10d2445565f6a5c85adb1"
+  },
+  "health": {
+    "status": "offline",
+    "message": "Ollama is unavailable on 127.0.0.1:11434. Start the local runtime and verify the selected model.",
+    "model": "gemma4:e4b-it-qat",
+    "configured": false,
+    "supports_tools": false,
+    "supports_vision": false,
+    "inference_verified": false,
+    "last_error": "",
+    "supports_thinking": false
+  },
+  "blocker": "Ollama is unavailable on 127.0.0.1:11434. Start the local runtime and verify the selected model."
+}

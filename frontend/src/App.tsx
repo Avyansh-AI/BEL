@@ -4,7 +4,8 @@ import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'framer-
 import { AudioLines, Check, ChevronDown, CircleHelp, History, Mic, MicOff, Minus, PanelTop, Send, Settings2, Volume2, Square, X } from 'lucide-react'
 import { BelApiClient, parseHistory } from './lib/belApi'
 import type { BelEvent, BelState, BelStatus, HistoryItem, PreparedAction, Proposal } from './lib/belApi'
-import { LocalCapture, toBase64 } from './lib/voice'
+import { appendTranscript, LocalCapture, parseTranscript, toBase64 } from './lib/voice'
+import { DictationSession, dictationLanguages, installedLanguages } from './lib/dictation'
 import { Orb } from './components/Orb'
 import type { OrbState } from './components/Orb'
 import { Overlay } from './components/Overlay'
@@ -38,6 +39,8 @@ export default function App() {
   const [connected, setConnected] = useState(false)
   const connectedRef = useRef(false)
   const [input, setInput] = useState('')
+  const inputRef = useRef(input)
+  inputRef.current = input
   const [busy, setBusy] = useState(false)
   const busyRef = useRef(false)
   const [panel, setPanel] = useState<Panel>(null)
@@ -49,6 +52,13 @@ export default function App() {
   const [now, setNow] = useState(Date.now())
   const [audioLevel, setAudioLevel] = useState(0)
   const [micAllowed, setMicAllowed] = useState(false)
+  const micAllowedRef = useRef(false)
+  const [consentPending, setConsentPending] = useState(false)
+  const consentPendingRef = useRef(false)
+  const consentGeneration = useRef(0)
+  const [locale, setLocale] = useState('en-US')
+  const [transcribing, setTranscribing] = useState(false)
+  const [stoppingDictation, setStoppingDictation] = useState(false)
   const [recording, setRecording] = useState(false)
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
   const [device, setDevice] = useState('')
@@ -69,6 +79,7 @@ export default function App() {
   const api = useRef(new BelApiClient()).current
   const activeRequest = useRef('')
   const capture = useRef<LocalCapture | null>(null)
+  const dictation = useRef(new DictationSession(requestId => api.request('/api/speech/cancel', { requestId }, 30000))).current
   const held = useRef(false)
   const audio = useRef<HTMLAudioElement | null>(null)
   const mounted = useRef(true)
@@ -79,9 +90,48 @@ export default function App() {
   const notify = (text: string) => { if (mounted.current) setToast(text) }
   const report = (error: unknown) => { if (mounted.current) { setState('error'); notify(message(error)) } }
   const refreshHistory = async () => { const data = await api.request<{ items: unknown }>('/api/bel/history'); if (mounted.current && !busyRef.current) setMessages(parseHistory(data.items)) }
-  const refreshStatus = async () => { const data = await api.request<BelStatus>('/api/bel/status'); if (mounted.current) { statusRef.current = data; setStatus(data) } }
+  const refreshStatus = async () => {
+    const consentVersion = consentGeneration.current
+    const data = await api.request<BelStatus>('/api/bel/status')
+    if (!mounted.current) return
+    statusRef.current = data; setStatus(data)
+    const supported = installedLanguages(data.voice.locales)
+    setLocale(value => supported.includes(value) ? value : supported[0] || 'en-US')
+    if ((!data.voice.microphone_enabled || !data.voice.stt_available) && !consentPendingRef.current && consentVersion === consentGeneration.current) {
+      micAllowedRef.current = false; setMicAllowed(false); cancelCapture()
+    }
+  }
   const stopPlayback = () => { if (audio.current) { audio.current.pause(); audio.current.currentTime = 0; audio.current = null } setPlaying(false); setState(connectedRef.current ? 'idle' : 'offline') }
-  const cancelCapture = () => { held.current = false; capture.current?.stop(false); capture.current = null; setRecording(false); setAudioLevel(0) }
+  const cancelCapture = () => {
+    held.current = false; capture.current?.stop(false); capture.current = null
+    if (dictation.active) {
+      setTranscribing(false); setStoppingDictation(true)
+      // Keep new work blocked until the server has acknowledged this exact stop.
+      busyRef.current = true; setBusy(true)
+      void dictation.cancel().catch(error => {
+        micAllowedRef.current = false
+        if (mounted.current) { setMicAllowed(false); report(error) }
+      }).finally(() => {
+        busyRef.current = false
+        if (mounted.current) { setBusy(false); setStoppingDictation(false) }
+      })
+    }
+    setRecording(false); setAudioLevel(0)
+  }
+  const setConsent = async (enabled: boolean) => {
+    if (consentPendingRef.current) return
+    const consentVersion = ++consentGeneration.current
+    consentPendingRef.current = true; setConsentPending(true)
+    if (!enabled) { micAllowedRef.current = false; setMicAllowed(false); cancelCapture(); setState('idle') }
+    try {
+      const result = await api.request<{ enabled: boolean }>('/api/speech/consent', { enabled })
+      if (typeof result.enabled !== 'boolean' || result.enabled !== enabled) throw new Error('Microphone consent could not be confirmed.')
+      if (!mounted.current || consentVersion !== consentGeneration.current || !connectedRef.current) return
+      micAllowedRef.current = result.enabled; setMicAllowed(result.enabled)
+      notify(enabled ? 'Hold to talk when ready. Review the transcript before sending.' : 'Microphone consent revoked. Pending audio was discarded.')
+    } catch (error) { micAllowedRef.current = false; setMicAllowed(false); cancelCapture(); report(error) }
+    finally { consentPendingRef.current = false; if (mounted.current) setConsentPending(false) }
+  }
 
   const onEvent = (event: BelEvent) => {
     if (event.requestId && event.requestId !== activeRequest.current) return
@@ -95,6 +145,7 @@ export default function App() {
     void api.connect(onEvent, (value, reason) => {
       if (!mounted.current) return
       connectedRef.current = value; setConnected(value)
+      if (!value) { consentGeneration.current += 1; cancelCapture(); micAllowedRef.current = false; setMicAllowed(false) }
       if (!audio.current && !capture.current && !busyRef.current) setState(value ? 'idle' : 'offline')
       if (reason) notify(reason)
       if (value) { void refreshStatus().catch(report); void refreshHistory().catch(report) }
@@ -106,19 +157,30 @@ export default function App() {
     connect()
     const nativeReady = () => { const host = bridge(); if (host) void host.status().then(s => { if (mounted.current) { setNative(s); setCompact(s.mode === 'compact') } }).catch(report) }
     const nativeMode = (event: Event) => { const mode = (event as CustomEvent<{ mode: NativeMode }>).detail?.mode; if (['active', 'compact', 'background'].includes(mode)) { setCompact(mode === 'compact'); setNative(s => s ? { ...s, mode } : s); if (mode === 'background' && !busyRef.current) setState('background') } }
-    const cancel = () => { if (capture.current) { cancelCapture(); setState(connectedRef.current ? 'idle' : 'offline') } }
+    const cancel = () => { if (capture.current || dictation.active) { cancelCapture(); setState(connectedRef.current ? 'idle' : 'offline') } }
     const visibility = () => { if (document.hidden) cancel() }
     nativeReady()
     window.addEventListener('pywebviewready', nativeReady)
     window.addEventListener('bel-native-mode', nativeMode)
     window.addEventListener('blur', cancel)
     document.addEventListener('visibilitychange', visibility)
-    return () => { mounted.current = false; api.disconnect(); capture.current?.stop(false); capture.current = null; audio.current?.pause(); audio.current = null; window.removeEventListener('pywebviewready', nativeReady); window.removeEventListener('bel-native-mode', nativeMode); window.removeEventListener('blur', cancel); document.removeEventListener('visibilitychange', visibility) }
+    return () => {
+      mounted.current = false; consentGeneration.current += 1
+      void dictation.cancel().catch(() => undefined)
+      if (micAllowedRef.current) void api.request('/api/speech/consent', { enabled: false }).catch(() => undefined)
+      micAllowedRef.current = false; api.disconnect(); capture.current?.stop(false); capture.current = null; audio.current?.pause(); audio.current = null
+      window.removeEventListener('pywebviewready', nativeReady); window.removeEventListener('bel-native-mode', nativeMode); window.removeEventListener('blur', cancel); document.removeEventListener('visibilitychange', visibility)
+    }
   }, [])
   useEffect(() => { try { localStorage.setItem('bel-interface-settings-v1', JSON.stringify(settings)) } catch { /* Appearance can work without storage. */ } }, [settings])
   useEffect(() => { if (!toast) return; const timer = setTimeout(() => setToast(''), 8000); return () => clearTimeout(timer) }, [toast])
   useEffect(() => { if (!approval) return; const timer = setInterval(() => setNow(Date.now()), 500); return () => clearInterval(timer) }, [approval])
-  useEffect(() => { const list = () => { if (micAllowed) void navigator.mediaDevices?.enumerateDevices().then(items => setDevices(items.filter(d => d.kind === 'audioinput'))).catch(() => setDevices([])) }; list(); navigator.mediaDevices?.addEventListener('devicechange', list); return () => navigator.mediaDevices?.removeEventListener('devicechange', list) }, [micAllowed])
+  useEffect(() => {
+    const list = () => { if (micAllowedRef.current) void navigator.mediaDevices?.enumerateDevices().then(items => { if (mounted.current && micAllowedRef.current) setDevices(items.filter(d => d.kind === 'audioinput')) }).catch(() => setDevices([])) }
+    const changed = () => { if (capture.current || dictation.active) { cancelCapture(); setState('idle'); notify('Audio devices changed. Pending dictation was discarded.') }; list() }
+    list(); navigator.mediaDevices?.addEventListener('devicechange', changed)
+    return () => navigator.mediaDevices?.removeEventListener('devicechange', changed)
+  }, [micAllowed])
 
   const sendMessage = async (raw: string) => {
     const text = raw.trim()
@@ -185,20 +247,31 @@ export default function App() {
     if (!current) return
     const wav = current.stop(true); setRecording(false); setAudioLevel(0)
     if (!wav) { setState(connectedRef.current ? 'idle' : 'offline'); return }
-    busyRef.current = true; setBusy(true); setState('speech_recognition')
+    if (!micAllowedRef.current || dictation.stopping) return
+    const request = dictation.begin()
+    busyRef.current = true; setBusy(true); setTranscribing(true); setState('speech_recognition')
     try {
-      const result = await api.request<{ text: string }>('/api/speech/transcribe', { audio: toBase64(wav), mimeType: 'audio/wav' }, 60000)
-      if (typeof result.text !== 'string' || result.text.length > 8000) throw new Error('Local transcription returned an invalid result.')
-      setInput(result.text); setState('idle'); notify('Transcript ready. Review it and press Send.')
-    } catch (error) { report(error) }
-    finally { busyRef.current = false; if (mounted.current) setBusy(false) }
+      const response = await api.request<unknown>('/api/speech/transcribe', { audio: toBase64(wav), mimeType: 'audio/wav', locale, requestId: request.requestId }, 60000, request.controller.signal)
+      if (!dictation.accepts(request) || !mounted.current || !micAllowedRef.current) return
+      const result = parseTranscript(response, locale)
+      setInput(appendTranscript(inputRef.current, result.text)); setState('idle')
+      notify(result.confidence < 0.7 ? 'Dictation may have misheard words. Edit the transcript before pressing Send.' : 'Transcript ready. Review it and press Send.')
+    } catch (error) { if (dictation.accepts(request)) report(error) }
+    finally {
+      if (dictation.finish(request)) {
+        busyRef.current = false
+        if (mounted.current) { setBusy(false); setTranscribing(false) }
+      }
+    }
   }
   const startCapture = async () => {
-    if (!micAllowed || !canRecord || busyRef.current || capture.current || approval || !connectedRef.current) return
+    if (!micAllowedRef.current || !canRecord || busyRef.current || dictation.stopping || consentPendingRef.current || capture.current || approval || !connectedRef.current) return
     held.current = true; stopPlayback()
     const current = new LocalCapture(); capture.current = current
     try {
-      const started = await current.start(device, setAudioLevel, () => void finishCapture())
+      const started = await current.start(device, setAudioLevel, () => void finishCapture(), () => {
+        if (capture.current === current) { cancelCapture(); report(new Error('The microphone disconnected. Audio was discarded.')) }
+      })
       if (!started || !held.current || capture.current !== current || !mounted.current) { current.stop(false); return }
       setRecording(true); setState('listening')
     } catch { if (capture.current === current) { cancelCapture(); report(new Error('Microphone access failed. Check permission and the selected audio device.')) } }
@@ -260,6 +333,8 @@ export default function App() {
           </motion.div></AnimatePresence>
         </section>
         <div className="demo-control">
+          {transcribing && <button className="demo-button" onClick={() => { cancelCapture(); setState('idle'); notify('Pending transcript discarded.') }}>DISCARD TRANSCRIPT</button>}
+          {stoppingDictation && <span className="setting-description" role="status">Stopping local dictation…</span>}
           {proposal && <button className="demo-button" disabled={busy || !!approval} onClick={() => void prepare(proposal)}>Review {proposal.tool || 'proposed action'}</button>}
           {playing ? <button className="demo-button" onClick={stopPlayback}><Square size={13} />STOP SPEAKING</button> : audioReady ? <button className="demo-button" disabled={busy} onClick={() => void playAudio()}><Volume2 size={13} />PLAY AUDIO</button> : lastBel?.text && status?.voice.tts_available && <button className="demo-button" disabled={busy || !!approval || lastBel.text.length > 500} title={lastBel.text.length > 500 ? 'Local voice currently accepts up to 500 characters.' : 'Review local speech generation'} onClick={() => void prepare({ path: '/api/capability/invoke', args: { id: 'speech.render', arguments: { text: lastBel.text } }, summary: 'Render this reply with the installed local voice.' })}><Volume2 size={13} />READ REPLY ALOUD</button>}
           {!connected && <button className="demo-button" onClick={connect}>RECONNECT</button>}
@@ -282,13 +357,14 @@ export default function App() {
           {panel === 'settings' && <div className="settings-list scroll-panel">
             <div className="setting-row"><div className="setting-copy"><strong>Animation</strong><span>Choose how much movement BEL uses.</span></div><label className="select-wrap"><select aria-label="Animation" value={settings.animations} onChange={e => setSettings(s => ({ ...s, animations: e.target.value === 'reduced' ? 'reduced' : 'natural' }))}><option value="natural">Natural</option><option value="reduced">Reduced</option></select><ChevronDown size={13} /></label></div>
             <div className="setting-row"><div className="setting-copy"><strong>Appearance</strong><span>Subtle variations on the midnight palette.</span></div><label className="select-wrap"><select aria-label="Appearance" value={settings.theme} onChange={e => setSettings(s => ({ ...s, theme: e.target.value === 'blue' ? 'blue' : 'midnight' }))}><option value="midnight">Midnight</option><option value="blue">Blue hour</option></select><ChevronDown size={13} /></label></div>
-            <div className="setting-row"><div className="setting-copy"><strong>Microphone consent</strong><span>{canRecord ? 'Allow hold-to-talk for this session. Audio goes only to local speech recognition; review the transcript before sending.' : status?.voice.reason || 'Local speech recognition is not configured. The microphone stays off.'}</span></div><button className={`switch${micAllowed ? ' is-on' : ''}`} disabled={!canRecord} role="switch" aria-checked={micAllowed} aria-label="Microphone consent" onClick={() => { if (micAllowed) { cancelCapture(); setState('idle') } setMicAllowed(!micAllowed) }}><span /></button></div>
+            <div className="setting-row"><div className="setting-copy"><strong>Microphone consent</strong><span>{canRecord ? 'Allow hold-to-talk for this session. Audio goes only to local speech recognition; review the transcript before sending.' : status?.voice.reason || 'Local speech recognition is not configured. The microphone stays off.'}</span></div><button className={`switch${micAllowed ? ' is-on' : ''}`} disabled={consentPending || !connected || (!canRecord && !micAllowed)} role="switch" aria-checked={micAllowed} aria-label="Microphone consent" onClick={() => void setConsent(!micAllowed)}><span /></button></div>
+            {canRecord && <><label className="field-label">Dictation language<select aria-label="Dictation language" value={locale} onChange={e => { cancelCapture(); setLocale(e.target.value); setState('idle') }}>{installedLanguages(status?.voice.locales).map(value => <option key={value} value={value}>{dictationLanguages[value]}</option>)}</select></label><p className="setting-description">Windows dictation may mishear words. Check the editable transcript before sending. Only installed recognition languages appear here.</p></>}
             {micAllowed && <label className="field-label">Microphone<select value={device} aria-label="Microphone device" onChange={e => { cancelCapture(); setDevice(e.target.value); setState('idle') }}><option value="">System default</option>{devices.filter(d => d.deviceId && d.deviceId !== 'default').map((d, i) => <option key={d.deviceId} value={d.deviceId}>{d.label || `Microphone ${i + 1}`}</option>)}</select></label>}
             <div className="setting-info"><CircleHelp size={15} /><p>{status?.voice.wake_available ? 'A configured BEL wake service is available.' : 'BEL wake-word enrollment is unavailable until a valid trained model and owner consent are provided.'}<br />No sleeping-mode microphone audio is sent to the cloud.</p></div>
             <button className="panel-link" onClick={() => openPanel('providers')}>AI providers <ChevronDown size={13} /></button><button className="panel-link" onClick={() => openPanel('memory')}>Memory management <ChevronDown size={13} /></button><button className="panel-link" onClick={() => openPanel('diagnostics')}>Diagnostics <ChevronDown size={13} /></button>
             <button className="panel-link" onClick={() => openPanel('tools')}>Tools and undo <ChevronDown size={13} /></button>
             <a className="panel-link" href="/legacy/" target="_blank" rel="noreferrer">Advanced workspace</a>
-            <div className="overlay-footnote"><Check size={13} /> Appearance is saved locally. Microphone consent expires when this page closes.</div>
+            <div className="overlay-footnote"><Check size={13} /> Appearance is saved locally. This page always starts with its microphone off.</div>
           </div>}
           {panel === 'tools' && <ToolsPanel key={toolsRevision} api={api} review={prepare} busy={busy} />}
           {panel === 'memory' && <div className="scroll-panel">

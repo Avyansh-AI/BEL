@@ -47,6 +47,7 @@ class Config:
     ollama_url: str = "http://127.0.0.1:11434"
     model_timeout: float = 120
     thinking: bool | None = None
+    local_stt: bool = False
 
     @classmethod
     def from_env(cls):
@@ -62,7 +63,11 @@ class Config:
             raise ValueError("BEL_DATA_DIR or SIGHT_DATA_DIR must name a data directory")
         data_dir = reject_links(Path(directory).expanduser()).resolve()
         saved = read_local_model(data_dir)
-        return cls(data_dir, port, environment_value("OLLAMA_MODEL", saved.get("model", "")), thinking=saved.get('thinking'))
+        speech = environment_value('LOCAL_STT', 'disabled')
+        if speech not in {'disabled', 'windows'}:
+            raise ValueError('BEL_LOCAL_STT must be disabled or windows')
+        return cls(data_dir, port, environment_value("OLLAMA_MODEL", saved.get("model", "")),
+                   thinking=saved.get('thinking'), local_stt=speech == 'windows')
 
     @property
     def origins(self):

@@ -1,5 +1,9 @@
 # BEL publication and historical SIGHT builds
 
+## Local dictation development preview
+
+The `bel/local-dictation-preview` branch is version `0.4.2.dev1`, based on verified commit `8ec3ca007b4aeef1559a280faf404e5af85fe83a`. It adds opt-in local recognition without changing owner data or the selected Gemma profile. The [preview report](sight/docs/BEL_DICTATION_PREVIEW.md) records evidence and limits. This candidate is separate from the preserved 0.4.1 ZIP and its hour-long test; it is not a production release.
+
 ## BEL source update
 
 The current project is BEL — Behavioral Executive Logic, version 0.4.1. The existing repository retains its SIGHT history. The approved reasoning model is `gemma4:e4b-it-qat` with thinking enabled. Release readiness is **PARTIAL**. The [implementation report](sight/docs/BEL_IMPLEMENTATION.md) and [Windows setup guide](sight/docs/BEL_SETUP.md) describe this source and how to reproduce the one-folder application.

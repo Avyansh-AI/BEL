@@ -151,8 +151,17 @@ def test_actual_browser_chat_ring_consent_and_xss(browser, live_server):
     expect(page.locator("#chatLog")).to_contain_text("<img src=x")
     assert page.evaluate("window.xssExecuted || false") is False
     assert page.locator("#chatLog img").count() == 0
-    page.locator("#ringWrap").click()
-    expect(page.locator("#statusLine")).to_contain_text("pending")
+    # The second utterance travels over WebSocket. Wait for its reply before
+    # checking the microphone message, which otherwise races that late reply.
+    expect(page.locator('#chatLog .bubble.max')).to_have_count(2)
+    expect(page.locator("#ringWrap")).to_have_class(re.compile(r"\bstandby\b"))
+    with page.expect_response(lambda response: response.url.endswith('/api/speech')) as speech:
+        page.locator("#ringWrap").click()
+    speech_status = speech.value.json()
+    assert speech_status['micEnabled'] is False
+    assert speech_status['stt']['configured'] is False
+    assert 'Local dictation is off' in speech_status['reason']
+    expect(page.locator("#statusLine")).to_have_text(speech_status['reason'])
     page.locator("#wakeBtn").click()
     expect(page.locator("#wakeBtn")).to_have_attribute("aria-pressed", "false")
     assert page.evaluate("window.deviceRequests") == 0

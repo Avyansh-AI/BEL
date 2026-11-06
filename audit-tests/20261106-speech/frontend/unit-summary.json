@@ -1,0 +1,16 @@
+{
+  "kind": "Frontend unit tests with synthetic transport/audio fixtures; physical microphone not opened",
+  "command": "npm.cmd test",
+  "tests": 20,
+  "passed": 20,
+  "failed": 0,
+  "skipped": 0,
+  "duration_ms": 251.8666,
+  "build_command": "npm.cmd run build",
+  "build_passed": true,
+  "vite_seconds": 5.81,
+  "javascript_bundle": "index-CAMU469U.js",
+  "actual_recognition_tested": false,
+  "physical_microphone_tested": false,
+  "real_browser_regression_report": "result.json"
+}

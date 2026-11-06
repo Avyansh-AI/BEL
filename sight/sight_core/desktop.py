@@ -301,6 +301,7 @@ def smoke_probe(controller, host, report, started):
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="BEL")
     parser.add_argument("--background", action="store_true")
+    parser.add_argument('--local-dictation', action='store_true', help='Offer local Windows dictation; microphone capture still requires session consent and hold-to-talk')
     parser.add_argument("--data-directory", type=Path)
     parser.add_argument("--port", type=int)
     parser.add_argument("--smoke-test", type=Path, help="Exercise only BEL's own desktop lifecycle and exit with a JSON report")
@@ -317,6 +318,8 @@ def main(argv=None):
             set_autostart(args.enable_autostart)
             return 0
         config = Config.from_env()
+        if args.local_dictation:
+            config = replace(config, local_stt=True)
         if args.data_directory:
             from .config import read_local_model, environment_value
             directory = args.data_directory.absolute()
@@ -355,7 +358,7 @@ def main(argv=None):
                     if controller.tray_ready.wait(3):
                         controller.set_mode("background")
                 controller.window.events.loaded += hide_after_load
-            logger.info("desktop.start; microphone disabled; wake model unavailable")
+            logger.info("desktop.start; dictation=%s; microphone requires session consent; wake model unavailable", config.local_stt)
             try:
                 webview.start(gui="edgechromium", debug=False, private_mode=True)
             finally:

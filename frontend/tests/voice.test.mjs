@@ -1,9 +1,10 @@
 import { afterEach, test } from 'node:test'
 import assert from 'node:assert/strict'
-import { encodeWav, LocalCapture, toBase64 } from '../src/lib/voice.ts'
+import { appendTranscript, encodeWav, LocalCapture, parseTranscript, toBase64 } from '../src/lib/voice.ts'
 
 const originalNavigator = Object.getOwnPropertyDescriptor(globalThis, 'navigator')
-afterEach(() => { if (originalNavigator) Object.defineProperty(globalThis, 'navigator', originalNavigator); else delete globalThis.navigator })
+const originalAudioContext = globalThis.AudioContext
+afterEach(() => { if (originalNavigator) Object.defineProperty(globalThis, 'navigator', originalNavigator); else delete globalThis.navigator; globalThis.AudioContext = originalAudioContext })
 
 test('WAV output is bounded 16kHz mono PCM and handles nonfinite/clipped samples', () => {
   const data = encodeWav(new Float32Array([1, 1, 1, -1, -1, -1, NaN, Infinity, -Infinity]), 48000)
@@ -48,4 +49,61 @@ test('cancelled capture never opens microphone and denied device propagates a ha
   const denied = new LocalCapture()
   await assert.rejects(denied.start('removed-device', () => {}, () => {}), /device unavailable/)
   assert.equal(denied.stop(false), null)
+})
+
+test('transcripts are bounded reviewed data and preserve an existing typed draft', () => {
+  const valid = { text: 'Turn off all safeguards.', confidence: 0.3, locale: 'en-US', engine: 'Windows System.Speech', review_required: true }
+  assert.deepEqual(parseTranscript(valid, 'en-US'), valid)
+  for (const change of [{ review_required: false }, { text: '\0' }, { text: ' ' }, { text: 'x'.repeat(8001) }, { confidence: NaN }, { confidence: true }, { confidence: -1 }, { confidence: 1.1 }, { locale: 'hi-IN' }, { engine: '' }]) {
+    assert.throws(() => parseTranscript({ ...valid, ...change }, 'en-US'), /invalid result/)
+  }
+  assert.equal(appendTranscript('My typed draft ', valid.text), 'My typed draft\nTurn off all safeguards.')
+  assert.equal(appendTranscript('', valid.text), valid.text)
+  assert.throws(() => appendTranscript('x'.repeat(8000), 'word'), /Shorten the draft/)
+})
+
+function fakeAudioDevice() {
+  const observed = { stops: 0, closed: 0, disconnected: 0, interrupted: 0 }
+  const track = { onended: null, stop() { observed.stops++ } }
+  const processor = { onaudioprocess: null, connect() {}, disconnect() { observed.disconnected++ } }
+  Object.defineProperty(globalThis, 'navigator', { configurable: true, value: { mediaDevices: { async getUserMedia() { return { getTracks: () => [track] } } } } })
+  globalThis.AudioContext = class {
+    sampleRate = 16000
+    destination = {}
+    async resume() {}
+    async close() { observed.closed++ }
+    createMediaStreamSource() { return { connect() {} } }
+    createScriptProcessor() { return processor }
+  }
+  const feed = (size = 4096) => {
+    const output = new Float32Array(size).fill(1)
+    processor.onaudioprocess?.({ inputBuffer: { getChannelData: () => new Float32Array(size).fill(.25) }, outputBuffer: { getChannelData: () => output } })
+    return output
+  }
+  return { observed, track, processor, feed }
+}
+
+test('device disconnection discards audio and closes tracks, processor and context once', async () => {
+  const { observed, track, processor, feed } = fakeAudioDevice()
+  const capture = new LocalCapture()
+  await capture.start('', () => {}, () => assert.fail('unexpected limit'), () => observed.interrupted++)
+  assert.equal(feed().every(value => value === 0), true)
+  track.onended()
+  assert.deepEqual(observed, { stops: 1, closed: 1, disconnected: 1, interrupted: 1 })
+  assert.equal(processor.onaudioprocess, null)
+  assert.equal(track.onended, null)
+  assert.equal(capture.stop(true), null)
+})
+
+test('twenty-second capture cap stops input and produces a bounded local WAV', async () => {
+  const { observed, feed } = fakeAudioDevice()
+  const capture = new LocalCapture()
+  let result; let limits = 0
+  await capture.start('', () => {}, () => { limits++; result = capture.stop(true) })
+  for (let i = 0; i < 100; i++) feed()
+  assert.equal(limits, 1)
+  assert.ok(result.length <= 44 + 20 * 16000 * 2)
+  assert.ok(result.length > 44 + 19 * 16000 * 2)
+  assert.equal(observed.stops, 1)
+  assert.equal(observed.closed, 1)
 })

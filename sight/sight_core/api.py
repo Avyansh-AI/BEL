@@ -37,6 +37,7 @@ from .capabilities import Capabilities
 from .chatgpt import ChatGPT, ChatGPTPolicy, Connect
 from .bel import Bel
 from .identity import APP_NAME, FULL_NAME, DEFAULT_OWNER
+from .local_speech import LocalSpeech, SpeechUnavailable, SpeechBusy, SpeechInputError
 
 UI = Path(__file__).resolve().parents[1] / "apps/ui"
 BEL_UI = (Path(sys._MEIPASS) / 'frontend/dist' if getattr(sys, 'frozen', False)
@@ -72,6 +73,16 @@ class AudioInput(StrictModel):
     audio: str = Field(max_length=5_592_408)
     mimeType: str = Field(pattern=r"^audio/(webm|ogg|mp4|wav)(;codecs=opus)?$")
     user: str = Field(default="default", pattern="^default$")
+    locale: str = Field(default='en-US', pattern=r'^(en-(US|GB|IN)|hi-IN)$')
+    requestId: uuid.UUID = Field(default_factory=uuid.uuid4)
+
+
+class SpeechConsent(StrictModel):
+    enabled: bool = Field(strict=True)
+
+
+class SpeechCancel(StrictModel):
+    requestId: uuid.UUID
 
 
 def create_app(config: Config | None = None, provider=None, *, local_only=False):
@@ -92,6 +103,11 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     learning_service = Learning(config, files, router)
     capability_service = Capabilities(store, files)
     bel = Bel(store, files, capability_service)
+    speech_service = LocalSpeech(config.local_stt)
+    speech_consents = {}
+    speech_tasks = {}
+    speech_task_ids = {}
+    speech_requests = {}
     active = {}
     active_inputs = {}
     sockets = {}
@@ -124,6 +140,12 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
             task.cancel()
         if active:
             await asyncio.gather(*active.values(), return_exceptions=True)
+        for task in list(speech_tasks.values()):
+            task.cancel()
+        if speech_tasks:
+            await asyncio.gather(*speech_tasks.values(), return_exceptions=True)
+        speech_consents.clear()
+        speech_requests.clear()
         for handler in logger.handlers[:]:
             handler.close()
             logger.removeHandler(handler)
@@ -137,14 +159,15 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     learning_service.mount(app)
     app.state.capabilities = capability_service
     app.state.bel = bel
+    app.state.speech = speech_service
     capability_service.mount(app)
 
-    async def broadcast(state, request_id=None):
+    async def broadcast(state, request_id=None, for_session=None):
         message = {'type': 'state', 'state': state}
         if request_id:
             message['requestId'] = request_id
         async def deliver(sender, session_id):
-            if sessions.get(session_id):
+            if sessions.get(session_id) and (for_session is None or for_session == session_id):
                 try:
                     await asyncio.wait_for(sender(message), .5)
                 except (TimeoutError, RuntimeError, WebSocketDisconnect):
@@ -199,7 +222,8 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "no-referrer"
-        response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+        microphone_policy = '(self)' if config.local_stt and request.url.path in {'/', '/index.html'} else '()'
+        response.headers["Permissions-Policy"] = 'camera=(), microphone=' + microphone_policy + ', geolocation=()'
         response.headers["X-Frame-Options"] = "DENY"
         if request.url.path in {"/", "/index.html", "/legacy/", "/legacy/index.html", "/systems.html", "/tasks.html", "/vision.html", "/learning.html", "/capabilities.html"} or request.url.path.startswith('/legacy/'):
             page = BEL_UI / 'index.html' if request.url.path in {'/', '/index.html'} else UI / ("index.html" if request.url.path == '/legacy/' else request.url.path.rsplit('/', 1)[-1])
@@ -322,17 +346,21 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
                           for name in ('groq', 'gemini', 'openrouter')], 'local_only': local_only}
 
     @app.get('/api/bel/status')
-    async def bel_status():
+    async def bel_status(request: Request):
         from .needle import verify_assets, NeedleError
         try:
             await asyncio.to_thread(verify_assets, bel.needle.asset_dir)
             needle_status, reason = 'ready', 'Local verified assets; proposals require owner approval.'
         except (NeedleError, OSError):
             needle_status, reason = 'unavailable', 'Provision the pinned Needle 3 assets; main-model chat remains available.'
+        speech_status = await app.state.speech.status()
         return {'name': APP_NAME, 'full_name': FULL_NAME, 'owner': DEFAULT_OWNER, 'mode': 'active',
-                'voice': {'recording_supported': False, 'stt_available': False, 'tts_available': os.name == 'nt',
+                'voice': {'recording_supported': config.local_stt and speech_status['available'],
+                          'stt_available': speech_status['available'], 'tts_available': os.name == 'nt',
                           'playback_available': True, 'wake_word': APP_NAME, 'wake_available': False,
-                          'microphone_enabled': False, 'reason': 'Local STT and a trained BEL wake model are not configured. Reviewed Windows speech rendering is available.'},
+                          'microphone_enabled': request.state.session.id in speech_consents,
+                          'engine': 'Windows System.Speech', 'locales': speech_status.get('locales', []),
+                          'reason': speech_status['reason']},
                 'tool_router': {'status': needle_status, 'model': 'Needle 3', 'reason': reason}}
 
     @app.get('/api/bel/history')
@@ -388,18 +416,111 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
         raise HTTPException(409, "No scheduler or reminders are configured; nothing was snoozed")
 
     @app.get("/api/speech")
-    async def speech():
-        return {"micEnabled": False, "reason": "Local speech and owner enrollment are pending the required engineering phase gates.", "stt": {"mode": "local", "configured": False}, "tts": {"mode": "local", "configured": False}, "supportedMimeTypes": ["audio/webm", "audio/ogg", "audio/mp4", "audio/wav"], "maxAudioBytes": 4*1024**2, "wake": {"enrolled": False, "enabled": False}}
+    async def speech(request: Request):
+        status = await app.state.speech.status()
+        return {'micEnabled': request.state.session.id in speech_consents, 'reason': status['reason'],
+                'stt': {'mode': 'local', 'configured': status['available'], 'locales': status.get('locales', [])},
+                'tts': {'mode': 'local', 'configured': os.name == 'nt', 'path': '/api/capability/invoke', 'capability': 'speech.render'},
+                'supportedMimeTypes': ['audio/wav'], 'maxAudioBytes': 700000,
+                'wake': {'enrolled': False, 'enabled': False}}
+
+    @app.post('/api/speech/consent')
+    async def speech_consent(request: Request, body: SpeechConsent):
+        session_id = request.state.session.id
+        for expired in [key for key in speech_consents if sessions.get(key) is None]:
+            speech_consents.pop(expired, None)
+        if body.enabled:
+            if not config.local_stt or not (await app.state.speech.status())['available']:
+                raise HTTPException(503, 'Launch BEL with local dictation enabled and an installed supported recognizer.')
+            speech_consents.setdefault(session_id, secrets.token_hex(16))
+        else:
+            speech_consents.pop(session_id, None)
+            if pending := speech_tasks.get(session_id):
+                pending.cancel()
+                await asyncio.gather(pending, return_exceptions=True)
+        audit('speech.consent', {'enabled': body.enabled})
+        return {'enabled': body.enabled}
+
+    def speech_request_records(session_id):
+        # Never evict an ID within a live session: delayed or replayed uploads
+        # must not restart a cancelled worker. Bound memory and fail closed.
+        for expired in [key for key in speech_requests if sessions.get(key) is None]:
+            speech_requests.pop(expired, None)
+        return speech_requests.setdefault(session_id, {})
+
+    @app.post('/api/speech/cancel')
+    async def cancel_speech(request: Request, body: SpeechCancel):
+        session_id, request_id = request.state.session.id, str(body.requestId)
+        records = speech_request_records(session_id)
+        if request_id not in records and len(records) >= 512:
+            raise HTTPException(429, 'The dictation session limit was reached. Reopen BEL to start a new session.')
+        records[request_id] = 'cancelled'
+        if speech_task_ids.get(session_id) == request_id and (pending := speech_tasks.get(session_id)):
+            pending.cancel()
+            await asyncio.gather(pending, return_exceptions=True)
+        return {'cancelled': True}
 
     @app.post("/api/speech/transcribe")
-    async def transcribe(body: AudioInput):
+    async def transcribe(request: Request, body: AudioInput):
         try:
             decoded = base64.b64decode(body.audio, validate=True)
         except ValueError:
             raise HTTPException(422, "Invalid base64 audio")
         if len(decoded) > 4*1024**2:
             raise HTTPException(413, "Audio exceeds the 4 MiB limit")
-        raise HTTPException(503, "Local STT is not installed; microphone input remains disabled")
+        if not config.local_stt:
+            raise HTTPException(503, 'Local dictation is disabled. Launch BEL with --local-dictation to offer it.')
+        session_id = request.state.session.id
+        consent = speech_consents.get(session_id)
+        if not consent:
+            raise HTTPException(403, 'Enable microphone consent for this session before submitting audio.')
+        request_id = str(body.requestId)
+        records = speech_request_records(session_id)
+        if request_id in records:
+            raise HTTPException(409, 'This dictation request was already used or cancelled.')
+        if len(records) >= 512:
+            raise HTTPException(429, 'The dictation session limit was reached. Reopen BEL to start a new session.')
+        if session_id in speech_tasks:
+            raise HTTPException(429, 'A dictation request is already running for this session.')
+        if body.mimeType != 'audio/wav':
+            raise HTTPException(422, 'Local dictation requires mono 16 kHz PCM WAV audio.')
+        records[request_id] = 'used'
+        task = asyncio.create_task(app.state.speech.transcribe(decoded, body.locale))
+        speech_tasks[session_id] = task
+        speech_task_ids[session_id] = request_id
+        async def cancel_on_disconnect():
+            while not task.done():
+                if not sessions.get(session_id) or await request.is_disconnected():
+                    records[request_id] = 'cancelled'
+                    task.cancel()
+                    return
+                await asyncio.sleep(.1)
+        connection = asyncio.create_task(cancel_on_disconnect())
+        try:
+            await broadcast('speech_recognition', for_session=session_id)
+            result = await task
+            if not sessions.get(session_id) or speech_consents.get(session_id) != consent:
+                raise HTTPException(403, 'Speech consent ended. The transcript was discarded.')
+            if records[request_id] == 'cancelled':
+                raise HTTPException(409, 'Local dictation was cancelled. No transcript was retained.')
+            return result
+        except SpeechInputError:
+            raise HTTPException(422, 'Audio is empty, malformed or exceeds the supported local recording limit.')
+        except SpeechBusy:
+            raise HTTPException(429, 'Local dictation is busy. Try again after the current request.')
+        except SpeechUnavailable:
+            raise HTTPException(503, 'Local recognition is unavailable or its deadline expired. Review the configured language.')
+        except asyncio.CancelledError:
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+            raise HTTPException(409, 'Local dictation was cancelled. No transcript was retained.')
+        finally:
+            connection.cancel()
+            await asyncio.gather(connection, return_exceptions=True)
+            if speech_tasks.get(session_id) is task:
+                speech_tasks.pop(session_id, None)
+                speech_task_ids.pop(session_id, None)
+            await broadcast('idle', for_session=session_id)
 
     @app.post("/api/speech/synthesize")
     async def synthesize():

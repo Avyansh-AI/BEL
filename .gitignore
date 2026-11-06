@@ -32,3 +32,5 @@ audit-tests/**/soak_progress.json
 # Failed test tracebacks include temporary browser session values; publish summaries only.
 audit-tests/20261029-bel/regression-001.xml
 audit-tests/20261030-bel/regression-final.xml
+audit-tests/20261105-speech/focused-001.xml
+audit-tests/20261105-speech/regression-001.xml

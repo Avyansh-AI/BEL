@@ -1,0 +1,97 @@
+{
+  "kind": "real Chromium plus real local API/WS; synthetic test data",
+  "checks": {
+    "authenticated_bootstrap": true,
+    "fragment_removed": true,
+    "title": true,
+    "official_logo_loaded": true,
+    "local_fonts_loaded": true,
+    "microphone_disabled_without_stt": true,
+    "native_only_controls_disabled_in_browser": true,
+    "actual_http_chat": true,
+    "persistent_history_visible": true,
+    "history_survives_page_reload": true,
+    "human_confirmation_shows_exact_memory": true,
+    "cancelled_preview_has_no_effect": true,
+    "approved_memory_persists": true,
+    "memory_correction": true,
+    "memory_deletion": true,
+    "provider_policy_loaded_without_mutation": true,
+    "invalid_tool_args_have_no_preview": true,
+    "tool_preview_has_no_file_side_effect": true,
+    "reviewed_file_created": true,
+    "undo_list_refreshes_after_execution": true,
+    "undo_preview_identifies_file": true,
+    "undo_preview_has_no_file_side_effect": true,
+    "undo_backend_reports_verified_result": true,
+    "reviewed_file_undo": true,
+    "active_orb_centered": true,
+    "compact_mode": true,
+    "native_compact_input_in_view": true,
+    "native_compact_content_does_not_overlap_header": true,
+    "mobile_input_in_view": true,
+    "mobile_no_horizontal_overflow": true,
+    "mobile_modal_keyboard_close": true,
+    "approved_history_clear": true,
+    "no_external_network_requests": true,
+    "no_javascript_errors": true
+  },
+  "model_inference_tested": false,
+  "microphone_tested": false,
+  "native_tray_tested": false,
+  "layout": {
+    "html": {
+      "x": 0,
+      "width": 1100,
+      "scrollLeft": 0,
+      "scrollWidth": 1100,
+      "transform": "none"
+    },
+    "body": {
+      "x": 0,
+      "width": 1100,
+      "scrollLeft": 0,
+      "scrollWidth": 1100,
+      "transform": "none"
+    },
+    "#root": {
+      "x": 0,
+      "width": 1100,
+      "scrollLeft": 0,
+      "scrollWidth": 1100,
+      "transform": "none"
+    },
+    ".app": {
+      "x": 0,
+      "width": 1100,
+      "scrollLeft": 0,
+      "scrollWidth": 1470,
+      "transform": "none"
+    },
+    ".topbar": {
+      "x": 0,
+      "width": 1100,
+      "scrollLeft": 0,
+      "scrollWidth": 1100,
+      "transform": "none"
+    },
+    ".orb-stage": {
+      "x": 390.5,
+      "width": 319,
+      "scrollLeft": 0,
+      "scrollWidth": 351,
+      "transform": "none"
+    },
+    ".input-area": {
+      "x": 263,
+      "width": 574,
+      "scrollLeft": 0,
+      "scrollWidth": 574,
+      "transform": "none"
+    }
+  },
+  "status": "PASS",
+  "seconds": 13.125,
+  "errors": [],
+  "external": []
+}

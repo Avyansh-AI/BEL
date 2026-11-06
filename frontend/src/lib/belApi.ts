@@ -5,7 +5,7 @@ export type Proposal = { path: string; args: Record<string, unknown>; summary: s
 export type ChatReply = { requestId: string; status: string; say: string; offline: boolean; proposal?: Proposal }
 export type PreparedAction = Proposal & { approvalId: string; expiresAt: number }
 export type HistoryItem = { id: string; role: 'user' | 'assistant'; text: string; at: number }
-export type BelStatus = { name: string; full_name: string; owner: string; mode: string; voice: { recording_supported: boolean; stt_available: boolean; tts_available: boolean; playback_available: boolean; wake_word: string; wake_available: boolean; microphone_enabled: boolean; reason: string }; tool_router: { status: string; model: string; reason: string } }
+export type BelStatus = { name: string; full_name: string; owner: string; mode: string; voice: { recording_supported: boolean; stt_available: boolean; tts_available: boolean; playback_available: boolean; wake_word: string; wake_available: boolean; microphone_enabled: boolean; reason: string; locales?: string[]; locale?: string; engine?: string }; tool_router: { status: string; model: string; reason: string } }
 const states = new Set<BelState>(['idle', 'wake_word', 'listening', 'speech_recognition', 'thinking', 'tool_execution', 'speaking', 'task_completed', 'error', 'offline', 'background'])
 const actionPaths = new Set(['/api/bel/tools/execute', '/api/bel/history/clear', '/api/capability/invoke', '/api/models/configure', '/api/learning/memory/save', '/api/learning/memory/edit', '/api/learning/memory/delete'])
 
@@ -37,11 +37,14 @@ export class BelApiClient {
   private onEvent: (event: BelEvent) => void = () => undefined
   private onConnection: (connected: boolean, reason?: string) => void = () => undefined
 
-  async request<T>(path: string, body?: unknown, timeout = 15000): Promise<T> {
+  async request<T>(path: string, body?: unknown, timeout = 15000, signal?: AbortSignal): Promise<T> {
     const base = window.location.origin
     const url = new URL(path, base)
     if (!path.startsWith('/api/') || url.origin !== base || !url.pathname.startsWith('/api/') || url.hash || /[\x00-\x1f\\]/.test(path) || decodeURIComponent(url.pathname).includes('..')) throw new Error('Invalid local API path.')
     const controller = new AbortController()
+    const cancel = () => controller.abort()
+    if (signal?.aborted) cancel()
+    else signal?.addEventListener('abort', cancel, { once: true })
     const deadline = setTimeout(() => controller.abort(), timeout)
     try {
       const response = await fetch(path, { method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin', cache: 'no-store', redirect: 'error', signal: controller.signal, headers: body === undefined ? {} : { 'content-type': 'application/json', 'x-sight-csrf': this.csrf }, body: body === undefined ? undefined : JSON.stringify(body) })
@@ -54,10 +57,11 @@ export class BelApiClient {
       }
       return data as T
     } catch (error) {
+      if (signal?.aborted) throw new DOMException('Request cancelled.', 'AbortError')
       if (controller.signal.aborted) throw new Error('BEL did not answer before the deadline. Check task history before retrying; the backend may still be working.')
       if (error instanceof TypeError) throw new Error('The local BEL service is unavailable. No simulated reply or cloud request was made.')
       throw error
-    } finally { clearTimeout(deadline) }
+    } finally { clearTimeout(deadline); signal?.removeEventListener('abort', cancel) }
   }
 
   async connect(onEvent: (event: BelEvent) => void, onConnection: (connected: boolean, reason?: string) => void) {

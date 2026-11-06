@@ -1,0 +1,16 @@
+{
+  "source_files": 51,
+  "payload_files": 364,
+  "payload_bytes": 215450927,
+  "matched_modules": {
+    "BEL.exe": 37,
+    "BEL-worker.exe": 6
+  },
+  "matched_entry_points": 2,
+  "build_manifest_sha256": "56dbccf58eba3da978e01b1d611d0cc25d5165b241881205195df9ee94f2fca2",
+  "zip_files": 451,
+  "zip_bytes": 111291871,
+  "zip_sha256": "1a65d49fcd1832b6128719af55ac6f7c2feb1e4833fa74b3c2805c3f71915475",
+  "distribution_notices": 55,
+  "zip": "C:\\Users\\Dell\\Documents\\Ai projects\\Sight\\dist\\BEL-0.4.2-preview1-Windows-x64.zip"
+}
