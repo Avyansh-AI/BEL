@@ -1,5 +1,9 @@
 # BEL publication and historical SIGHT builds
 
+## Offline voice Preview 2
+
+Development is isolated on `bel/offline-voice-preview2`, version `0.4.2.dev2`, based on Preview 1 commit `98c8f3120e5f7fc3ce960dcfbe90323e859cacdf`. The local rollback tag is `rollback/bel-preview1-20261106`. The [Preview 2 report](sight/docs/BEL_PREVIEW2_REPORT.md) records current evidence; the [offline speech setup](sight/docs/BEL_OFFLINE_SPEECH.md) describes explicitly installed, pinned CPU assets. Stable 0.4.1 and Preview 1 archives remain separate. This is a development preview with PARTIAL readiness, not a production release or stable-branch merge. Private recordings, corpus audio, model caches, credentials and owner data are excluded from source publication.
+
 ## Local dictation development preview
 
 The `bel/local-dictation-preview` branch is version `0.4.2.dev1`, based on verified commit `8ec3ca007b4aeef1559a280faf404e5af85fe83a`. It adds opt-in local recognition without changing owner data or the selected Gemma profile. The [preview report](sight/docs/BEL_DICTATION_PREVIEW.md) records evidence and limits. This candidate is separate from the preserved 0.4.1 ZIP and its hour-long test; it is not a production release.

@@ -1,0 +1,6 @@
+# Optional Windows x64/Python 3.12 corpus decoding only; never required by BEL.
+# Install to a separate --target directory with --no-deps --require-hashes.
+soundfile==0.14.0 --hash=sha256:299491d3499460fb1b74bb4bd78b57ffc2d243a5fafa7b6ec1b264875c78453e
+numpy==2.5.4 --hash=sha256:a7b1b6353e36a7e50de2973a38d705c88ee93adcf120673cee7f45a4a3fa223a
+cffi==2.1.1 --hash=sha256:f53e442b08449d42821fa4a4fba000095af9f62742a500f978a9f557ec44339a
+pycparser==3.12 --hash=sha256:a076f3f489b39b43ed13563a1dafe42447445bec2e294154ec5c57fcdda4c85e

@@ -5,7 +5,8 @@ export type Proposal = { path: string; args: Record<string, unknown>; summary: s
 export type ChatReply = { requestId: string; status: string; say: string; offline: boolean; proposal?: Proposal }
 export type PreparedAction = Proposal & { approvalId: string; expiresAt: number }
 export type HistoryItem = { id: string; role: 'user' | 'assistant'; text: string; at: number }
-export type BelStatus = { name: string; full_name: string; owner: string; mode: string; voice: { recording_supported: boolean; stt_available: boolean; tts_available: boolean; playback_available: boolean; wake_word: string; wake_available: boolean; microphone_enabled: boolean; reason: string; locales?: string[]; locale?: string; engine?: string }; tool_router: { status: string; model: string; reason: string } }
+export type SpeechEngine = { id: 'windows' | 'whisper_cpp'; label: string; available: boolean; locales: string[]; reason: string }
+export type BelStatus = { name: string; full_name: string; owner: string; mode: string; voice: { recording_supported: boolean; stt_available: boolean; tts_available: boolean; playback_available: boolean; wake_word: string; wake_available: boolean; microphone_enabled: boolean; reason: string; locales?: string[]; locale?: string; engine?: string; default_engine?: 'windows' | 'whisper_cpp'; engines?: SpeechEngine[] }; tool_router: { status: string; model: string; reason: string } }
 const states = new Set<BelState>(['idle', 'wake_word', 'listening', 'speech_recognition', 'thinking', 'tool_execution', 'speaking', 'task_completed', 'error', 'offline', 'background'])
 const actionPaths = new Set(['/api/bel/tools/execute', '/api/bel/history/clear', '/api/capability/invoke', '/api/models/configure', '/api/learning/memory/save', '/api/learning/memory/edit', '/api/learning/memory/delete'])
 

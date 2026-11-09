@@ -48,6 +48,9 @@ class Config:
     model_timeout: float = 120
     thinking: bool | None = None
     local_stt: bool = False
+    speech_engine: str = 'whisper_cpp'
+    asr_directory: Path | None = None
+    asr_model: str = 'small-q5_1'
 
     @classmethod
     def from_env(cls):
@@ -64,10 +67,20 @@ class Config:
         data_dir = reject_links(Path(directory).expanduser()).resolve()
         saved = read_local_model(data_dir)
         speech = environment_value('LOCAL_STT', 'disabled')
-        if speech not in {'disabled', 'windows'}:
-            raise ValueError('BEL_LOCAL_STT must be disabled or windows')
+        if speech not in {'disabled', 'windows', 'whisper_cpp'}:
+            raise ValueError('BEL_LOCAL_STT must be disabled, windows or whisper_cpp')
+        speech_engine = environment_value('SPEECH_ENGINE', 'whisper_cpp')
+        asr_model = environment_value('ASR_MODEL', 'small-q5_1')
+        if speech_engine not in {'windows', 'whisper_cpp'} or asr_model not in {'base-q5_1', 'small-q5_1'}:
+            raise ValueError('Invalid offline speech engine or model selection')
+        asr_directory = environment_value('ASR_DIRECTORY')
+        if asr_directory is not None:
+            if not asr_directory.strip():
+                raise ValueError('BEL_ASR_DIRECTORY must name an installation directory')
+            asr_directory = reject_links(Path(asr_directory).expanduser()).resolve()
         return cls(data_dir, port, environment_value("OLLAMA_MODEL", saved.get("model", "")),
-                   thinking=saved.get('thinking'), local_stt=speech == 'windows')
+                   thinking=saved.get('thinking'), local_stt=speech != 'disabled',
+                   speech_engine=speech_engine, asr_directory=asr_directory, asr_model=asr_model)
 
     @property
     def origins(self):

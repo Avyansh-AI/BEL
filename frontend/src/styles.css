@@ -311,3 +311,14 @@ button:disabled { opacity: .4; cursor: not-allowed; }
 .orb-stage--listening .orb-orbit, .orb-stage--speaking .orb-orbit { opacity: .96; }
 @keyframes orb-ring-drift { 0%, 100% { transform: rotate(-27deg) scale(1); } 50% { transform: rotate(-23deg) scale(1.015); } }
 .app--reduced .orb-orbit { animation: none !important; }
+
+/* A temporary review surface uses the existing quiet blue input language. */
+.speech-review { width: 100%; max-height: min(40vh, 310px); overflow: auto; margin-bottom: 12px; padding: 14px 16px; border: 1px solid rgba(160,199,255,.16); border-radius: 20px; background: rgba(13,20,31,.94); box-shadow: 0 10px 34px rgba(0,0,0,.18); text-align: left; }
+.speech-review-heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 5px 12px; color: #adc3df; font-size: 9px; letter-spacing: .08em; }
+.speech-review textarea { display: block; width: 100%; min-height: 58px; max-height: 120px; margin: 9px 0; resize: vertical; padding: 9px 11px; border: 1px solid rgba(161,198,245,.17); border-radius: 10px; color: #e2edfa; background: rgba(4,10,18,.65); font: inherit; font-size: 13px; line-height: 1.5; }
+.speech-review textarea:focus-visible { outline: 2px solid rgba(140,191,255,.7); outline-offset: 2px; }
+.speech-review-note { margin: 5px 0 9px; color: #aebcd0; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.speech-review .action-row { justify-content: flex-end; flex-wrap: wrap; gap: 9px; }
+.app--compact .speech-review { max-height: 180px; margin-bottom: 7px; padding: 10px; border-radius: 13px; }
+.app--compact:has(.speech-review) .main-stage { min-height: 0; }
+@media (max-width: 540px) { .speech-review { padding: 11px; max-height: 35vh; } .speech-review .primary-button, .speech-review .text-button { font-size: 11px; } }

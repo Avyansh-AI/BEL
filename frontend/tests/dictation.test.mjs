@@ -44,4 +44,17 @@ test('language options reflect installed supported locales without prototype or 
   assert.deepEqual(installedLanguages(['en-IN', 'en-GB', 'en-US', 'hi-IN', 'en-IN', '__proto__', 'toString', 'fr-FR', 3]), ['en-IN', 'en-GB', 'en-US', 'hi-IN'])
   assert.deepEqual(installedLanguages(null), [])
   assert.deepEqual(installedLanguages(['en-US']), ['en-US'])
+  assert.deepEqual(installedLanguages(['auto', 'hi-IN']), ['hi-IN'])
+  assert.deepEqual(installedLanguages(['auto', 'hi-IN'], true), ['auto', 'hi-IN'])
+})
+
+test('capture identity is preserved through recognition and invalid identities cannot enter a session', () => {
+  const session = new DictationSession(() => assert.fail('unexpected cancellation'))
+  for (const value of ['', 'undefined', 'another owner request', '../request']) assert.throws(() => session.begin(value), /Invalid capture session/)
+  const id = crypto.randomUUID()
+  const request = session.begin(id)
+  assert.equal(request.requestId, id)
+  assert.equal(session.requestId, id)
+  assert.equal(session.finish(request), true)
+  assert.equal(session.requestId, null)
 })

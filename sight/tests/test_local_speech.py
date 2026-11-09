@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import io
 import json
 import os
@@ -165,3 +166,32 @@ def test_failed_pipe_exchange_is_reported_without_payload(monkeypatch):
     with pytest.raises(SpeechUnavailable, match='transport failed') as error:
         local_speech.run_worker({'audio': 'private payload'}, threading.Event(), 1)
     assert 'private' not in str(error.value)
+
+
+@pytest.mark.skipif(os.name != 'nt', reason='Execute the fixed Windows collection loop')
+def test_eof_after_valid_final_result_does_not_discard_collected_text():
+    # Deterministic recognizer fixture models System.Speech's documented EOF:
+    # a valid final result clears AudioFormat; the next Recognize call throws.
+    # Execute the actual worker collection code, not a duplicate Python loop.
+    preamble = '''
+$ErrorActionPreference = 'Stop'
+[Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
+class EndedRecognizer {
+    [object]$AudioFormat = 'configured'
+    [object] Recognize([timespan]$timeout) {
+        if ($null -eq $this.AudioFormat) { throw 'No audio input is supplied' }
+        $this.AudioFormat = $null
+        return [pscustomobject]@{Text='synthetic final phrase'; Confidence=0.8}
+    }
+}
+$engine = [EndedRecognizer]::new()
+$recognizer = [pscustomobject]@{Culture=[pscustomobject]@{Name='en-US'}}
+'''
+    collection = local_speech.POWERSHELL.split('    $parts = ', 1)[1].split('} catch {', 1)[0]
+    script = preamble + '    $parts = ' + collection
+    command = [str(local_speech.powershell_path()), '-NoLogo', '-NoProfile', '-NonInteractive',
+               '-EncodedCommand', base64.b64encode(script.encode('utf-16-le')).decode('ascii')]
+    response = local_speech.run_process(command, b'', threading.Event(), 10)
+    result = json.loads(response.decode('utf-8-sig'))
+    assert result['ok'] is True and result['text'] == 'synthetic final phrase'
+    assert result['confidence'] == .8

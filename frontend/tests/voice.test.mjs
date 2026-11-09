@@ -1,6 +1,6 @@
 import { afterEach, test } from 'node:test'
 import assert from 'node:assert/strict'
-import { appendTranscript, encodeWav, LocalCapture, parseTranscript, toBase64 } from '../src/lib/voice.ts'
+import { appendTranscript, captureErrorMessage, encodeWav, LocalCapture, parseTranscript, toBase64 } from '../src/lib/voice.ts'
 
 const originalNavigator = Object.getOwnPropertyDescriptor(globalThis, 'navigator')
 const originalAudioContext = globalThis.AudioContext
@@ -75,9 +75,9 @@ function fakeAudioDevice() {
     createMediaStreamSource() { return { connect() {} } }
     createScriptProcessor() { return processor }
   }
-  const feed = (size = 4096) => {
+  const feed = (size = 4096, amplitude = .25) => {
     const output = new Float32Array(size).fill(1)
-    processor.onaudioprocess?.({ inputBuffer: { getChannelData: () => new Float32Array(size).fill(.25) }, outputBuffer: { getChannelData: () => output } })
+    processor.onaudioprocess?.({ inputBuffer: { getChannelData: () => new Float32Array(size).fill(amplitude) }, outputBuffer: { getChannelData: () => output } })
     return output
   }
   return { observed, track, processor, feed }
@@ -104,6 +104,70 @@ test('twenty-second capture cap stops input and produces a bounded local WAV', a
   assert.equal(limits, 1)
   assert.ok(result.length <= 44 + 20 * 16000 * 2)
   assert.ok(result.length > 44 + 19 * 16000 * 2)
+  assert.equal(observed.stops, 1)
+  assert.equal(observed.closed, 1)
+})
+
+test('unavailable confidence remains unknown and engine fallback metadata must be consistent', () => {
+  const valid = { text: 'A reviewed draft.', confidence: null, confidence_kind: 'unavailable', locale: 'auto', engine: 'whisper.cpp', engine_id: 'whisper_cpp', requested_engine: 'whisper_cpp', review_required: true }
+  assert.equal(parseTranscript(valid, 'auto').confidence, null)
+  for (const change of [{ confidence_kind: undefined }, { confidence: .9 }, { engine_id: 'remote' }, { fallback_from: 'whisper_cpp' }, { fallback_reason: 'x'.repeat(501) }]) {
+    assert.throws(() => parseTranscript({ ...valid, ...change }, 'auto'), /invalid result/)
+  }
+  const fallback = { ...valid, locale: 'en-US', engine: 'Windows System.Speech', engine_id: 'windows', confidence: .5, confidence_kind: 'engine_score', fallback_from: 'whisper_cpp', fallback_reason: 'The requested local model is missing.' }
+  assert.deepEqual(parseTranscript(fallback, 'en-US'), fallback)
+})
+
+test('permission and device failures give specific recovery guidance', () => {
+  for (const [name, hint] of [['NotAllowedError', 'permission was denied'], ['SecurityError', 'permission was denied'], ['NotFoundError', 'No microphone'], ['NotReadableError', 'busy'], ['OverconstrainedError', 'System default']]) {
+    assert.ok(captureErrorMessage({ name }).includes(hint))
+  }
+  assert.match(captureErrorMessage(new Error('private device details')), /capture was interrupted/)
+  assert.doesNotMatch(captureErrorMessage(new Error('private device details')), /private/)
+})
+
+test('zero and near-zero capture are discarded with all audio resources closed', async () => {
+  for (const amplitude of [0, 1e-7, NaN]) {
+    const { feed, observed } = fakeAudioDevice()
+    const capture = new LocalCapture()
+    await capture.start('', () => {}, () => assert.fail('unexpected limit'))
+    feed(4096, amplitude)
+    assert.equal(capture.stop(true), null)
+    assert.equal(capture.failure, 'silent')
+    assert.equal(observed.stops, 1)
+    assert.equal(observed.closed, 1)
+    assert.equal(observed.disconnected, 1)
+  }
+})
+
+test('rapid independent capture cancellation releases each device and keeps session IDs unique', async () => {
+  const ids = new Set()
+  for (let i = 0; i < 30; i++) {
+    const { feed, observed, track } = fakeAudioDevice()
+    const capture = new LocalCapture()
+    ids.add(capture.id)
+    await capture.start('', () => {}, () => assert.fail('unexpected limit'))
+    feed()
+    assert.equal(capture.stop(false), null)
+    assert.equal(capture.stop(false), null)
+    assert.deepEqual(observed, { stops: 1, closed: 1, disconnected: 1, interrupted: 0 })
+    assert.equal(track.onended, null)
+  }
+  assert.equal(ids.size, 30)
+})
+
+test('cancellation during audio-context resume never installs a processing callback', async () => {
+  const { processor, observed } = fakeAudioDevice()
+  const Original = globalThis.AudioContext
+  let release
+  globalThis.AudioContext = class extends Original { resume() { return new Promise(resolve => { release = resolve }) } }
+  const capture = new LocalCapture()
+  const pending = capture.start('', () => assert.fail('unexpected level'), () => assert.fail('unexpected limit'))
+  await new Promise(resolve => setImmediate(resolve))
+  capture.stop(false)
+  release()
+  assert.equal(await pending, false)
+  assert.equal(processor.onaudioprocess, null)
   assert.equal(observed.stops, 1)
   assert.equal(observed.closed, 1)
 })

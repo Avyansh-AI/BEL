@@ -1,6 +1,6 @@
 [project]
 name = "bel-local"
-version = "0.4.2.dev1"
+version = "0.4.2.dev2"
 description = "BEL — Behavioral Executive Logic; local-first assistant, partial release"
 requires-python = ">=3.12,<3.13"
 

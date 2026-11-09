@@ -47,7 +47,7 @@ def loopback_listeners(port):
     return rows if isinstance(rows, list) else [rows]
 
 
-def run(executable, fixture):
+def run(executable, fixture, engine='windows', asr_directory=None):
     run_id = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ') + '-' + uuid.uuid4().hex[:6]
     cache = ROOT.parent / '.cache' / ('speech-native-' + run_id)
     data = cache / 'data'
@@ -61,6 +61,10 @@ def run(executable, fixture):
                 'BEL_OLLAMA_MODEL', 'SIGHT_OLLAMA_MODEL', 'WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS', 'WEBVIEW2_USER_DATA_FOLDER'):
         env.pop(key, None)
     env['BEL_OLLAMA_MODEL'] = ''  # No inference is required for this test.
+    env['BEL_SPEECH_ENGINE'] = engine
+    env['BEL_ASR_MODEL'] = 'small-q5_1'
+    if asr_directory is not None:
+        env['BEL_ASR_DIRECTORY'] = str(asr_directory.resolve(strict=True))
     env['WEBVIEW2_USER_DATA_FOLDER'] = str(cache / 'webview-profile')
     env['WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS'] = (
         f'--remote-debugging-address=127.0.0.1 --remote-debugging-port={debug_port} '
@@ -69,7 +73,7 @@ def run(executable, fixture):
     audio = base64.b64encode(raw).decode('ascii')
     checks, transcript = [], ''
     started = time.monotonic()
-    result = {'format': 1, 'kind': 'Frozen BEL, actual native WebView2 and Windows System.Speech',
+    result = {'format': 1, 'kind': 'Frozen BEL, actual native WebView2 and local speech', 'requested_engine': engine,
               'run_id': run_id, 'started_utc': datetime.now(timezone.utc).isoformat(),
               'executable_sha256': hashlib.sha256(executable.read_bytes()).hexdigest(),
               'fixture_sha256': hashlib.sha256(raw).hexdigest(),
@@ -78,7 +82,7 @@ def run(executable, fixture):
                   'Prerecorded synthetic WAV sent over HTTP; this does not qualify native microphone permissions or human recognition.',
                   'Installed WebView2 and speech runtime reused; fresh Windows account remains untested.',
                   'A loopback-only debug port was enabled solely in this disposable test process; ordinary launches do not set it.',
-                  'No wake-word model or Hindi speech recognizer was provisioned.']}
+                  'No BEL wake-word model or Hindi accuracy qualification is supplied by this test.']}
 
     def check(name, passed, **details):
         checks.append({'id': name, 'passed': bool(passed), **details})
@@ -91,7 +95,7 @@ def run(executable, fixture):
                                     '--data-directory', str(data), '--port', str(port)],
                                    env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                                    stderr=subprocess.DEVNULL, creationflags=0x08000000)
-        with httpx.Client(base_url=origin, trust_env=False, timeout=35) as client:
+        with httpx.Client(base_url=origin, trust_env=False, timeout=75) as client:
             connected = False
             deadline = time.monotonic() + 40
             while time.monotonic() < deadline and process.poll() is None:
@@ -112,17 +116,19 @@ def run(executable, fixture):
             status = client.get('/api/speech').json()
             check('frozen_english_recognizer_available', status['stt']['configured'] and 'en-US' in status['stt']['locales'])
             check('consent_defaults_off_and_wake_unavailable', not status['micEnabled'] and not status['wake']['enabled'])
-            make_audio = lambda: {'audio': audio, 'mimeType': 'audio/wav', 'locale': 'en-US', 'requestId': str(uuid.uuid4())}
+            make_audio = lambda: {'audio': audio, 'mimeType': 'audio/wav', 'locale': 'en-US',
+                                 'engine': engine, 'allow_fallback': False, 'requestId': str(uuid.uuid4())}
             check('frozen_no_consent_rejects_audio', client.post('/api/speech/transcribe', json=make_audio()).status_code == 403)
             check('frozen_explicit_consent', client.post('/api/speech/consent', json={'enabled': True}).json() == {'enabled': True})
             before = time.monotonic()
             recognized = client.post('/api/speech/transcribe', json=make_audio())
             heard = recognized.json()
             result['recognition_seconds'] = round(time.monotonic() - before, 3)
-            valid = (recognized.status_code == 200 and heard.get('engine') == 'Windows System.Speech'
+            confidence_valid = (heard.get('confidence') is None and heard.get('confidence_kind') == 'unavailable') if engine == 'whisper_cpp' else (type(heard.get('confidence')) in (int, float) and 0 <= heard['confidence'] <= 1)
+            valid = (recognized.status_code == 200 and heard.get('engine_id') == engine
                      and isinstance(heard.get('text'), str) and bool(heard['text'].strip())
                      and heard.get('review_required') is True and heard.get('locale') == 'en-US'
-                     and type(heard.get('confidence')) in (int, float) and 0 <= heard['confidence'] <= 1)
+                     and confidence_valid)
             check('frozen_actual_recognition_requires_review', valid)
             if valid:
                 transcript = heard['text']
@@ -213,10 +219,12 @@ def main():
     parser.add_argument('--executable', required=True, type=Path)
     parser.add_argument('--fixture', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
+    parser.add_argument('--engine', choices=('windows', 'whisper_cpp'), default='windows')
+    parser.add_argument('--asr-directory', type=Path)
     args = parser.parse_args()
     if os.name != 'nt' or args.output.exists():
         raise SystemExit('Windows and a new evidence path are required')
-    result = run(args.executable.resolve(strict=True), args.fixture.resolve(strict=True))
+    result = run(args.executable.resolve(strict=True), args.fixture.resolve(strict=True), args.engine, args.asr_directory)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open('x', encoding='utf-8') as stream:
         json.dump(result, stream, indent=2)

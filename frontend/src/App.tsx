@@ -3,8 +3,9 @@ import type { FormEvent } from 'react'
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'framer-motion'
 import { AudioLines, Check, ChevronDown, CircleHelp, History, Mic, MicOff, Minus, PanelTop, Send, Settings2, Volume2, Square, X } from 'lucide-react'
 import { BelApiClient, parseHistory } from './lib/belApi'
-import type { BelEvent, BelState, BelStatus, HistoryItem, PreparedAction, Proposal } from './lib/belApi'
-import { appendTranscript, LocalCapture, parseTranscript, toBase64 } from './lib/voice'
+import type { BelEvent, BelState, BelStatus, HistoryItem, PreparedAction, Proposal, SpeechEngine } from './lib/belApi'
+import { appendTranscript, captureErrorMessage, LocalCapture, parseTranscript, toBase64 } from './lib/voice'
+import type { SpeechEngineId, Transcript } from './lib/voice'
 import { DictationSession, dictationLanguages, installedLanguages } from './lib/dictation'
 import { Orb } from './components/Orb'
 import type { OrbState } from './components/Orb'
@@ -20,6 +21,9 @@ type DesktopWindow = Window & { pywebview?: { api: DesktopBridge } }
 type Memory = { id: string; store: string; project_id: string; key: string; content: string; source_uri: string; privacy_scope: string; confidence: number; expiry: number | null }
 type Provider = { id: string; policy: Record<string, unknown>; status: string; reason?: string }
 type Panel = 'settings' | 'history' | 'memory' | 'providers' | 'diagnostics' | 'tools' | null
+type VoicePhase = 'idle' | 'requesting' | 'listening' | 'processing' | 'draft_ready' | 'review' | 'cancelled' | 'error'
+type VoiceDraft = { captureId: string; text: string; result: Transcript }
+const voiceLabels: Record<VoicePhase, string> = { idle: '', requesting: 'Waiting for microphone permission…', listening: 'Listening…', processing: 'Processing speech locally…', draft_ready: 'Draft ready — awaiting your review', review: 'Awaiting your review', cancelled: 'Recording cancelled', error: 'Speech input needs attention' }
 const labels: Record<BelState, string> = { idle: 'Here when you need me', wake_word: 'Wake word detected', listening: 'Listening…', speech_recognition: 'Transcribing locally…', thinking: 'Thinking…', tool_execution: 'Carrying out your approved action…', speaking: 'Speaking…', task_completed: 'Task completed', error: 'Something needs attention', offline: 'Local service disconnected', background: 'Running in the background' }
 const visualState = (state: BelState): OrbState => state === 'wake_word' || state === 'task_completed' ? 'happy' : state === 'tool_execution' || state === 'speech_recognition' ? 'thinking' : state === 'background' ? 'idle' : state
 const message = (error: unknown) => error instanceof Error ? error.message : 'The request could not be completed.'
@@ -57,11 +61,21 @@ export default function App() {
   const consentPendingRef = useRef(false)
   const consentGeneration = useRef(0)
   const [locale, setLocale] = useState('en-US')
+  const [engine, setEngine] = useState<SpeechEngineId>('windows')
+  const engineRef = useRef(engine)
+  engineRef.current = engine
+  const engineChosen = useRef(false)
+  const [allowFallback, setAllowFallback] = useState(true)
+  const [voicePhase, setVoicePhase] = useState<VoicePhase>('idle')
+  const [voiceDraft, setVoiceDraft] = useState<VoiceDraft | null>(null)
+  const voiceDraftRef = useRef<VoiceDraft | null>(null)
+  voiceDraftRef.current = voiceDraft
   const [transcribing, setTranscribing] = useState(false)
   const [stoppingDictation, setStoppingDictation] = useState(false)
   const [recording, setRecording] = useState(false)
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
   const [device, setDevice] = useState('')
+  const [hasDevicePermission, setHasDevicePermission] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [audioReady, setAudioReady] = useState('')
   const [memories, setMemories] = useState<Memory[]>([])
@@ -85,7 +99,13 @@ export default function App() {
   const mounted = useRef(true)
   const systemReduced = useReducedMotion()
   const reducedMotion = settings.animations === 'reduced' || systemReduced === true
-  const canRecord = !!(status?.voice.stt_available && status.voice.recording_supported && navigator.mediaDevices?.getUserMedia)
+  const engines: SpeechEngine[] = Array.isArray(status?.voice.engines)
+    ? status.voice.engines.filter(item => item && ['windows', 'whisper_cpp'].includes(item.id) && Array.isArray(item.locales))
+    : [{ id: 'windows', label: 'Windows System.Speech', available: !!status?.voice.stt_available, locales: status?.voice.locales || [], reason: status?.voice.reason || '' }]
+  const selectedEngine = engines.find(item => item.id === engine)
+  const languageChoices = installedLanguages(selectedEngine?.locales, engine === 'whisper_cpp')
+  const engineReady = selectedEngine?.available || (allowFallback && engines.some(item => item.available && item.id !== engine && item.locales.includes(locale)))
+  const canRecord = !!(status?.voice.stt_available && status.voice.recording_supported && engineReady && navigator.mediaDevices?.getUserMedia)
 
   const notify = (text: string) => { if (mounted.current) setToast(text) }
   const report = (error: unknown) => { if (mounted.current) { setState('error'); notify(message(error)) } }
@@ -95,7 +115,9 @@ export default function App() {
     const data = await api.request<BelStatus>('/api/bel/status')
     if (!mounted.current) return
     statusRef.current = data; setStatus(data)
-    const supported = installedLanguages(data.voice.locales)
+    const selected = !engineChosen.current && data.voice.default_engine ? data.voice.default_engine : engineRef.current
+    if (!engineChosen.current && data.voice.default_engine) setEngine(data.voice.default_engine)
+    const supported = installedLanguages(data.voice.engines?.find(item => item.id === selected)?.locales ?? data.voice.locales, selected === 'whisper_cpp')
     setLocale(value => supported.includes(value) ? value : supported[0] || 'en-US')
     if ((!data.voice.microphone_enabled || !data.voice.stt_available) && !consentPendingRef.current && consentVersion === consentGeneration.current) {
       micAllowedRef.current = false; setMicAllowed(false); cancelCapture()
@@ -103,6 +125,7 @@ export default function App() {
   }
   const stopPlayback = () => { if (audio.current) { audio.current.pause(); audio.current.currentTime = 0; audio.current = null } setPlaying(false); setState(connectedRef.current ? 'idle' : 'offline') }
   const cancelCapture = () => {
+    const hadCapture = !!capture.current || dictation.active
     held.current = false; capture.current?.stop(false); capture.current = null
     if (dictation.active) {
       setTranscribing(false); setStoppingDictation(true)
@@ -116,6 +139,7 @@ export default function App() {
         if (mounted.current) { setBusy(false); setStoppingDictation(false) }
       })
     }
+    if (hadCapture) setVoicePhase('cancelled')
     setRecording(false); setAudioLevel(0)
   }
   const setConsent = async (enabled: boolean) => {
@@ -134,7 +158,7 @@ export default function App() {
   }
 
   const onEvent = (event: BelEvent) => {
-    if (event.requestId && event.requestId !== activeRequest.current) return
+    if (event.requestId && event.requestId !== activeRequest.current && event.requestId !== dictation.requestId) return
     if (event.type === 'error') { notify(event.message); if (!audio.current && !capture.current) setState('error'); return }
     // Only actual local playback/capture drives these two states.
     if (event.state === 'speaking' || event.state === 'listening' || audio.current || capture.current) return
@@ -156,36 +180,42 @@ export default function App() {
     mounted.current = true
     connect()
     const nativeReady = () => { const host = bridge(); if (host) void host.status().then(s => { if (mounted.current) { setNative(s); setCompact(s.mode === 'compact') } }).catch(report) }
-    const nativeMode = (event: Event) => { const mode = (event as CustomEvent<{ mode: NativeMode }>).detail?.mode; if (['active', 'compact', 'background'].includes(mode)) { setCompact(mode === 'compact'); setNative(s => s ? { ...s, mode } : s); if (mode === 'background' && !busyRef.current) setState('background') } }
-    const cancel = () => { if (capture.current || dictation.active) { cancelCapture(); setState(connectedRef.current ? 'idle' : 'offline') } }
+    const nativeMode = (event: Event) => { const mode = (event as CustomEvent<{ mode: NativeMode }>).detail?.mode; if (['active', 'compact', 'background'].includes(mode)) { setCompact(mode === 'compact'); setNative(s => s ? { ...s, mode } : s); if (mode === 'background') { cancelCapture(); if (!busyRef.current) setState('background') } } }
+    const cancel = () => { if (capture.current || dictation.active) { cancelCapture(); setVoicePhase('cancelled'); setState(connectedRef.current ? 'idle' : 'offline') } }
     const visibility = () => { if (document.hidden) cancel() }
     nativeReady()
     window.addEventListener('pywebviewready', nativeReady)
     window.addEventListener('bel-native-mode', nativeMode)
     window.addEventListener('blur', cancel)
+    window.addEventListener('pagehide', cancel)
     document.addEventListener('visibilitychange', visibility)
     return () => {
       mounted.current = false; consentGeneration.current += 1
       void dictation.cancel().catch(() => undefined)
       if (micAllowedRef.current) void api.request('/api/speech/consent', { enabled: false }).catch(() => undefined)
       micAllowedRef.current = false; api.disconnect(); capture.current?.stop(false); capture.current = null; audio.current?.pause(); audio.current = null
-      window.removeEventListener('pywebviewready', nativeReady); window.removeEventListener('bel-native-mode', nativeMode); window.removeEventListener('blur', cancel); document.removeEventListener('visibilitychange', visibility)
+      window.removeEventListener('pywebviewready', nativeReady); window.removeEventListener('bel-native-mode', nativeMode); window.removeEventListener('blur', cancel); window.removeEventListener('pagehide', cancel); document.removeEventListener('visibilitychange', visibility)
     }
   }, [])
   useEffect(() => { try { localStorage.setItem('bel-interface-settings-v1', JSON.stringify(settings)) } catch { /* Appearance can work without storage. */ } }, [settings])
   useEffect(() => { if (!toast) return; const timer = setTimeout(() => setToast(''), 8000); return () => clearTimeout(timer) }, [toast])
   useEffect(() => { if (!approval) return; const timer = setInterval(() => setNow(Date.now()), 500); return () => clearInterval(timer) }, [approval])
   useEffect(() => {
-    const list = () => { if (micAllowedRef.current) void navigator.mediaDevices?.enumerateDevices().then(items => { if (mounted.current && micAllowedRef.current) setDevices(items.filter(d => d.kind === 'audioinput')) }).catch(() => setDevices([])) }
-    const changed = () => { if (capture.current || dictation.active) { cancelCapture(); setState('idle'); notify('Audio devices changed. Pending dictation was discarded.') }; list() }
+    const list = () => { if (micAllowedRef.current && hasDevicePermission) void navigator.mediaDevices?.enumerateDevices().then(items => {
+      if (!mounted.current || !micAllowedRef.current) return
+      const microphones = items.filter(d => d.kind === 'audioinput'); setDevices(microphones)
+      setDevice(current => microphones.some(item => item.deviceId === current) ? current : '')
+    }).catch(() => { if (mounted.current) setDevices([]) }) }
+    const changed = () => { if (capture.current || dictation.active) { cancelCapture(); setVoicePhase('cancelled'); setState('idle'); notify('Audio devices changed. Pending dictation was discarded.') }; list() }
     list(); navigator.mediaDevices?.addEventListener('devicechange', changed)
     return () => navigator.mediaDevices?.removeEventListener('devicechange', changed)
-  }, [micAllowed])
+  }, [micAllowed, hasDevicePermission])
 
-  const sendMessage = async (raw: string) => {
+  const sendMessage = async (raw: string, reviewedSpeech = false) => {
     const text = raw.trim()
-    if (!text || text.length > 8000 || busyRef.current || !connectedRef.current || approval) return
+    if (!text || text.length > 8000 || busyRef.current || !connectedRef.current || approval || (voiceDraftRef.current && !reviewedSpeech)) return
     stopPlayback(); cancelCapture(); setAudioReady(''); setProposal(null)
+    setVoiceDraft(null); setVoicePhase('idle')
     busyRef.current = true; setBusy(true); setInput(''); setState('thinking')
     const requestId = makeId(); activeRequest.current = requestId
     const assistantId = requestId + '-assistant'
@@ -246,17 +276,22 @@ export default function App() {
     const current = capture.current; capture.current = null
     if (!current) return
     const wav = current.stop(true); setRecording(false); setAudioLevel(0)
-    if (!wav) { setState(connectedRef.current ? 'idle' : 'offline'); return }
+    if (!wav) {
+      setVoicePhase(current.failure ? 'error' : 'idle'); setState(connectedRef.current ? 'idle' : 'offline')
+      if (current.failure) notify(current.failure === 'silent' ? 'No audible signal was captured. Check the microphone level and try again.' : 'The recording was too short. Hold to talk for a little longer.')
+      return
+    }
     if (!micAllowedRef.current || dictation.stopping) return
-    const request = dictation.begin()
-    busyRef.current = true; setBusy(true); setTranscribing(true); setState('speech_recognition')
+    const request = dictation.begin(current.id)
+    busyRef.current = true; setBusy(true); setTranscribing(true); setVoicePhase('processing'); setState('speech_recognition')
     try {
-      const response = await api.request<unknown>('/api/speech/transcribe', { audio: toBase64(wav), mimeType: 'audio/wav', locale, requestId: request.requestId }, 60000, request.controller.signal)
+      const response = await api.request<unknown>('/api/speech/transcribe', { audio: toBase64(wav), mimeType: 'audio/wav', locale, engine, allow_fallback: allowFallback, requestId: request.requestId }, 120000, request.controller.signal)
       if (!dictation.accepts(request) || !mounted.current || !micAllowedRef.current) return
       const result = parseTranscript(response, locale)
-      setInput(appendTranscript(inputRef.current, result.text)); setState('idle')
-      notify(result.confidence < 0.7 ? 'Dictation may have misheard words. Edit the transcript before pressing Send.' : 'Transcript ready. Review it and press Send.')
-    } catch (error) { if (dictation.accepts(request)) report(error) }
+      if (result.requested_engine && result.requested_engine !== engine) throw new Error('The transcription engine did not match this request.')
+      setVoiceDraft({ captureId: current.id, text: result.text, result }); setVoicePhase('draft_ready'); setState('idle')
+      notify('Speech draft ready. Review or correct it, then deliberately send it.')
+    } catch (error) { if (dictation.accepts(request)) { setVoicePhase('error'); report(error) } }
     finally {
       if (dictation.finish(request)) {
         busyRef.current = false
@@ -265,19 +300,27 @@ export default function App() {
     }
   }
   const startCapture = async () => {
-    if (!micAllowedRef.current || !canRecord || busyRef.current || dictation.stopping || consentPendingRef.current || capture.current || approval || !connectedRef.current) return
+    if (!micAllowedRef.current || !canRecord || busyRef.current || dictation.stopping || consentPendingRef.current || capture.current || voiceDraftRef.current || approval || !connectedRef.current) return
     held.current = true; stopPlayback()
+    setVoicePhase('requesting')
     const current = new LocalCapture(); capture.current = current
     try {
-      const started = await current.start(device, setAudioLevel, () => void finishCapture(), () => {
-        if (capture.current === current) { cancelCapture(); report(new Error('The microphone disconnected. Audio was discarded.')) }
+      const started = await current.start(device, level => { if (capture.current === current) setAudioLevel(level) }, () => { if (capture.current === current) void finishCapture() }, () => {
+        if (capture.current === current) { cancelCapture(); setVoicePhase('error'); report(new Error('The microphone disconnected. Audio was discarded.')) }
       })
       if (!started || !held.current || capture.current !== current || !mounted.current) { current.stop(false); return }
-      setRecording(true); setState('listening')
-    } catch { if (capture.current === current) { cancelCapture(); report(new Error('Microphone access failed. Check permission and the selected audio device.')) } }
+      setHasDevicePermission(true); setRecording(true); setVoicePhase('listening'); setState('listening')
+    } catch (error) { if (capture.current === current) { cancelCapture(); setVoicePhase('error'); report(new Error(captureErrorMessage(error))) } }
+  }
+  const discardSpeechDraft = () => { setVoiceDraft(null); setVoicePhase('idle'); notify('Speech draft discarded. Your typed message is unchanged.') }
+  const sendSpeechDraft = () => {
+    const draft = voiceDraftRef.current
+    if (!draft || !draft.text.trim()) return
+    try { void sendMessage(appendTranscript(inputRef.current, draft.text), true) } catch (error) { report(error) }
   }
   const setMode = async (mode: NativeMode) => {
     if (mode === 'background' && !native?.tray_available) return
+    if (mode === 'background') cancelCapture()
     try { const host = bridge(); if (host) { const result = await host.set_mode(mode); setNative(result); setCompact(result.mode === 'compact') } else if (mode !== 'background') setCompact(mode === 'compact') } catch (error) { report(error) }
   }
 
@@ -307,6 +350,9 @@ export default function App() {
   }
   const lastUser = [...messages].reverse().find(x => x.role === 'user')
   const lastBel = [...messages].reverse().find(x => x.role === 'assistant')
+  const shownVoicePhase = recording ? 'listening' : voicePhase === 'listening' ? 'idle' : voicePhase
+  const voiceLabel = shownVoicePhase !== 'idle' ? voiceLabels[shownVoicePhase] : ''
+  const shownOrbState: OrbState = recording ? 'listening' : shownVoicePhase === 'processing' ? 'thinking' : voiceDraft ? 'idle' : visualState(state) === 'listening' ? 'idle' : visualState(state)
 
   return <MotionConfig reducedMotion={reducedMotion ? 'always' : 'never'}>
     <div className={`app app--${settings.theme}${compact ? ' app--compact' : ''}${reducedMotion ? ' app--reduced' : ''}`}>
@@ -325,7 +371,7 @@ export default function App() {
       </header>
       <main className="main-stage">
         <div className="presence-label"><span className="presence-line" /><span>A QUIETLY INTELLIGENT PRESENCE</span><span className="presence-line" /></div>
-        <div className="hero-orb-wrap"><Orb state={visualState(state)} audioLevel={audioLevel} reducedMotion={reducedMotion} /><div className="orb-caption"><span className={`state-indicator state-indicator--${visualState(state)}`} /><span>{state === 'offline' && connected ? 'Working locally' : labels[state]}</span></div></div>
+        <div className="hero-orb-wrap"><Orb state={shownOrbState} audioLevel={audioLevel} reducedMotion={reducedMotion} label={voiceLabel || undefined} /><div className="orb-caption" role="status" aria-live="polite"><span className={`state-indicator state-indicator--${shownOrbState}`} /><span>{voiceLabel || (state === 'offline' && connected ? 'Working locally' : labels[state])}</span></div></div>
         <section className="conversation" aria-live="polite" aria-label="Recent conversation">
           <AnimatePresence mode="wait"><motion.div className="conversation-content" key={`${lastUser?.id ?? 'hello'}-${lastBel?.id ?? ''}`} initial={{ opacity: 0, y: 7 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} transition={{ duration: 0.22 }}>
             {lastUser && <div className="conversation-line conversation-line--user"><span className="speaker-label">YOU</span><p>{lastUser.text}</p></div>}
@@ -333,7 +379,7 @@ export default function App() {
           </motion.div></AnimatePresence>
         </section>
         <div className="demo-control">
-          {transcribing && <button className="demo-button" onClick={() => { cancelCapture(); setState('idle'); notify('Pending transcript discarded.') }}>DISCARD TRANSCRIPT</button>}
+          {transcribing && <button className="demo-button" onClick={() => { cancelCapture(); setVoicePhase('cancelled'); setState('idle'); notify('Pending transcript discarded.') }}>DISCARD TRANSCRIPT</button>}
           {stoppingDictation && <span className="setting-description" role="status">Stopping local dictation…</span>}
           {proposal && <button className="demo-button" disabled={busy || !!approval} onClick={() => void prepare(proposal)}>Review {proposal.tool || 'proposed action'}</button>}
           {playing ? <button className="demo-button" onClick={stopPlayback}><Square size={13} />STOP SPEAKING</button> : audioReady ? <button className="demo-button" disabled={busy} onClick={() => void playAudio()}><Volume2 size={13} />PLAY AUDIO</button> : lastBel?.text && status?.voice.tts_available && <button className="demo-button" disabled={busy || !!approval || lastBel.text.length > 500} title={lastBel.text.length > 500 ? 'Local voice currently accepts up to 500 characters.' : 'Review local speech generation'} onClick={() => void prepare({ path: '/api/capability/invoke', args: { id: 'speech.render', arguments: { text: lastBel.text } }, summary: 'Render this reply with the installed local voice.' })}><Volume2 size={13} />READ REPLY ALOUD</button>}
@@ -341,12 +387,19 @@ export default function App() {
         </div>
       </main>
       <footer className="input-area">
+        {voiceDraft && <section className="speech-review" aria-label="Review speech draft">
+          <div className="speech-review-heading"><span>SPEECH DRAFT · REVIEW BEFORE SENDING</span><span>{voiceDraft.result.engine}</span></div>
+          <textarea aria-label="Speech transcript" value={voiceDraft.text} maxLength={8000} rows={2} onFocus={() => setVoicePhase('review')} onChange={event => { setVoicePhase('review'); setVoiceDraft(draft => draft ? { ...draft, text: event.target.value } : null) }} />
+          <p className="speech-review-note">{voiceDraft.result.confidence === null ? 'This engine does not provide a calibrated confidence score. Check every word.' : voiceDraft.result.confidence < 0.7 ? 'Low recognition confidence. Correct any misheard words before sending.' : 'Review the transcription before sending.'}{voiceDraft.result.fallback_from ? ` A local fallback was used (${voiceDraft.result.fallback_from} → ${voiceDraft.result.engine_id || voiceDraft.result.engine}). ${voiceDraft.result.fallback_reason || ''}` : ''}</p>
+          {input.trim() && <p className="speech-review-note">Send includes your typed message below, followed by this speech draft.</p>}
+          <div className="action-row"><button className="text-button" type="button" onClick={discardSpeechDraft}>Discard speech draft</button><button className="primary-button" type="button" disabled={!voiceDraft.text.trim() || busy || !connected || !!approval || (input.trimEnd() ? input.trimEnd().length + 1 : 0) + voiceDraft.text.length > 8000} onClick={sendSpeechDraft}>Send reviewed message</button></div>
+        </section>}
         <form className="input-pill" onSubmit={submit}>
-          <button className={`mic-button${recording ? ' is-listening' : ''}`} type="button" disabled={!micAllowed || !canRecord || busy || !connected || !!approval} aria-label="Hold to talk" title={!canRecord ? 'Local speech recognition is unavailable; use text input.' : !micAllowed ? 'Enable microphone consent in Settings.' : 'Hold to talk; release to transcribe locally.'} onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); void startCapture() }} onPointerUp={() => void finishCapture()} onPointerCancel={() => { cancelCapture(); setState('idle') }} onKeyDown={event => { if ((event.key === ' ' || event.key === 'Enter') && !event.repeat) { event.preventDefault(); void startCapture() } }} onKeyUp={event => { if (event.key === ' ' || event.key === 'Enter') { event.preventDefault(); void finishCapture() } }}>
+          <button className={`mic-button${recording ? ' is-listening' : ''}`} type="button" disabled={!micAllowed || !canRecord || busy || !connected || !!approval || !!voiceDraft} aria-label="Hold to talk" title={!canRecord ? 'Local speech recognition is unavailable; use text input.' : !micAllowed ? 'Enable microphone consent in Settings.' : 'Hold to talk; release to transcribe locally.'} onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); void startCapture() }} onPointerUp={() => void finishCapture()} onPointerCancel={() => { cancelCapture(); setVoicePhase('cancelled'); setState('idle') }} onKeyDown={event => { if ((event.key === ' ' || event.key === 'Enter') && !event.repeat) { event.preventDefault(); void startCapture() } }} onKeyUp={event => { if (event.key === ' ' || event.key === 'Enter') { event.preventDefault(); void finishCapture() } }}>
             {micAllowed && canRecord ? <Mic size={18} strokeWidth={1.8} /> : <MicOff size={18} strokeWidth={1.8} />}
           </button>
           <input value={input} onChange={event => setInput(event.target.value)} maxLength={8000} placeholder="Talk to BEL…" aria-label="Message BEL" autoComplete="off" />
-          <span className="input-hint">↵</span><button className="send-button" type="submit" aria-label="Send message" disabled={!input.trim() || busy || !connected || !!approval} title="Send message"><Send size={16} strokeWidth={1.8} /></button>
+          <span className="input-hint">↵</span><button className="send-button" type="submit" aria-label="Send message" disabled={!input.trim() || busy || !connected || !!approval || !!voiceDraft} title={voiceDraft ? 'Review the speech draft and use Send reviewed message.' : 'Send message'}><Send size={16} strokeWidth={1.8} /></button>
         </form>
         <div className="input-meta"><span><AudioLines size={12} />{recording ? 'MICROPHONE ACTIVE' : 'LOCAL-FIRST ASSISTANT'}</span><span className="meta-divider" /><span>{status?.voice.wake_available ? 'BEL WAKE WORD AVAILABLE' : 'WAKE WORD NOT ENROLLED'}</span></div>
       </footer>
@@ -358,7 +411,16 @@ export default function App() {
             <div className="setting-row"><div className="setting-copy"><strong>Animation</strong><span>Choose how much movement BEL uses.</span></div><label className="select-wrap"><select aria-label="Animation" value={settings.animations} onChange={e => setSettings(s => ({ ...s, animations: e.target.value === 'reduced' ? 'reduced' : 'natural' }))}><option value="natural">Natural</option><option value="reduced">Reduced</option></select><ChevronDown size={13} /></label></div>
             <div className="setting-row"><div className="setting-copy"><strong>Appearance</strong><span>Subtle variations on the midnight palette.</span></div><label className="select-wrap"><select aria-label="Appearance" value={settings.theme} onChange={e => setSettings(s => ({ ...s, theme: e.target.value === 'blue' ? 'blue' : 'midnight' }))}><option value="midnight">Midnight</option><option value="blue">Blue hour</option></select><ChevronDown size={13} /></label></div>
             <div className="setting-row"><div className="setting-copy"><strong>Microphone consent</strong><span>{canRecord ? 'Allow hold-to-talk for this session. Audio goes only to local speech recognition; review the transcript before sending.' : status?.voice.reason || 'Local speech recognition is not configured. The microphone stays off.'}</span></div><button className={`switch${micAllowed ? ' is-on' : ''}`} disabled={consentPending || !connected || (!canRecord && !micAllowed)} role="switch" aria-checked={micAllowed} aria-label="Microphone consent" onClick={() => void setConsent(!micAllowed)}><span /></button></div>
-            {canRecord && <><label className="field-label">Dictation language<select aria-label="Dictation language" value={locale} onChange={e => { cancelCapture(); setLocale(e.target.value); setState('idle') }}>{installedLanguages(status?.voice.locales).map(value => <option key={value} value={value}>{dictationLanguages[value]}</option>)}</select></label><p className="setting-description">Windows dictation may mishear words. Check the editable transcript before sending. Only installed recognition languages appear here.</p></>}
+            {status?.voice.recording_supported && <>
+              <label className="field-label">Recognition engine<select aria-label="Recognition engine" value={engine} onChange={event => {
+                const selected = event.target.value as SpeechEngineId; engineChosen.current = true; cancelCapture(); setEngine(selected); setVoicePhase('idle'); setState('idle')
+                const choices = installedLanguages(engines.find(item => item.id === selected)?.locales, selected === 'whisper_cpp')
+                setLocale(current => choices.includes(current) ? current : choices[0] || 'en-US')
+              }}>{engines.map(item => <option key={item.id} value={item.id}>{item.label}{item.available ? '' : ' · unavailable'}</option>)}</select></label>
+              <p className="setting-description">{selectedEngine?.reason}</p>
+              <label className="checkbox-row"><input type="checkbox" checked={allowFallback} onChange={event => { cancelCapture(); setAllowFallback(event.target.checked); setVoicePhase('idle') }} />Allow an already installed local fallback if recognition fails safely</label>
+              <label className="field-label">Dictation language<select aria-label="Dictation language" value={locale} onChange={e => { cancelCapture(); setLocale(e.target.value); setVoicePhase('idle'); setState('idle') }}>{languageChoices.map(value => <option key={value} value={value}>{dictationLanguages[value]}</option>)}</select></label><p className="setting-description">Recognition may mishear words. Review the editable draft before sending. No recording or model download is sent to a cloud service.</p>
+            </>}
             {micAllowed && <label className="field-label">Microphone<select value={device} aria-label="Microphone device" onChange={e => { cancelCapture(); setDevice(e.target.value); setState('idle') }}><option value="">System default</option>{devices.filter(d => d.deviceId && d.deviceId !== 'default').map((d, i) => <option key={d.deviceId} value={d.deviceId}>{d.label || `Microphone ${i + 1}`}</option>)}</select></label>}
             <div className="setting-info"><CircleHelp size={15} /><p>{status?.voice.wake_available ? 'A configured BEL wake service is available.' : 'BEL wake-word enrollment is unavailable until a valid trained model and owner consent are provided.'}<br />No sleeping-mode microphone audio is sent to the cloud.</p></div>
             <button className="panel-link" onClick={() => openPanel('providers')}>AI providers <ChevronDown size={13} /></button><button className="panel-link" onClick={() => openPanel('memory')}>Memory management <ChevronDown size={13} /></button><button className="panel-link" onClick={() => openPanel('diagnostics')}>Diagnostics <ChevronDown size={13} /></button>

@@ -37,7 +37,8 @@ from .capabilities import Capabilities
 from .chatgpt import ChatGPT, ChatGPTPolicy, Connect
 from .bel import Bel
 from .identity import APP_NAME, FULL_NAME, DEFAULT_OWNER
-from .local_speech import LocalSpeech, SpeechUnavailable, SpeechBusy, SpeechInputError
+from .local_speech import SpeechUnavailable, SpeechBusy, SpeechInputError
+from .speech_engines import SpeechService
 
 UI = Path(__file__).resolve().parents[1] / "apps/ui"
 BEL_UI = (Path(sys._MEIPASS) / 'frontend/dist' if getattr(sys, 'frozen', False)
@@ -73,7 +74,9 @@ class AudioInput(StrictModel):
     audio: str = Field(max_length=5_592_408)
     mimeType: str = Field(pattern=r"^audio/(webm|ogg|mp4|wav)(;codecs=opus)?$")
     user: str = Field(default="default", pattern="^default$")
-    locale: str = Field(default='en-US', pattern=r'^(en-(US|GB|IN)|hi-IN)$')
+    locale: str = Field(default='en-US', pattern=r'^(en-(US|GB|IN)|hi-IN|auto)$')
+    engine: str | None = Field(default=None, pattern=r'^(windows|whisper_cpp)$')
+    allow_fallback: bool = Field(default=True, strict=True)
     requestId: uuid.UUID = Field(default_factory=uuid.uuid4)
 
 
@@ -103,7 +106,8 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     learning_service = Learning(config, files, router)
     capability_service = Capabilities(store, files)
     bel = Bel(store, files, capability_service)
-    speech_service = LocalSpeech(config.local_stt)
+    speech_service = SpeechService(config.local_stt, asset_dir=config.asr_directory,
+                                   model=config.asr_model, preferred=config.speech_engine)
     speech_consents = {}
     speech_tasks = {}
     speech_task_ids = {}
@@ -359,7 +363,11 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
                           'stt_available': speech_status['available'], 'tts_available': os.name == 'nt',
                           'playback_available': True, 'wake_word': APP_NAME, 'wake_available': False,
                           'microphone_enabled': request.state.session.id in speech_consents,
-                          'engine': 'Windows System.Speech', 'locales': speech_status.get('locales', []),
+                          'engine': speech_status.get('engine', 'Windows System.Speech'), 'locales': speech_status.get('locales', []),
+                          'engines': speech_status.get('engines', []),
+                          'default_engine': speech_status.get('default_engine', 'windows'),
+                          'preferred_engine': speech_status.get('preferred_engine', config.speech_engine),
+                          'degraded': speech_status.get('degraded', False),
                           'reason': speech_status['reason']},
                 'tool_router': {'status': needle_status, 'model': 'Needle 3', 'reason': reason}}
 
@@ -419,7 +427,8 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     async def speech(request: Request):
         status = await app.state.speech.status()
         return {'micEnabled': request.state.session.id in speech_consents, 'reason': status['reason'],
-                'stt': {'mode': 'local', 'configured': status['available'], 'locales': status.get('locales', [])},
+                'stt': {'mode': 'local', 'configured': status['available'], 'locales': status.get('locales', []),
+                        'engines': status.get('engines', []), 'default_engine': status.get('default_engine', 'windows')},
                 'tts': {'mode': 'local', 'configured': os.name == 'nt', 'path': '/api/capability/invoke', 'capability': 'speech.render'},
                 'supportedMimeTypes': ['audio/wav'], 'maxAudioBytes': 700000,
                 'wake': {'enrolled': False, 'enabled': False}}
@@ -485,7 +494,8 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
         if body.mimeType != 'audio/wav':
             raise HTTPException(422, 'Local dictation requires mono 16 kHz PCM WAV audio.')
         records[request_id] = 'used'
-        task = asyncio.create_task(app.state.speech.transcribe(decoded, body.locale))
+        task = asyncio.create_task(app.state.speech.transcribe(decoded, body.locale,
+                                   engine=body.engine, allow_fallback=body.allow_fallback))
         speech_tasks[session_id] = task
         speech_task_ids[session_id] = request_id
         async def cancel_on_disconnect():
@@ -497,7 +507,7 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
                 await asyncio.sleep(.1)
         connection = asyncio.create_task(cancel_on_disconnect())
         try:
-            await broadcast('speech_recognition', for_session=session_id)
+            await broadcast('speech_recognition', request_id, for_session=session_id)
             result = await task
             if not sessions.get(session_id) or speech_consents.get(session_id) != consent:
                 raise HTTPException(403, 'Speech consent ended. The transcript was discarded.')
@@ -509,7 +519,7 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
         except SpeechBusy:
             raise HTTPException(429, 'Local dictation is busy. Try again after the current request.')
         except SpeechUnavailable:
-            raise HTTPException(503, 'Local recognition is unavailable or its deadline expired. Review the configured language.')
+            raise HTTPException(503, 'Local recognition is unavailable or its deadline expired. Check the installed model, selected language and available RAM in Settings.')
         except asyncio.CancelledError:
             task.cancel()
             await asyncio.gather(task, return_exceptions=True)
@@ -520,7 +530,7 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
             if speech_tasks.get(session_id) is task:
                 speech_tasks.pop(session_id, None)
                 speech_task_ids.pop(session_id, None)
-            await broadcast('idle', for_session=session_id)
+            await broadcast('idle', request_id, for_session=session_id)
 
     @app.post("/api/speech/synthesize")
     async def synthesize():

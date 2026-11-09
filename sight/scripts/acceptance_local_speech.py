@@ -104,7 +104,7 @@ def verify(fixtures):
     cache = ROOT.parent / '.cache' / ('live-speech-' + run_id)
     cache.mkdir(parents=True)
     data = cache / 'data'
-    config = Config(data, port=free_port(), local_stt=True)
+    config = Config(data, port=free_port(), local_stt=True, speech_engine='windows')
     host = BackendHost(config)
     rows, raw_rows, metrics = [], [], []
     started = time.monotonic()
@@ -127,7 +127,8 @@ def verify(fixtures):
 
     def body(raw, locale='en-US', request_id=None):
         return {'audio': base64.b64encode(raw).decode('ascii'), 'mimeType': 'audio/wav',
-                'locale': locale, 'requestId': request_id or str(uuid.uuid4())}
+                'locale': locale, 'engine': 'windows', 'allow_fallback': False,
+                'requestId': request_id or str(uuid.uuid4())}
 
     try:
         launch = host.start()

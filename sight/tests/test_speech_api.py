@@ -26,7 +26,7 @@ class Recognizer:
     calls = 0
     async def status(self):
         return {'available': True, 'locales': ['en-US'], 'reason': 'Synthetic recognizer fixture'}
-    async def transcribe(self, raw, locale):
+    async def transcribe(self, raw, locale, *, engine=None, allow_fallback=True):
         self.calls += 1
         return dict(RESPONSE)
 
@@ -107,7 +107,7 @@ def test_stop_cancels_only_named_request_and_discards_late_results(enabled, igno
     app, client = enabled
     began, stopped = threading.Event(), threading.Event()
     class Pending(Recognizer):
-        async def transcribe(self, raw, locale):
+        async def transcribe(self, raw, locale, *, engine=None, allow_fallback=True):
             began.set()
             try:
                 await asyncio.sleep(60)
@@ -148,7 +148,7 @@ def test_revocation_cancels_and_discards_pending_transcripts(enabled, ignore_can
     app, client = enabled
     began, stopped = threading.Event(), threading.Event()
     class Pending(Recognizer):
-        async def transcribe(self, raw, locale):
+        async def transcribe(self, raw, locale, *, engine=None, allow_fallback=True):
             began.set()
             try:
                 await asyncio.sleep(60)
@@ -175,7 +175,7 @@ def test_revocation_cancels_and_discards_pending_transcripts(enabled, ignore_can
 def test_worker_failures_are_structured_and_do_not_echo_audio(enabled, error, code):
     app, client = enabled
     class Failed(Recognizer):
-        async def transcribe(self, *_):
+        async def transcribe(self, *_, **kwargs):
             raise error('private input must never be logged')
     app.state.speech = Failed()
     client.post('/api/speech/consent', json={'enabled': True}).raise_for_status()
@@ -194,3 +194,24 @@ def test_local_speech_environment_is_explicit_and_defaults_off(tmp_path, monkeyp
     monkeypatch.setenv('BEL_LOCAL_STT', 'maybe')
     with pytest.raises(ValueError, match='BEL_LOCAL_STT'):
         Config.from_env()
+
+
+def test_engine_selection_and_no_fallback_reach_only_the_recognizer(enabled):
+    app, client = enabled
+    class Selected(Recognizer):
+        async def transcribe(self, raw, locale, *, engine=None, allow_fallback=True):
+            assert engine == 'whisper_cpp' and locale == 'auto' and allow_fallback is False
+            return {**RESPONSE, 'locale': 'auto', 'confidence': None, 'confidence_kind': 'unavailable'}
+    app.state.speech = Selected()
+    client.post('/api/speech/consent', json={'enabled': True}).raise_for_status()
+    result = client.post('/api/speech/transcribe', json={**BODY, 'engine': 'whisper_cpp', 'locale': 'auto', 'allow_fallback': False})
+    assert result.status_code == 200 and result.json()['confidence'] is None
+    assert not client.get('/api/bel/history').json()['items']
+
+
+@pytest.mark.parametrize('fields', [{'engine': 'shell'}, {'allow_fallback': 'true'}, {'locale': '--prompt'}, {'confirmed': True}])
+def test_invalid_engine_arguments_rejected_before_recognition(enabled, fields):
+    app, client = enabled
+    client.post('/api/speech/consent', json={'enabled': True}).raise_for_status()
+    assert client.post('/api/speech/transcribe', json={**BODY, **fields}).status_code == 422
+    assert app.state.speech.calls == 0

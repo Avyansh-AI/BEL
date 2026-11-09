@@ -40,7 +40,30 @@ JSON_SCHEMA = {'type': 'object', 'properties': {'city': {'type': 'string'}, 'cou
                'required': ['city', 'count'], 'additionalProperties': False}
 
 
-async def run(destination, thinking=False):
+class IsolatedRuntimeTransport(httpx.AsyncBaseTransport):
+    """Real HTTP to an explicitly selected disposable loopback test runtime.
+
+    This does not change the application's approved endpoint or simulate replies.
+    It avoids stopping an unrelated owner Ollama instance during acceptance.
+    """
+    def __init__(self, port):
+        if type(port) is not int or not 1024 <= port <= 65535:
+            raise ValueError('Invalid isolated loopback test port')
+        self.port = port
+
+    async def handle_async_request(self, request):
+        if (request.url.scheme, request.url.host, request.url.port) != ('http', '127.0.0.1', 11434):
+            raise ValueError('Unexpected provider destination in acceptance')
+        url = request.url.copy_with(port=self.port)
+        headers = request.headers.copy()
+        headers['host'] = f'127.0.0.1:{self.port}'
+        forwarded = httpx.Request(request.method, url, headers=headers, stream=request.stream, extensions=request.extensions)
+        async with httpx.AsyncHTTPTransport(retries=0) as transport:
+            response = await transport.handle_async_request(forwarded)
+            return httpx.Response(response.status_code, headers=response.headers, content=await response.aread())
+
+
+async def run(destination, thinking=False, isolated_runtime_port=None):
     identifier = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ') + '-' + uuid.uuid4().hex[:6]
     data = ROOT.parent / 'test-data' / ('official-acceptance-' + identifier)
     if destination.exists():
@@ -48,6 +71,8 @@ async def run(destination, thinking=False):
     destination.parent.mkdir(parents=True, exist_ok=True)
     result = {'started_utc': datetime.now(timezone.utc).isoformat(), 'model': OFFICIAL_GEMMA,
               'thinking': thinking, 'cloud_requests': 0, 'test_data': str(data), 'complete': False,
+              'runtime_endpoint_scope': 'production loopback endpoint' if isolated_runtime_port is None else 'real isolated loopback runtime; production endpoint readiness is not established by this test',
+              'isolated_runtime_port': isolated_runtime_port,
               'cases': CASES, 'json_schema': JSON_SCHEMA, 'rows': [],
               'grading': 'Exact visible answers (outer whitespace/backticks and one trailing period ignored). JSON equality. Tone screen is not a semantic quality proof.',
               'source_hashes': {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
@@ -57,14 +82,15 @@ async def run(destination, thinking=False):
         destination.write_text(json.dumps(result, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
 
     save()
-    provider = OllamaProvider(Config(data, model=OFFICIAL_GEMMA, thinking=thinking))
+    provider = OllamaProvider(Config(data, model=OFFICIAL_GEMMA, thinking=thinking),
+                              transport=IsolatedRuntimeTransport(isolated_runtime_port) if isolated_runtime_port is not None else None)
     result['health'] = vars(await provider.health())
     if result['health']['status'] != 'ready':
         result['blocker'] = result['health']['message']
         save()
         print(json.dumps({'evidence': str(destination), 'blocker': result['blocker']}), flush=True)
         return 1
-    with httpx.Client(base_url='http://127.0.0.1:11434', timeout=5, trust_env=False) as client:
+    with httpx.Client(base_url=f'http://127.0.0.1:{isolated_runtime_port or 11434}', timeout=5, trust_env=False) as client:
         result['runtime'] = client.get('/api/version').json()
         result['tag'] = next(row for row in client.get('/api/tags').json()['models'] if row['name'] == OFFICIAL_GEMMA)
     router = ModelRouter(provider, Store(data), local_only=True)
@@ -134,5 +160,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--thinking', action='store_true', help='Test thinking mode without changing saved owner settings')
+    parser.add_argument('--isolated-runtime-port', type=int, help='Use an already started real loopback test runtime; never change production provider policy')
     args = parser.parse_args()
-    raise SystemExit(asyncio.run(run(args.output.resolve(), thinking=args.thinking)))
+    raise SystemExit(asyncio.run(run(args.output.resolve(), thinking=args.thinking, isolated_runtime_port=args.isolated_runtime_port)))

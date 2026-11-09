@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+from array import array
 import base64
 import ctypes
 import io
@@ -10,6 +11,7 @@ import math
 import os
 from pathlib import Path
 import struct
+import sys
 import subprocess
 import threading
 import time
@@ -50,8 +52,11 @@ def validate_audio(raw):
                 raise SpeechInputError('Truncated PCM samples')
     except (wave.Error, EOFError, struct.error) as exc:
         raise SpeechInputError('Invalid WAV audio') from exc
-    if not any(samples):
-        raise SpeechInputError('Recording is silent')
+    values = array('h', samples)
+    if sys.byteorder != 'little':
+        values.byteswap()
+    if sum(value * value for value in values) < 16 * 16 * len(values):
+        raise SpeechInputError('Recording is silent or below the supported audio level')
 
 
 def powershell_path():
@@ -71,10 +76,27 @@ def run_worker(request, cancelled, timeout):
     encoded = base64.b64encode(POWERSHELL.encode('utf-16-le')).decode('ascii')
     command = [str(powershell_path()), '-NoLogo', '-NoProfile', '-NonInteractive', '-EncodedCommand', encoded]
     payload = json.dumps(request, ensure_ascii=True).encode('ascii')
+    output = run_process(command, payload, cancelled, timeout)
+    try:
+        result = json.loads(output.decode('utf-8-sig'))
+    except (ValueError, UnicodeError) as exc:
+        raise SpeechUnavailable('Invalid local speech response') from exc
+    if not isinstance(result, dict) or result.get('ok') is not True:
+        raise SpeechUnavailable('Local recognizer failed')
+    return result
+
+
+def run_process(command, payload, cancelled, timeout, *, cwd=None, env=None, memory_limit=None):
+    """Pipe transport for fixed, locally verified recognizer commands only."""
     if cancelled.is_set():
         raise SpeechUnavailable('Cancelled before startup')
+    options = {}
+    if cwd is not None:
+        options['cwd'] = str(cwd)
+    if env is not None:
+        options['env'] = env
     process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE, creationflags=0x08000000)
+                               stderr=subprocess.PIPE, creationflags=0x08000000, **options)
     deadline = time.monotonic() + timeout
     completed = threading.Event()
     response = []
@@ -93,7 +115,11 @@ def run_worker(request, cancelled, timeout):
     # both its deadline and cancellation from being observed. Keep all pipe I/O
     # on one owned thread while this worker can terminate the exact child.
     exchange_thread = threading.Thread(target=exchange, name='BEL-speech-pipes', daemon=True)
+    job = None
     try:
+        if memory_limit is not None:
+            from .speech_resources import ProcessBudget
+            job = ProcessBudget(process, memory_limit)
         exchange_thread.start()
         while not completed.wait(.05):
             if cancelled.is_set() or time.monotonic() >= deadline:
@@ -105,13 +131,7 @@ def run_worker(request, cancelled, timeout):
         output, errors = response[0]
         if process.returncode or len(output) > 50000 or len(errors) > 20000:
             raise SpeechUnavailable('Local recognizer failed')
-        try:
-            result = json.loads(output.decode('utf-8-sig'))
-        except (ValueError, UnicodeError) as exc:
-            raise SpeechUnavailable('Invalid local speech response') from exc
-        if not isinstance(result, dict) or result.get('ok') is not True:
-            raise SpeechUnavailable('Local recognizer failed')
-        return result
+        return output
     finally:
         if process.poll() is None:
             process.kill()
@@ -126,6 +146,8 @@ def run_worker(request, cancelled, timeout):
             stream = getattr(process, name, None)
             if stream is not None and not stream.closed:
                 stream.close()
+        if job is not None:
+            job.close()
 
 
 class LocalSpeech:
@@ -137,11 +159,11 @@ class LocalSpeech:
         self._cached_status = None
         self._status_until = 0
 
-    async def _request(self, value, timeout):
+    async def _request(self, value, timeout, runner=None):
         if not self._busy.acquire(blocking=False):
             raise SpeechBusy('A local recognition worker is running')
         cancelled = threading.Event()
-        task = asyncio.create_task(asyncio.to_thread(run_worker, value, cancelled, timeout))
+        task = asyncio.create_task(asyncio.to_thread(runner or run_worker, value, cancelled, timeout))
         try:
             return await asyncio.shield(task)
         except asyncio.CancelledError:

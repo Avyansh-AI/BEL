@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 export type OrbState = 'offline' | 'idle' | 'listening' | 'thinking' | 'speaking' | 'happy' | 'error'
 
-export function Orb({ state, audioLevel, reducedMotion }: { state: OrbState; audioLevel: number; reducedMotion: boolean }) {
+export function Orb({ state, audioLevel, reducedMotion, label }: { state: OrbState; audioLevel: number; reducedMotion: boolean; label?: string }) {
   const activeScale = state === 'listening'
     ? 1 + Math.min(audioLevel, 0.7) * 0.12
     : state === 'speaking'
@@ -36,7 +36,7 @@ export function Orb({ state, audioLevel, reducedMotion }: { state: OrbState; aud
   const animateAura = !reducedMotion && (state === 'speaking' || state === 'listening')
 
   return (
-    <div className={`orb-stage orb-stage--${state}`} role="img" aria-label={`BEL is ${state}`}>
+    <div className={`orb-stage orb-stage--${state}`} role="img" aria-label={label || `BEL is ${state}`}>
       <motion.div className="orb-aura" animate={animateAura ? { opacity: [0.4, 0.72, 0.4], scale: [0.94, 1.08, 0.94] } : { opacity: state === 'offline' ? 0.42 : 0.58, scale: 1 }} transition={{ duration: reducedMotion ? 0 : 2.1, repeat: animateAura ? Infinity : 0, ease: 'easeInOut' }} />
       <div className="orb-orbit orb-orbit--back" aria-hidden="true" />
       <motion.div className="orb" animate={animate} transition={transition}>

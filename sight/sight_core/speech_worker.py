@@ -35,6 +35,9 @@ try {
     $weighted = 0.0
     $characters = 0
     for ($index = 0; $index -lt 32; $index++) {
+        # EOF can coincide with a valid final result. System.Speech then clears
+        # its input; another Recognize call throws and would lose all prior text.
+        if ($null -eq $engine.AudioFormat) { break }
         $heard = $engine.Recognize([timespan]::FromSeconds(3))
         if (-not $heard) { break }
         $characters += $heard.Text.Length
