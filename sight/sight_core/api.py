@@ -39,6 +39,7 @@ from .bel import Bel
 from .identity import APP_NAME, FULL_NAME, DEFAULT_OWNER
 from .local_speech import SpeechUnavailable, SpeechBusy, SpeechInputError
 from .speech_engines import SpeechService
+from .speech_tts import LocalTTS, TTSUnavailable, TTSBusy, TTSInputError
 from .system_monitor import monitor as system_monitor
 from .cognitive import CognitiveOrchestrator, IntentType
 
@@ -90,6 +91,14 @@ class SpeechCancel(StrictModel):
     requestId: uuid.UUID
 
 
+class SynthesizeRequest(StrictModel):
+    text: str = Field(min_length=1, max_length=4000)
+    voice: str | None = None
+    rate: float | None = Field(default=1.0, ge=0.5, le=3.0)
+    pitch: float | None = Field(default=1.0, ge=0.5, le=2.0)
+    volume: float | None = Field(default=1.0, ge=0.0, le=1.0)
+
+
 def create_app(config: Config | None = None, provider=None, *, local_only=False):
     redact_transport_logs()
     config = config or Config.from_env()
@@ -116,6 +125,7 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     )
     speech_service = SpeechService(config.local_stt, asset_dir=config.asr_directory,
                                    model=config.asr_model, preferred=config.speech_engine)
+    tts_service = LocalTTS(config.local_tts)
     speech_consents = {}
     speech_tasks = {}
     speech_task_ids = {}
@@ -172,6 +182,7 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     app.state.capabilities = capability_service
     app.state.bel = bel
     app.state.speech = speech_service
+    app.state.tts = tts_service
     capability_service.mount(app)
 
     async def broadcast(state, request_id=None, for_session=None):
@@ -370,9 +381,13 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
         except (NeedleError, OSError):
             needle_status, reason = 'unavailable', 'Provision the pinned Needle 3 assets; main-model chat remains available.'
         speech_status = await app.state.speech.status()
+        tts_status = await app.state.tts.status() if hasattr(app.state, 'tts') else {'available': False}
         return {'name': APP_NAME, 'full_name': FULL_NAME, 'owner': DEFAULT_OWNER, 'mode': 'active',
                 'voice': {'recording_supported': config.local_stt and speech_status['available'],
-                          'stt_available': speech_status['available'], 'tts_available': os.name == 'nt',
+                          'stt_available': speech_status['available'],
+                          'tts_available': tts_status['available'],
+                          'tts_enabled': config.local_tts,
+                          'tts_voice': tts_status.get('default_voice'),
                           'playback_available': True, 'wake_word': APP_NAME, 'wake_available': False,
                           'microphone_enabled': request.state.session.id in speech_consents,
                           'engine': speech_status.get('engine', 'Windows System.Speech'), 'locales': speech_status.get('locales', []),
@@ -545,8 +560,40 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
             await broadcast('idle', request_id, for_session=session_id)
 
     @app.post("/api/speech/synthesize")
-    async def synthesize():
-        raise HTTPException(503, "Local TTS is not installed; no cloud fallback is authorized")
+    async def synthesize(body: SynthesizeRequest):
+        if not app.state.config.local_tts:
+            raise HTTPException(503, "Local TTS is disabled or not configured; launch BEL with --local-tts or set BEL_LOCAL_TTS=windows.")
+        try:
+            wav_bytes = await app.state.tts.synthesize(
+                body.text,
+                voice=body.voice,
+                rate=body.rate,
+                pitch=body.pitch,
+                volume=body.volume,
+            )
+            return Response(
+                content=wav_bytes,
+                media_type="audio/wav",
+                headers={
+                    "Content-Disposition": 'inline; filename="speech.wav"',
+                    "Cache-Control": "no-store",
+                },
+            )
+        except TTSInputError as exc:
+            raise HTTPException(422, str(exc)) from exc
+        except TTSBusy as exc:
+            raise HTTPException(429, str(exc)) from exc
+        except TTSUnavailable as exc:
+            raise HTTPException(503, str(exc)) from exc
+
+    @app.get("/api/speech/voices")
+    async def list_speech_voices():
+        if not app.state.config.local_tts:
+            raise HTTPException(503, "Local TTS is disabled or not configured")
+        try:
+            return await app.state.tts.list_voices()
+        except TTSUnavailable as exc:
+            raise HTTPException(503, str(exc)) from exc
 
     @app.get("/api/voiceprint/{operation}")
     @app.post("/api/voiceprint/{operation}")

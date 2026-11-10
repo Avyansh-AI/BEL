@@ -51,6 +51,7 @@ class Config:
     speech_engine: str = 'whisper_cpp'
     asr_directory: Path | None = None
     asr_model: str = 'small-q5_1'
+    local_tts: bool = False
 
     @classmethod
     def from_env(cls):
@@ -73,6 +74,9 @@ class Config:
         asr_model = environment_value('ASR_MODEL', 'small-q5_1')
         if speech_engine not in {'windows', 'whisper_cpp'} or asr_model not in {'base-q5_1', 'small-q5_1'}:
             raise ValueError('Invalid offline speech engine or model selection')
+        speech_tts = environment_value('LOCAL_TTS', 'windows' if os.name == 'nt' else 'disabled')
+        if speech_tts not in {'disabled', 'windows'}:
+            raise ValueError('BEL_LOCAL_TTS must be disabled or windows')
         asr_directory = environment_value('ASR_DIRECTORY')
         if asr_directory is not None:
             if not asr_directory.strip():
@@ -80,7 +84,8 @@ class Config:
             asr_directory = reject_links(Path(asr_directory).expanduser()).resolve()
         return cls(data_dir, port, environment_value("OLLAMA_MODEL", saved.get("model", "")),
                    thinking=saved.get('thinking'), local_stt=speech != 'disabled',
-                   speech_engine=speech_engine, asr_directory=asr_directory, asr_model=asr_model)
+                   speech_engine=speech_engine, asr_directory=asr_directory, asr_model=asr_model,
+                   local_tts=speech_tts != 'disabled')
 
     @property
     def origins(self):

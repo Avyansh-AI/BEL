@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([string]$DataDirectory, [switch]$Background, [switch]$LocalDictation)
+param([string]$DataDirectory, [switch]$Background, [switch]$LocalDictation, [switch]$LocalTTS)
 $ErrorActionPreference = 'Stop'
 $belPython = Join-Path $PSScriptRoot 'sight\.venv\Scripts\pythonw.exe'
 $belEntry = Join-Path $PSScriptRoot 'sight\scripts\bel_desktop.py'
@@ -15,4 +15,5 @@ if ($DataDirectory.Contains('"') -or $DataDirectory -eq [IO.Path]::GetPathRoot($
 $belArguments = @(('"' + $belEntry + '"'), '--data-directory', ('"' + $DataDirectory.TrimEnd('\') + '"'))
 if ($Background) { $belArguments += '--background' }
 if ($LocalDictation) { $belArguments += '--local-dictation' }
+if ($LocalTTS) { $belArguments += '--local-tts' }
 Start-Process -FilePath $belPython -ArgumentList $belArguments -WorkingDirectory $PSScriptRoot -WindowStyle Hidden | Out-Null

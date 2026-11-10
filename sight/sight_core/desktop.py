@@ -302,6 +302,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(prog="BEL")
     parser.add_argument("--background", action="store_true")
     parser.add_argument('--local-dictation', action='store_true', help='Offer local Windows dictation; microphone capture still requires session consent and hold-to-talk')
+    parser.add_argument('--local-tts', action='store_true', help='Offer local Windows speech synthesis (TTS)')
     parser.add_argument("--data-directory", type=Path)
     parser.add_argument("--port", type=int)
     parser.add_argument("--smoke-test", type=Path, help="Exercise only BEL's own desktop lifecycle and exit with a JSON report")
@@ -320,6 +321,8 @@ def main(argv=None):
         config = Config.from_env()
         if args.local_dictation:
             config = replace(config, local_stt=True)
+        if args.local_tts:
+            config = replace(config, local_tts=True)
         if args.data_directory:
             from .config import read_local_model, environment_value
             directory = args.data_directory.absolute()

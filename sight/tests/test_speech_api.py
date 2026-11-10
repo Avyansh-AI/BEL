@@ -215,3 +215,56 @@ def test_invalid_engine_arguments_rejected_before_recognition(enabled, fields):
     client.post('/api/speech/consent', json={'enabled': True}).raise_for_status()
     assert client.post('/api/speech/transcribe', json={**BODY, **fields}).status_code == 422
     assert app.state.speech.calls == 0
+
+
+def test_tts_disabled_returns_503(client):
+    res = client.post('/api/speech/synthesize', json={'text': 'Test synthesis'})
+    assert res.status_code == 503
+    assert res.json()['error']
+
+    voices_res = client.get('/api/speech/voices')
+    assert voices_res.status_code == 503
+
+
+def test_tts_enabled_mock_and_validation(tmp_path):
+    from sight_core.speech_tts import TTSBusy, TTSUnavailable
+    app = create_app(Config(tmp_path / 'data', local_tts=True))
+    
+    class MockTTS:
+        async def status(self):
+            return {'available': True, 'default_voice': 'Mock Voice', 'voices': [{'name': 'Mock Voice'}]}
+        async def list_voices(self):
+            return [{'name': 'Mock Voice', 'id': 'mock-1', 'language': 'en-US'}]
+        async def synthesize(self, text, **kwargs):
+            if text == 'busy':
+                raise TTSBusy('Busy')
+            if text == 'fail':
+                raise TTSUnavailable('Unavailable')
+            return b'RIFF$\x00\x00\x00WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00\x80>\x00\x00\x00}\x00\x00\x02\x00\x10\x00data\x00\x00\x00\x00'
+
+    app.state.tts = MockTTS()
+    with TestClient(app, base_url=URL) as c:
+        authenticate(c, app)
+        # Voices endpoint
+        v_res = c.get('/api/speech/voices')
+        assert v_res.status_code == 200
+        assert v_res.json() == [{'name': 'Mock Voice', 'id': 'mock-1', 'language': 'en-US'}]
+
+        # Validation error
+        assert c.post('/api/speech/synthesize', json={'text': ''}).status_code == 422
+        assert c.post('/api/speech/synthesize', json={'text': 'hi', 'rate': 99.0}).status_code == 422
+
+        # Success synthesis
+        synth_res = c.post('/api/speech/synthesize', json={'text': 'Hello world'})
+        assert synth_res.status_code == 200
+        assert synth_res.headers['content-type'] == 'audio/wav'
+        assert synth_res.content[:4] == b'RIFF'
+
+        # Busy error -> 429
+        busy_res = c.post('/api/speech/synthesize', json={'text': 'busy'})
+        assert busy_res.status_code == 429
+
+        # Unavailable error -> 503
+        fail_res = c.post('/api/speech/synthesize', json={'text': 'fail'})
+        assert fail_res.status_code == 503
+
