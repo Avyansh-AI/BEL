@@ -20,6 +20,27 @@ from .knowledge import (
     ProjectMemoryService,
     RAGEngine,
 )
+from .rsi import (
+    RecursiveSelfImprovementEngine,
+    PROTECTED_CORE_FILES,
+    CapabilityGap,
+    GapType,
+    DiagnosticReport,
+)
+
+
+class RSISynthesizeInput(StrictModel):
+    user_request: str = Field(min_length=3, max_length=500)
+    suggested_tool_name: str = Field(min_length=2, max_length=80, pattern=r'^[a-zA-Z0-9_.-]+$')
+    missing_capability: str = Field(min_length=3, max_length=500)
+    project_id: str = Field(default='default', pattern=r'^[A-Za-z0-9_-]{1,80}$')
+
+
+class RSIAutoHealInput(StrictModel):
+    skill_id: str = Field(min_length=2, max_length=80)
+    error_type: str = Field(min_length=1, max_length=80)
+    error_message: str = Field(min_length=1, max_length=500)
+    failing_code: str = Field(min_length=10, max_length=50000)
 
 
 class Compact(StrictModel):
@@ -79,6 +100,7 @@ ACTIONS={
     'projects/add':ProjectMemoryInput,'projects/delete':ProjectMemoryDelete,
     'rag/ingest':RAGIngestInput,'rag/delete':RAGDocumentDelete,
     'memory/verifiable_delete':VerifiableDelete,
+    'rsi/synthesize':RSISynthesizeInput,'rsi/promote':SkillPromote,'rsi/rollback':SkillSelect,'rsi/auto_heal':RSIAutoHealInput,
     'forge/stage':SkillManifest,'forge/generate':SkillGenerate,'forge/promote':SkillPromote,
     'forge/rollback':SkillSelect,'forge/archive':SkillSelect,'forge/forget':ForgetSkill,
     'jobs/submit':Job,'jobs/cancel':JobSelect,'jobs/pause':JobSelect,'jobs/resume':JobSelect,'roles/configure':RolePolicy,
@@ -105,6 +127,7 @@ class Learning:
                 manager=self.manager,
                 vectorizer=self.vectorizer,
             )
+            self.rsi = RecursiveSelfImprovementEngine(store=self.store, router=router)
         except (sqlite3.Error,ValueError,OSError):
             self.error='Learning storage unavailable. Existing data was preserved; restore a verified backup into a new data directory.'
         self.router=router
@@ -130,6 +153,10 @@ class Learning:
                  'projects/delete':'Delete an isolated project memory entry.',
                  'rag/ingest':'Ingest and index document into the multi-format RAG corpus.',
                  'rag/delete':'Remove a document and its chunks from the RAG index.',
+                 'rsi/synthesize':'Synthesize a verified tool from capability gap and test in sandbox.',
+                 'rsi/promote':'Promote a verified synthesized skill to immutable procedure registry.',
+                 'rsi/rollback':'Roll back an active skill to a prior verified version.',
+                 'rsi/auto_heal':'Diagnose runtime exception and synthesize surgical repair with rollback journal.',
                  'forge/forget':'Delete all versions and candidates of this skill; keep historical operational receipts.'}.get(key,'Apply the displayed '+key+' change to your local learning data.')
         return value.model_dump(),summary
 
@@ -171,6 +198,44 @@ class Learning:
             return {'deleted': self.rag.delete_document(args['id'], args['project_id'])}
         if key=='memory/verifiable_delete':
             return self.manager.verifiable_delete(args['id'], args.get('project_id'))
+        if key=='rsi/synthesize':
+            s_in = RSISynthesizeInput.model_validate(args)
+            gap = CapabilityGap(
+                id=f"gap-{uuid.uuid4().hex[:8]}",
+                user_request=s_in.user_request,
+                detected_intent="tool_synthesis",
+                gap_type=GapType.USER_REQUESTED_EXTENSION,
+                missing_capability=s_in.missing_capability,
+                suggested_tool_name=s_in.suggested_tool_name,
+                context={'project_id': s_in.project_id},
+            )
+            candidate = self.rsi.synthesizer.synthesize_tool_template(gap)
+            test_res = self.rsi.synthesizer.run_tests(candidate)
+            cid = None
+            if test_res.passed and self.store:
+                cid = self.rsi._save_candidate(candidate, test_res)
+            return {
+                'candidate_id': cid,
+                'candidate': candidate.model_dump(),
+                'test_results': test_res.model_dump(),
+                'ready_for_promotion': test_res.passed,
+            }
+        if key=='rsi/promote':
+            return self.rsi.promote_candidate(args['candidate_id'], args['expected_digest'])
+        if key=='rsi/rollback':
+            return self.rsi.rollback_skill(args['id'], args['version'])
+        if key=='rsi/auto_heal':
+            h_in = RSIAutoHealInput.model_validate(args)
+            diag = DiagnosticReport(
+                error_type=h_in.error_type,
+                exception_message=h_in.error_message,
+                failing_file="tool.py",
+                sanitized_traceback=h_in.error_message,
+                is_protected_core=False,
+                diagnosis=f"Reported {h_in.error_type}: {h_in.error_message}",
+            )
+            res = self.rsi.auto_heal.attempt_skill_heal(h_in.skill_id, h_in.failing_code, diag)
+            return res.model_dump()
         if key=='forge/stage':return await asyncio.to_thread(self.forge.stage,SkillManifest.model_validate(args))
         if key=='forge/generate':return await self.forge.generate(SkillGenerate.model_validate(args),self.router)
         if key=='forge/promote':return self.forge.promote(**args)
@@ -283,3 +348,13 @@ class Learning:
         async def rag_search(project_id: str = 'default', q: str = ''):
             self.require()
             return {'items': [c.model_dump() for c in self.rag.search(q, project_id)]}
+
+        @app.get('/api/learning/rsi/status')
+        async def rsi_status():
+            self.require()
+            return {
+                'enabled': True,
+                'protected_core_files': sorted(list(PROTECTED_CORE_FILES)),
+                'axioms': ['Human life, wellbeing, dignity, and safety always take priority over AI self-preservation.'],
+                'curator': self.forge.curator(),
+            }

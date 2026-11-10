@@ -22,10 +22,11 @@ from .verification import VerificationEngine, VerificationResult
 class CognitiveOrchestrator:
     """Master cognitive orchestration engine for BEL."""
 
-    def __init__(self, router=None, bel=None, memory=None) -> None:
+    def __init__(self, router=None, bel=None, memory=None, rsi=None) -> None:
         self.router = router
         self.bel = bel
         self.memory = memory
+        self.rsi = rsi
         self.understanding = InputUnderstanding()
         self.context = ContextManager()
         self.reasoning = ReasoningEngine()
@@ -86,6 +87,38 @@ class CognitiveOrchestrator:
                 "deliberation": deliberation.model_dump(),
                 "requestId": req_id,
             }
+
+        # 4.5 Handle Recursive Self-Improvement (RSI) Capability Extensions
+        if self.rsi is not None:
+            gap, candidate, test_res = self.rsi.process_request_for_extensions(
+                user_text, detected_intent=parsed.intent.value, active_entities=parsed.entities
+            )
+            if gap and candidate:
+                if test_res and test_res.passed:
+                    proposal_say = (
+                        f"I have synthesized and sandboxed the '{candidate.name}' capability: {candidate.description}. "
+                        f"All {test_res.passed_cases}/{test_res.total_cases} validation tests passed cleanly ({test_res.execution_time_ms:.1f}ms). "
+                        f"Would you like me to promote this verified skill to your active registry?"
+                    )
+                else:
+                    proposal_say = (
+                        f"I analyzed the '{gap.suggested_tool_name}' requirement, but sandbox verification failed. "
+                        f"Error: {test_res.error_message if test_res else 'Unknown failure'}. The candidate was not promoted."
+                    )
+
+                self.context.add_turn("user", user_text, intent="rsi_synthesis", entities=parsed.entities)
+                self.context.add_turn("assistant", proposal_say)
+
+                return {
+                    "status": "ok",
+                    "say": proposal_say,
+                    "intent": "rsi_synthesis",
+                    "gap": gap.model_dump(),
+                    "candidate": candidate.model_dump(),
+                    "test_results": test_res.model_dump() if test_res else None,
+                    "outcome": "ready_for_promotion" if (test_res and test_res.passed) else "verification_failed",
+                    "requestId": req_id,
+                }
 
         # 5. Handle System Queries
         if parsed.intent == IntentType.SYSTEM_QUERY:

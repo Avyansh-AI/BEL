@@ -108,7 +108,12 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     learning_service = Learning(config, files, router)
     capability_service = Capabilities(store, files)
     bel = Bel(store, files, capability_service, memory=learning_service.memory if not learning_service.error else None)
-    cognitive = CognitiveOrchestrator(router=router, bel=bel, memory=learning_service.hierarchical_memory if not learning_service.error else None)
+    cognitive = CognitiveOrchestrator(
+        router=router,
+        bel=bel,
+        memory=learning_service.hierarchical_memory if not learning_service.error else None,
+        rsi=learning_service.rsi if not learning_service.error else None,
+    )
     speech_service = SpeechService(config.local_stt, asset_dir=config.asr_directory,
                                    model=config.asr_model, preferred=config.speech_engine)
     speech_consents = {}
