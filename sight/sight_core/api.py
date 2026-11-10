@@ -40,6 +40,7 @@ from .identity import APP_NAME, FULL_NAME, DEFAULT_OWNER
 from .local_speech import SpeechUnavailable, SpeechBusy, SpeechInputError
 from .speech_engines import SpeechService
 from .system_monitor import monitor as system_monitor
+from .cognitive import CognitiveOrchestrator, IntentType
 
 UI = Path(__file__).resolve().parents[1] / "apps/ui"
 BEL_UI = (Path(sys._MEIPASS) / 'frontend/dist' if getattr(sys, 'frozen', False)
@@ -107,6 +108,7 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     learning_service = Learning(config, files, router)
     capability_service = Capabilities(store, files)
     bel = Bel(store, files, capability_service, memory=learning_service.memory if not learning_service.error else None)
+    cognitive = CognitiveOrchestrator(router=router, bel=bel)
     speech_service = SpeechService(config.local_stt, asset_dir=config.asr_directory,
                                    model=config.asr_model, preferred=config.speech_engine)
     speech_consents = {}
@@ -569,8 +571,11 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
             bel.remember(body.requestId, 'user', body.text, history_generation)
             await broadcast('thinking', body.requestId)
         try:
-            proposal = await bel.propose(body.text, body.requestId) if bel_chat else None
-            if proposal:
+            parsed = cognitive.understanding.parse(body.text)
+            if bel_chat and (parsed.intent in (IntentType.SERIOUS_MODE, IntentType.TASK_PLAN) or parsed.is_ambiguous):
+                res = await cognitive.process_turn(body.text, request_id=body.requestId, is_offline=local_only)
+                output = res | {'offline': local_only or res.get('offline', False)}
+            elif (proposal := (await bel.propose(body.text, body.requestId) if bel_chat else None)):
                 output = {'status': 'ok', 'say': 'Please review and approve this proposed action: ' + proposal['summary'] + '.',
                           'offline': True, 'proposal': proposal, 'outcome': 'pending_confirmation'}
             elif body.text.strip().lower() == "cancel the sos":

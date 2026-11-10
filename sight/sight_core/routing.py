@@ -19,12 +19,13 @@ ENDPOINTS = {
     "groq": "https://api.groq.com/openai/v1/chat/completions",
     "gemini": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
     "openrouter": "https://openrouter.ai/api/v1/chat/completions",
+    "tokenharbor": "https://api.tokenharbor.com/v1/chat/completions",
 }
 SYSTEM = SYSTEM_PROMPT
 
 
 class ProviderPolicy(StrictModel):
-    provider: Literal["groq", "gemini", "openrouter"]
+    provider: Literal["groq", "gemini", "openrouter", "tokenharbor"]
     enabled: bool = False
     model: str = Field(default="", max_length=150, pattern=r"^[A-Za-z0-9_.:/-]*$")
     allow_remote_text: bool = False
@@ -49,7 +50,7 @@ class ProviderPolicy(StrictModel):
                 raise ValueError("Free-only policy requires billing disabled and a zero dollar budget")
             if self.provider == "openrouter" and not self.model.endswith(":free"):
                 raise ValueError("Free OpenRouter routing requires an explicit :free model")
-            if self.provider in {"groq", "gemini"} and not self.free_tier_confirmed:
+            if self.provider in {"groq", "gemini", "tokenharbor"} and not self.free_tier_confirmed:
                 raise ValueError("Confirm this account/project is Free tier with paid billing disabled before enabling free inference")
         if self.enabled and not self.free_only and (
             not self.billing_enabled or self.daily_budget_usd <= 0
