@@ -142,7 +142,8 @@ class WindowsBackend:
                 if pid.value in candidates:
                     windows.append((pid.value, int(hwnd)))
             return True
-        if not self.user.EnumWindows(visit, 0):
+        ctypes.set_last_error(0)
+        if not self.user.EnumWindows(visit, 0) and ctypes.get_last_error() != 0:
             raise InspectionError('Window enumeration failed')
         return Observation(tuple(sorted(candidates)), tuple(windows))
 
