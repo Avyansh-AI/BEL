@@ -4,7 +4,7 @@ import json
 import sqlite3
 import uuid
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 from fastapi import HTTPException
 from pydantic import Field
 from .brain_store import BrainStore
@@ -13,6 +13,13 @@ from .forge import Forge, SkillManifest, SkillGenerate, SkillPromote, SkillSelec
 from .jobs import Jobs, Job, JobSelect, RolePolicy
 from .tools import StrictModel
 from .releases import Releases
+from .knowledge import (
+    DenseVectorizer,
+    HierarchicalMemoryCoordinator,
+    MemoryManagementEngine,
+    ProjectMemoryService,
+    RAGEngine,
+)
 
 
 class Compact(StrictModel):
@@ -31,9 +38,47 @@ class Restore(StrictModel):
     id: str = Field(pattern=r'^[a-f0-9-]{36}$')
 
 
+class ProjectMemoryInput(StrictModel):
+    project_id: str = Field(min_length=1, max_length=80, pattern=r'^[A-Za-z0-9_-]{1,80}$')
+    category: Literal['goal', 'decision', 'architecture', 'choice', 'progress', 'issue', 'dependency', 'roadmap', 'file'] = 'decision'
+    title: str = Field(min_length=1, max_length=200)
+    content: str = Field(min_length=1, max_length=12000)
+    importance: int = Field(default=3, ge=1, le=5)
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+    expiry: float | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class ProjectMemoryDelete(StrictModel):
+    project_id: str = Field(min_length=1, max_length=80, pattern=r'^[A-Za-z0-9_-]{1,80}$')
+    id: str = Field(pattern=r'^[a-f0-9-]{36}$')
+
+
+class RAGIngestInput(StrictModel):
+    project_id: str = Field(default='default', pattern=r'^[A-Za-z0-9_-]{1,80}$')
+    title: str = Field(min_length=1, max_length=200)
+    text: str = Field(min_length=1, max_length=500000)
+    doc_format: Literal['txt', 'markdown', 'pdf', 'docx', 'csv', 'json', 'code', 'unknown'] = 'markdown'
+    strategy: Literal['sliding_window', 'semantic_paragraph', 'hierarchical_markdown', 'code_aware'] = 'semantic_paragraph'
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class RAGDocumentDelete(StrictModel):
+    project_id: str = Field(default='default', pattern=r'^[A-Za-z0-9_-]{1,80}$')
+    id: str = Field(pattern=r'^[a-f0-9-]{36}$')
+
+
+class VerifiableDelete(StrictModel):
+    id: str = Field(pattern=r'^[a-f0-9-]{36}$')
+    project_id: str | None = None
+
+
 ACTIONS={
     'memory/save':MemoryInput,'memory/edit':MemoryEdit,'memory/delete':MemoryDelete,
     'memory/purge':Empty,'memory/compact':Compact,
+    'projects/add':ProjectMemoryInput,'projects/delete':ProjectMemoryDelete,
+    'rag/ingest':RAGIngestInput,'rag/delete':RAGDocumentDelete,
+    'memory/verifiable_delete':VerifiableDelete,
     'forge/stage':SkillManifest,'forge/generate':SkillGenerate,'forge/promote':SkillPromote,
     'forge/rollback':SkillSelect,'forge/archive':SkillSelect,'forge/forget':ForgetSkill,
     'jobs/submit':Job,'jobs/cancel':JobSelect,'jobs/pause':JobSelect,'jobs/resume':JobSelect,'roles/configure':RolePolicy,
@@ -48,6 +93,18 @@ class Learning:
             self.store=BrainStore(config.data_dir)
             self.memory=MemoryService(self.store);self.forge=Forge(self.store)
             self.jobs=Jobs(self.store,self.memory,self.forge,files,router)
+            self.vectorizer = DenseVectorizer()
+            self.project_memory = ProjectMemoryService(self.store, vectorizer=self.vectorizer)
+            self.rag = RAGEngine(self.store, vectorizer=self.vectorizer)
+            self.manager = MemoryManagementEngine(self.store, vectorizer=self.vectorizer)
+            self.hierarchical_memory = HierarchicalMemoryCoordinator(
+                self.store,
+                memory_service=self.memory,
+                project_memory=self.project_memory,
+                rag_engine=self.rag,
+                manager=self.manager,
+                vectorizer=self.vectorizer,
+            )
         except (sqlite3.Error,ValueError,OSError):
             self.error='Learning storage unavailable. Existing data was preserved; restore a verified backup into a new data directory.'
         self.router=router
@@ -68,6 +125,11 @@ class Learning:
                  'forge/promote':'Promote this exact tested skill digest as a new immutable version.',
                  'jobs/submit':'Run this exact task plan within its displayed tool/model budgets. File writes create new workspace files only.',
                  'memory/delete':'Forget this memory and its derived summaries. Historical task receipts and separate backups are retained.',
+                 'memory/verifiable_delete':'Verifiably purge memory from database and search indices with cryptographic proof.',
+                 'projects/add':'Record a structured, isolated project memory entry.',
+                 'projects/delete':'Delete an isolated project memory entry.',
+                 'rag/ingest':'Ingest and index document into the multi-format RAG corpus.',
+                 'rag/delete':'Remove a document and its chunks from the RAG index.',
                  'forge/forget':'Delete all versions and candidates of this skill; keep historical operational receipts.'}.get(key,'Apply the displayed '+key+' change to your local learning data.')
         return value.model_dump(),summary
 
@@ -79,6 +141,36 @@ class Learning:
         if key=='memory/delete':return self.memory.delete(args['id'])
         if key=='memory/purge':return self.memory.purge_expired()
         if key=='memory/compact':return self.memory.compact(args['ids'],args['project_id'])
+        if key=='projects/add':
+            p_in = ProjectMemoryInput.model_validate(args)
+            rec = self.project_memory.add_record(
+                project_id=p_in.project_id,
+                category=p_in.category,
+                title=p_in.title,
+                content=p_in.content,
+                importance=p_in.importance,
+                confidence=p_in.confidence,
+                expiry=p_in.expiry,
+                metadata=p_in.metadata,
+            )
+            return rec.model_dump()
+        if key=='projects/delete':
+            return {'deleted': self.project_memory.delete_record(args['project_id'], args['id'])}
+        if key=='rag/ingest':
+            r_in = RAGIngestInput.model_validate(args)
+            doc = self.rag.ingest_text(
+                title=r_in.title,
+                text=r_in.text,
+                project_id=r_in.project_id,
+                doc_format=r_in.doc_format,
+                strategy=r_in.strategy,
+                metadata=r_in.metadata,
+            )
+            return doc.model_dump()
+        if key=='rag/delete':
+            return {'deleted': self.rag.delete_document(args['id'], args['project_id'])}
+        if key=='memory/verifiable_delete':
+            return self.manager.verifiable_delete(args['id'], args.get('project_id'))
         if key=='forge/stage':return await asyncio.to_thread(self.forge.stage,SkillManifest.model_validate(args))
         if key=='forge/generate':return await self.forge.generate(SkillGenerate.model_validate(args),self.router)
         if key=='forge/promote':return self.forge.promote(**args)
@@ -119,6 +211,11 @@ class Learning:
         @app.get('/api/learning/memory')
         async def memory(project_id:str='default',q:str=''):
             self.require();return {'items':self.memory.search(q,project_id,50) if q else self.memory.export(project_id)}
+
+        @app.get('/api/learning/memory/unified')
+        async def unified_memory(project_id: str = 'default', q: str = ''):
+            self.require()
+            return {'items': [r.model_dump() for r in self.hierarchical_memory.retrieve(q, project_id)]}
 
         @app.get('/api/learning/memory/{identifier}')
         async def record(identifier:str):
@@ -165,3 +262,24 @@ class Learning:
                 edges=[dict(e) for e in db.execute('SELECT * FROM graph_edges') if e['source'] in ids and e['target'] in ids]
                 reviews=[dict(r) for r in db.execute('SELECT * FROM reviews ORDER BY created_at DESC LIMIT 50')]
             return {'nodes':nodes,'edges':edges,'reviews':reviews,'metrics':self.forge.curator()}
+
+        @app.get('/api/learning/projects/{project_id}/records')
+        async def project_records(project_id: str):
+            self.require()
+            return {'items': [r.model_dump() for r in self.project_memory.get_all_project_records(project_id)]}
+
+        @app.get('/api/learning/projects/{project_id}/search')
+        async def project_search(project_id: str, q: str = ''):
+            self.require()
+            hits = self.project_memory.search(project_id, q)
+            return {'items': [{'record': r.model_dump(), 'score': s} for r, s in hits]}
+
+        @app.get('/api/learning/rag/documents')
+        async def rag_documents(project_id: str = 'default'):
+            self.require()
+            return {'items': [d.model_dump() for d in self.rag.list_documents(project_id)]}
+
+        @app.get('/api/learning/rag/search')
+        async def rag_search(project_id: str = 'default', q: str = ''):
+            self.require()
+            return {'items': [c.model_dump() for c in self.rag.search(q, project_id)]}

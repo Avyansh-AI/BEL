@@ -9,7 +9,7 @@ import uuid
 
 from .security import private_directory, canonical, safe_database, safe_file, reject_links, atomic_private_write
 
-VERSION = 2
+VERSION = 3
 
 
 class BrainStore:
@@ -59,6 +59,69 @@ class BrainStore:
                     CREATE TABLE brain_events(seq INTEGER PRIMARY KEY AUTOINCREMENT,ts REAL NOT NULL,kind TEXT NOT NULL,subject TEXT NOT NULL,payload TEXT NOT NULL);
                     CREATE TABLE reviews(task TEXT PRIMARY KEY,created_at REAL NOT NULL,lesson TEXT NOT NULL,state TEXT NOT NULL DEFAULT 'proposed');
                     PRAGMA user_version=2; COMMIT;''')
+                version = 2
+            if version == 2:
+                db.executescript('''BEGIN IMMEDIATE;
+                    CREATE TABLE project_memory(
+                        id TEXT PRIMARY KEY,
+                        project_id TEXT NOT NULL,
+                        category TEXT NOT NULL,
+                        title TEXT NOT NULL,
+                        content TEXT NOT NULL,
+                        importance INTEGER NOT NULL DEFAULT 3,
+                        confidence REAL NOT NULL DEFAULT 1.0,
+                        created_at REAL NOT NULL,
+                        updated_at REAL NOT NULL,
+                        expiry REAL,
+                        metadata TEXT NOT NULL DEFAULT '{}'
+                    );
+                    CREATE INDEX idx_project_memory_proj_cat ON project_memory(project_id, category);
+
+                    CREATE TABLE memory_vectors(
+                        id TEXT PRIMARY KEY,
+                        store TEXT NOT NULL,
+                        project_id TEXT NOT NULL,
+                        dimension INTEGER NOT NULL,
+                        vector BLOB NOT NULL,
+                        updated_at REAL NOT NULL
+                    );
+                    CREATE INDEX idx_memory_vectors_store ON memory_vectors(store, project_id);
+
+                    CREATE TABLE rag_documents(
+                        id TEXT PRIMARY KEY,
+                        project_id TEXT NOT NULL,
+                        title TEXT NOT NULL,
+                        file_path TEXT,
+                        mime_type TEXT NOT NULL,
+                        content_hash TEXT NOT NULL,
+                        total_chunks INTEGER NOT NULL DEFAULT 0,
+                        metadata TEXT NOT NULL DEFAULT '{}',
+                        created_at REAL NOT NULL,
+                        updated_at REAL NOT NULL
+                    );
+                    CREATE INDEX idx_rag_docs_proj ON rag_documents(project_id);
+
+                    CREATE TABLE rag_chunks(
+                        id TEXT PRIMARY KEY,
+                        doc_id TEXT NOT NULL REFERENCES rag_documents(id) ON DELETE CASCADE,
+                        project_id TEXT NOT NULL,
+                        chunk_index INTEGER NOT NULL,
+                        content TEXT NOT NULL,
+                        token_count INTEGER NOT NULL,
+                        metadata TEXT NOT NULL DEFAULT '{}',
+                        created_at REAL NOT NULL,
+                        UNIQUE(doc_id, chunk_index)
+                    );
+                    CREATE INDEX idx_rag_chunks_doc ON rag_chunks(doc_id);
+                    CREATE INDEX idx_rag_chunks_proj ON rag_chunks(project_id);
+
+                    CREATE VIRTUAL TABLE rag_fts USING fts5(
+                        id UNINDEXED,
+                        doc_id UNINDEXED,
+                        project_id UNINDEXED,
+                        content
+                    );
+                    PRAGMA user_version=3; COMMIT;''')
             row = db.execute("SELECT value FROM brain_settings WHERE key='owner_id'").fetchone()
             if not row:
                 db.execute('INSERT INTO brain_settings VALUES(?,?)', ('owner_id', json.dumps(str(uuid.uuid4()))))
@@ -119,7 +182,7 @@ class BrainStore:
         expected = safe_file(source.with_suffix(source.suffix+'.sha256')).read_text().strip()
         if hashlib.sha256(source.read_bytes()).hexdigest() != expected: raise ValueError('Backup hash mismatch')
         with sqlite3.connect(source.resolve().as_uri()+'?mode=ro',uri=True) as src:
-            if src.execute('PRAGMA integrity_check').fetchone()[0] != 'ok' or src.execute('PRAGMA user_version').fetchone()[0] not in (1,2):
+            if src.execute('PRAGMA integrity_check').fetchone()[0] != 'ok' or src.execute('PRAGMA user_version').fetchone()[0] not in (1,2,3):
                 raise ValueError('Unsupported or corrupt learning backup')
             private_directory(directory)
             with sqlite3.connect(directory/'brain.sqlite3') as dst: src.backup(dst)

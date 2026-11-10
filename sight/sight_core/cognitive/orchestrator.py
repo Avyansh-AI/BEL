@@ -22,9 +22,10 @@ from .verification import VerificationEngine, VerificationResult
 class CognitiveOrchestrator:
     """Master cognitive orchestration engine for BEL."""
 
-    def __init__(self, router=None, bel=None) -> None:
+    def __init__(self, router=None, bel=None, memory=None) -> None:
         self.router = router
         self.bel = bel
+        self.memory = memory
         self.understanding = InputUnderstanding()
         self.context = ContextManager()
         self.reasoning = ReasoningEngine()
@@ -38,11 +39,20 @@ class CognitiveOrchestrator:
         self,
         user_text: str,
         request_id: str | None = None,
+        project_id: str = "default",
         is_offline: bool = False,
         allow_cloud: bool = True,
     ) -> dict[str, Any]:
         """Process an incoming conversational or operational turn through the cognitive pipeline."""
         req_id = request_id or f"req-{uuid.uuid4().hex[:8]}"
+
+        # 0. Hierarchical Memory Context Retrieval
+        memory_citations = []
+        memory_context_str = ""
+        if self.memory is not None:
+            synth = self.memory.synthesize_context(user_text, project_id=project_id)
+            memory_context_str = synth.get("context_text", "")
+            memory_citations = synth.get("citations", [])
 
         # 1. Reference Resolution from working context
         context_refs = self.context.resolve_references(user_text)
@@ -147,6 +157,8 @@ class CognitiveOrchestrator:
         # 8. Standard Conversational Intelligence via Task-Aware Model Routing
         route = self.decision.select_route("conversation", is_offline=is_offline, allow_cloud=allow_cloud)
         context_prompt = self.context.get_recent_context_text(max_turns=4)
+        if memory_context_str:
+            context_prompt = f"{memory_context_str}\n\nRecent Conversation:\n{context_prompt}"
 
         if self.router is not None:
             try:
@@ -158,7 +170,11 @@ class CognitiveOrchestrator:
             except Exception as exc:
                 answer = self.response.format_failure("inference", str(exc), "Try again or check model status.")
         else:
-            answer = f"Understood, sir. (Processed via {route.provider} route: {route.model_name})."
+            if memory_citations:
+                cite_tags = ", ".join(c["attribution"] for c in memory_citations[:2])
+                answer = f"Understood, sir. Informed by knowledge {cite_tags}. (Processed via {route.provider} route: {route.model_name})."
+            else:
+                answer = f"Understood, sir. (Processed via {route.provider} route: {route.model_name})."
 
         self.context.add_turn("user", user_text, intent=IntentType.CONVERSATION.value, entities=parsed.entities)
         self.context.add_turn("assistant", answer)
@@ -168,5 +184,6 @@ class CognitiveOrchestrator:
             "say": answer,
             "intent": IntentType.CONVERSATION.value,
             "model_route": route.model_dump(),
+            "citations": memory_citations,
             "requestId": req_id,
         }
