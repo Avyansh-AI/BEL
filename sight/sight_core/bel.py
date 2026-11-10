@@ -81,8 +81,8 @@ class Tool:
 
 
 class Bel:
-    def __init__(self, store, files, capabilities, needle=None):
-        self.store, self.files, self.capabilities = store, files, capabilities
+    def __init__(self, store, files, capabilities, needle=None, memory=None):
+        self.store, self.files, self.capabilities, self.memory = store, files, capabilities, memory
         self.needle = needle or NeedleRouter()
         self.lock = asyncio.Lock()
         self.tools = {t.name: t for t in [
@@ -128,6 +128,56 @@ class Bel:
             row = db.execute("SELECT value FROM bel_meta WHERE key='history_generation'").fetchone()
             return int(row[0]) if row else 0
 
+    def _checkpoint_pre_compress(self, db):
+        """Hermes-inspired context pre-compression memory checkpointing.
+        Extracts key user statements and decisions from earliest messages
+        before bounded turn pruning occurs, preserving knowledge in long-term memory.
+        """
+        last_seq_row = db.execute("SELECT value FROM bel_meta WHERE key='last_pre_compress_seq'").fetchone()
+        last_seq = int(last_seq_row[0]) if last_seq_row else 0
+        rows = db.execute(
+            "SELECT seq, role, text, at FROM bel_history WHERE seq > ? ORDER BY seq ASC LIMIT 40",
+            (last_seq,)
+        ).fetchall()
+        if not rows:
+            return None
+        summary_lines = []
+        max_seq = last_seq
+        for r in rows:
+            max_seq = max(max_seq, r['seq'])
+            text = r['text'].strip()
+            if text and not text.lower().startswith(('help', 'status', 'what can you do')):
+                summary_lines.append(f"[{r['role']}]: {text[:300]}")
+        if summary_lines:
+            checkpoint_content = "\n".join(summary_lines[:20])
+            checkpoint_key = f"context_checkpoint_{int(time.time())}"
+            if self.memory is not None:
+                try:
+                    from .memory import MemoryInput
+                    self.memory.put(MemoryInput(
+                        store='episode',
+                        key=checkpoint_key,
+                        content=checkpoint_content,
+                        source_uri='bel_pre_compress',
+                        privacy_scope='local',
+                        confidence=0.9
+                    ))
+                except Exception:
+                    pass
+            db.execute("INSERT INTO bel_meta VALUES('last_pre_compress_checkpoint', ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+                       (checkpoint_content,))
+        db.execute("INSERT INTO bel_meta VALUES('last_pre_compress_seq', ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+                   (str(max_seq),))
+        db.execute("INSERT INTO events(ts,type,task,payload) VALUES(?,?,?,?)",
+                   (time.time() * 1000, 'bel.memory.pre_compressed', None,
+                    canonical(redact({'checkpoint_seq': max_seq, 'entries': len(summary_lines)}))))
+        return max_seq
+
+    def checkpoint_pre_compress(self):
+        with self.store.connect() as db:
+            db.execute('BEGIN IMMEDIATE')
+            return self._checkpoint_pre_compress(db)
+
     def remember(self, request_id, role, text, generation=None):
         if role not in {'user', 'assistant'}:
             raise ValueError('Invalid role')
@@ -138,6 +188,9 @@ class Bel:
                 return
             db.execute('INSERT OR IGNORE INTO bel_history(request_id,role,text,at) VALUES(?,?,?,?)',
                        (request_id, role, redact(str(text))[:16000], time.time() * 1000))
+            count = db.execute('SELECT count(*) FROM bel_history').fetchone()[0]
+            if count >= 160:
+                self._checkpoint_pre_compress(db)
             db.execute('DELETE FROM bel_history WHERE seq NOT IN (SELECT seq FROM bel_history ORDER BY seq DESC LIMIT 200)')
 
     def history(self):

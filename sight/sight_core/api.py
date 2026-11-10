@@ -106,7 +106,7 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     router.chatgpt = chatgpt
     learning_service = Learning(config, files, router)
     capability_service = Capabilities(store, files)
-    bel = Bel(store, files, capability_service)
+    bel = Bel(store, files, capability_service, memory=learning_service.memory if not learning_service.error else None)
     speech_service = SpeechService(config.local_stt, asset_dir=config.asr_directory,
                                    model=config.asr_model, preferred=config.speech_engine)
     speech_consents = {}
