@@ -39,6 +39,7 @@ from .bel import Bel
 from .identity import APP_NAME, FULL_NAME, DEFAULT_OWNER
 from .local_speech import SpeechUnavailable, SpeechBusy, SpeechInputError
 from .speech_engines import SpeechService
+from .system_monitor import monitor as system_monitor
 
 UI = Path(__file__).resolve().parents[1] / "apps/ui"
 BEL_UI = (Path(sys._MEIPASS) / 'frontend/dist' if getattr(sys, 'frozen', False)
@@ -321,6 +322,10 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
         enabled = not local_only and any(router.provider(p).policy.enabled for p in ("groq", "gemini", "openrouter"))
         return {"ok": integrity == "ok", "database": integrity, "phase": 4, "release": "PARTIAL", "cloud_enabled": enabled}
 
+    @app.get("/api/system/telemetry")
+    async def system_telemetry():
+        return system_monitor.get_telemetry()
+
     @app.get("/api/status")
     async def status():
         model = await local.health()
@@ -574,7 +579,10 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
             elif body.text.strip().lower() in {"help", "what can you do", "status"}:
                 output = {"status": "ok", "say": "BEL's local core is running. I can answer questions, retrieve your saved memories and propose registered tools for your approval. File tools are limited to the private workspace. Settings shows model readiness and capability limits.", "offline": True}
             else:
-                if not learning_service.error:
+                safe, reason = system_monitor.check_memory_safety(min_ram_mb=300)
+                if not safe and not any(router.provider(p).policy.enabled for p in ("groq", "gemini", "openrouter")):
+                    output = {"status": "ok", "say": f"System memory is critically low ({reason}). Local model inference was throttled to prevent host freeze.", "offline": True, "throttled": True}
+                elif not learning_service.error:
                     context=learning_service.memory.context(body.text)
                     remote=learning_service.memory.context(body.text,remote=True)
                     output = await router.generate(body.text,local_context=context['text'],remote_context=remote['text'],recover_empty=True)
