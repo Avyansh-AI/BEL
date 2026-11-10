@@ -42,6 +42,9 @@ from .speech_engines import SpeechService
 from .speech_tts import LocalTTS, TTSUnavailable, TTSBusy, TTSInputError
 from .system_monitor import monitor as system_monitor
 from .cognitive import CognitiveOrchestrator, IntentType
+from .vision import VisionService, CaptureOptions, VisionUnavailable
+from .wake_detector import AcousticWakeDetector
+from .actuator import DesktopActuator, ActuatorActionType
 
 UI = Path(__file__).resolve().parents[1] / "apps/ui"
 BEL_UI = (Path(sys._MEIPASS) / 'frontend/dist' if getattr(sys, 'frozen', False)
@@ -99,6 +102,21 @@ class SynthesizeRequest(StrictModel):
     volume: float | None = Field(default=1.0, ge=0.0, le=1.0)
 
 
+class WakeChunkRequest(StrictModel):
+    chunk: str = ""
+    simulate: bool = False
+
+
+class ActuatorProposeRequest(StrictModel):
+    action_type: str = Field(pattern="^(mouse_click|key_press|type_text|window_focus)$")
+    arguments: dict
+    summary: str
+
+
+class ActuatorExecuteRequest(StrictModel):
+    approval_id: str
+
+
 def create_app(config: Config | None = None, provider=None, *, local_only=False):
     redact_transport_logs()
     config = config or Config.from_env()
@@ -126,6 +144,9 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     speech_service = SpeechService(config.local_stt, asset_dir=config.asr_directory,
                                    model=config.asr_model, preferred=config.speech_engine)
     tts_service = LocalTTS(config.local_tts)
+    vision_service = VisionService(enabled=True)
+    wake_detector = AcousticWakeDetector(wake_phrase=APP_NAME)
+    desktop_actuator = DesktopActuator(vision_service=vision_service, enabled=True)
     speech_consents = {}
     speech_tasks = {}
     speech_task_ids = {}
@@ -183,6 +204,9 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     app.state.bel = bel
     app.state.speech = speech_service
     app.state.tts = tts_service
+    app.state.vision = vision_service
+    app.state.wake = wake_detector
+    app.state.actuator = desktop_actuator
     capability_service.mount(app)
 
     async def broadcast(state, request_id=None, for_session=None):
@@ -388,7 +412,7 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
                           'tts_available': tts_status['available'],
                           'tts_enabled': config.local_tts,
                           'tts_voice': tts_status.get('default_voice'),
-                          'playback_available': True, 'wake_word': APP_NAME, 'wake_available': False,
+                          'playback_available': True, 'wake_word': APP_NAME, 'wake_available': True,
                           'microphone_enabled': request.state.session.id in speech_consents,
                           'engine': speech_status.get('engine', 'Windows System.Speech'), 'locales': speech_status.get('locales', []),
                           'engines': speech_status.get('engines', []),
@@ -396,6 +420,7 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
                           'preferred_engine': speech_status.get('preferred_engine', config.speech_engine),
                           'degraded': speech_status.get('degraded', False),
                           'reason': speech_status['reason']},
+                'vision': app.state.vision.status() if hasattr(app.state, 'vision') else {'available': False},
                 'tool_router': {'status': needle_status, 'model': 'Needle 3', 'reason': reason}}
 
     @app.get('/api/bel/history')
@@ -594,6 +619,68 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
             return await app.state.tts.list_voices()
         except TTSUnavailable as exc:
             raise HTTPException(503, str(exc)) from exc
+
+    @app.get("/api/vision/status")
+    async def vision_status():
+        return app.state.vision.status()
+
+    @app.post("/api/vision/capture")
+    async def vision_capture(options: CaptureOptions | None = None):
+        try:
+            image_bytes = app.state.vision.capture(options)
+            mime = "image/png" if options and options.format == "png" else "image/jpeg"
+            return Response(content=image_bytes, media_type=mime)
+        except VisionUnavailable as exc:
+            raise HTTPException(503, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(500, f"Screen capture error: {exc}") from exc
+
+    @app.get("/api/vision/windows")
+    async def vision_windows():
+        windows = app.state.vision.list_windows()
+        return {"windows": [w.model_dump() for w in windows]}
+
+    @app.post("/api/speech/wake/process")
+    async def wake_process(body: WakeChunkRequest):
+        try:
+            pcm_bytes = base64.b64decode(body.chunk) if body.chunk else b""
+        except Exception as exc:
+            raise HTTPException(422, f"Invalid base64 audio chunk: {exc}") from exc
+        res = app.state.wake.process_chunk(pcm_bytes, simulate_trigger=body.simulate)
+        return {
+            "triggered": res.triggered,
+            "state": res.state.value,
+            "energy_rms": res.energy_rms,
+            "speech_detected": res.speech_detected,
+            "confidence": res.confidence,
+            "timestamp": res.timestamp,
+        }
+
+    @app.get("/api/speech/wake/status")
+    async def wake_status():
+        return app.state.wake.status()
+
+    @app.post("/api/actuator/propose")
+    async def actuator_propose(body: ActuatorProposeRequest):
+        try:
+            proposal = app.state.actuator.propose(
+                action_type=ActuatorActionType(body.action_type),
+                arguments=body.arguments,
+                summary=body.summary,
+            )
+            return proposal.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, str(exc)) from exc
+
+    @app.post("/api/actuator/execute")
+    async def actuator_execute(body: ActuatorExecuteRequest):
+        try:
+            result = app.state.actuator.execute_approved(body.approval_id)
+            return result
+        except ValueError as exc:
+            raise HTTPException(400, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(500, f"Actuation failed: {exc}") from exc
 
     @app.get("/api/voiceprint/{operation}")
     @app.post("/api/voiceprint/{operation}")
