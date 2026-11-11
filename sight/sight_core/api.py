@@ -48,6 +48,26 @@ from .actuator import DesktopActuator, ActuatorActionType
 from .action_verifier import ActionVerifier
 from .ui_grounding import UIGroundingService
 from .browser_automation import BrowserAutomationService, BrowserSecurityError, BrowserOperationError
+from .code_agent import (
+    CodeAgent,
+    FileEdit,
+    SecurityBoundaryViolation,
+)
+from .blender_agent import (
+    BlenderAgent,
+    MaterialProperties,
+    MeshRequest,
+    RenderRequest,
+)
+from .godot_agent import (
+    GodotAgent,
+    GodotProjectRequest,
+    GodotSceneRequest,
+)
+from .unreal_agent import (
+    UnrealAgent,
+    UnrealScriptRequest,
+)
 
 UI = Path(__file__).resolve().parents[1] / "apps/ui"
 BEL_UI = (Path(sys._MEIPASS) / 'frontend/dist' if getattr(sys, 'frozen', False)
@@ -151,6 +171,90 @@ class UIControlsRequest(StrictModel):
     parent_hwnd: int | None = None
 
 
+class CodeAnalyzeRequest(StrictModel):
+    path: str
+    max_files: int = 200
+
+
+class CodeGenerateRequest(StrictModel):
+    path: str
+    content: str
+
+
+class CodeRefactorRequest(StrictModel):
+    edits: list[dict]
+
+
+class CodeTestRequest(StrictModel):
+    test_type: str = "pytest"
+    target: str | None = None
+    cwd: str | None = None
+    timeout: int = 60
+
+
+class GitStatusRequest(StrictModel):
+    repo_dir: str | None = None
+
+
+class GitBranchRequest(StrictModel):
+    branch_name: str
+    repo_dir: str | None = None
+
+
+class GitCommitRequest(StrictModel):
+    message: str
+    paths: list[str] | None = None
+    repo_dir: str | None = None
+    conventional: bool = True
+
+
+class GitDiffRequest(StrictModel):
+    repo_dir: str | None = None
+    staged: bool = False
+    file_path: str | None = None
+
+
+class BlenderMeshApiRequest(StrictModel):
+    mesh_type: str = "cube"
+    parameters: dict = Field(default_factory=dict)
+    material: dict = Field(default_factory=dict)
+    output_format: str = "glb"
+    output_path: str | None = None
+
+
+class BlenderRenderApiRequest(StrictModel):
+    mesh_type: str = "cube"
+    parameters: dict = Field(default_factory=dict)
+    material: dict = Field(default_factory=dict)
+    resolution: list[int] = Field(default_factory=lambda: [800, 600])
+    output_path: str | None = None
+    samples: int = 64
+
+
+class GodotProjectApiRequest(StrictModel):
+    project_name: str
+    target_dir: str
+    renderer: str = "forward_plus"
+
+
+class GodotSceneApiRequest(StrictModel):
+    project_dir: str
+    scene_name: str
+    archetype: str = "2d_character"
+    include_script: bool = True
+
+
+class GodotInspectApiRequest(StrictModel):
+    project_dir: str
+
+
+class UnrealScriptApiRequest(StrictModel):
+    task_type: str = "spawn_actor"
+    actor_class: str = "StaticMeshActor"
+    parameters: dict = Field(default_factory=dict)
+    output_path: str | None = None
+
+
 def create_app(config: Config | None = None, provider=None, *, local_only=False):
     redact_transport_logs()
     config = config or Config.from_env()
@@ -188,6 +292,12 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
         action_verifier=action_verifier,
         enabled=True,
     )
+    code_workspace = config.data_dir / "workspace"
+    code_workspace.mkdir(parents=True, exist_ok=True)
+    code_agent = CodeAgent(workspace_root=code_workspace)
+    blender_agent = BlenderAgent(workspace_root=config.data_dir / "creative/blender")
+    godot_agent = GodotAgent(workspace_root=config.data_dir / "creative/godot")
+    unreal_agent = UnrealAgent(workspace_root=config.data_dir / "creative/unreal")
     speech_consents = {}
     speech_tasks = {}
     speech_task_ids = {}
@@ -255,6 +365,10 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     app.state.verifier = action_verifier
     app.state.ui_grounding = ui_grounding
     app.state.browser = browser_automation
+    app.state.code_agent = code_agent
+    app.state.blender_agent = blender_agent
+    app.state.godot_agent = godot_agent
+    app.state.unreal_agent = unreal_agent
     capability_service.mount(app)
 
     async def broadcast(state, request_id=None, for_session=None):
@@ -807,6 +921,186 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
             return delta.model_dump()
         except Exception as exc:
             raise HTTPException(422, f"Visual verification failed: {exc}") from exc
+
+    # =========================================================================
+    # STAGE 7 — CODING & CREATIVE DEVELOPMENT INTELLIGENCE
+    # =========================================================================
+
+    @app.post("/api/coding/analyze")
+    async def coding_analyze(body: CodeAnalyzeRequest):
+        try:
+            analysis = app.state.code_agent.analyze_path(body.path)
+            return analysis.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Analysis failed: {exc}") from exc
+
+    @app.post("/api/coding/generate")
+    async def coding_generate(body: CodeGenerateRequest):
+        try:
+            result = app.state.code_agent.write_file(body.path, body.content)
+            if not result.success:
+                raise HTTPException(422, result.error or "Code generation failed AST security audit")
+            return result.model_dump()
+        except HTTPException:
+            raise
+        except PermissionError as exc:
+            raise HTTPException(403, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(400, f"Code generation failed: {exc}") from exc
+
+    @app.post("/api/coding/refactor")
+    async def coding_refactor(body: CodeRefactorRequest):
+        try:
+            edits = [FileEdit(**e) for e in body.edits]
+            result = app.state.code_agent.apply_edits(edits)
+            if not result.success:
+                raise HTTPException(422, result.error or "Refactoring transaction failed")
+            return result.model_dump()
+        except HTTPException:
+            raise
+        except PermissionError as exc:
+            raise HTTPException(403, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(400, f"Refactoring failed: {exc}") from exc
+
+    @app.post("/api/coding/test")
+    async def coding_test(body: CodeTestRequest):
+        try:
+            res = app.state.code_agent.runner.run_tests(
+                test_type=body.test_type,
+                target=body.target,
+                cwd=body.cwd,
+                timeout_sec=body.timeout,
+            )
+            return res.model_dump()
+        except Exception as exc:
+            raise HTTPException(500, f"Test execution failed: {exc}") from exc
+
+    @app.post("/api/coding/git/status")
+    async def coding_git_status(body: GitStatusRequest | None = None):
+        repo_dir = body.repo_dir if body and body.repo_dir else app.state.code_agent.workspace_root
+        return app.state.code_agent.git.status(repo_dir).model_dump()
+
+    @app.post("/api/coding/git/branch")
+    async def coding_git_branch(body: GitBranchRequest):
+        repo_dir = body.repo_dir or app.state.code_agent.workspace_root
+        res = app.state.code_agent.git.create_branch(repo_dir, body.branch_name)
+        if not res.success:
+            raise HTTPException(400, res.error or "Branch creation failed")
+        return res.model_dump()
+
+    @app.post("/api/coding/git/commit")
+    async def coding_git_commit(body: GitCommitRequest):
+        repo_dir = body.repo_dir or app.state.code_agent.workspace_root
+        res = app.state.code_agent.git.create_commit(
+            repo_dir,
+            message=body.message,
+            paths=body.paths,
+            conventional=body.conventional,
+        )
+        if not res.success:
+            raise HTTPException(400, res.error or "Commit failed")
+        return res.model_dump()
+
+    @app.post("/api/coding/git/diff")
+    async def coding_git_diff(body: GitDiffRequest):
+        repo_dir = body.repo_dir or app.state.code_agent.workspace_root
+        diff = app.state.code_agent.git.get_diff(repo_dir, staged=body.staged, file_path=body.file_path)
+        return {"diff": diff}
+
+    @app.get("/api/creative/blender/status")
+    async def creative_blender_status():
+        return app.state.blender_agent.get_status().model_dump()
+
+    @app.post("/api/creative/blender/generate_mesh")
+    async def creative_blender_generate_mesh(body: BlenderMeshApiRequest):
+        try:
+            mat = MaterialProperties(**body.material) if body.material else MaterialProperties()
+            req = MeshRequest(
+                mesh_type=body.mesh_type,
+                parameters=body.parameters,
+                material=mat,
+                output_format=body.output_format,
+                output_path=body.output_path,
+            )
+            res = app.state.blender_agent.generate_mesh(req)
+            return res.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Mesh generation failed: {exc}") from exc
+
+    @app.post("/api/creative/blender/render")
+    async def creative_blender_render(body: BlenderRenderApiRequest):
+        try:
+            mat = MaterialProperties(**body.material) if body.material else MaterialProperties()
+            req = RenderRequest(
+                mesh_type=body.mesh_type,
+                parameters=body.parameters,
+                material=mat,
+                resolution=body.resolution,
+                output_path=body.output_path,
+                samples=body.samples,
+            )
+            res = app.state.blender_agent.render_mesh(req)
+            return res.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Render failed: {exc}") from exc
+
+    @app.get("/api/creative/godot/status")
+    async def creative_godot_status():
+        return app.state.godot_agent.get_status().model_dump()
+
+    @app.post("/api/creative/godot/create_project")
+    async def creative_godot_create_project(body: GodotProjectApiRequest):
+        try:
+            req = GodotProjectRequest(
+                project_name=body.project_name,
+                target_dir=body.target_dir,
+                renderer=body.renderer,
+            )
+            res = app.state.godot_agent.create_project(req)
+            return res.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Godot project creation failed: {exc}") from exc
+
+    @app.post("/api/creative/godot/create_scene")
+    async def creative_godot_create_scene(body: GodotSceneApiRequest):
+        try:
+            req = GodotSceneRequest(
+                project_dir=body.project_dir,
+                scene_name=body.scene_name,
+                archetype=body.archetype,
+                include_script=body.include_script,
+            )
+            res = app.state.godot_agent.create_scene(req)
+            return res.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Godot scene creation failed: {exc}") from exc
+
+    @app.post("/api/creative/godot/inspect")
+    async def creative_godot_inspect(body: GodotInspectApiRequest):
+        try:
+            res = app.state.godot_agent.inspect_project(body.project_dir)
+            return res.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Godot project inspection failed: {exc}") from exc
+
+    @app.get("/api/creative/unreal/status")
+    async def creative_unreal_status():
+        return app.state.unreal_agent.get_status().model_dump()
+
+    @app.post("/api/creative/unreal/generate_script")
+    async def creative_unreal_generate_script(body: UnrealScriptApiRequest):
+        try:
+            req = UnrealScriptRequest(
+                task_type=body.task_type,
+                actor_class=body.actor_class,
+                parameters=body.parameters,
+                output_path=body.output_path,
+            )
+            res = app.state.unreal_agent.generate_script(req)
+            return res.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Unreal script generation failed: {exc}") from exc
 
     @app.get("/api/voiceprint/{operation}")
     @app.post("/api/voiceprint/{operation}")
