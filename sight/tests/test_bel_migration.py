@@ -80,7 +80,7 @@ def test_full_migration_preserves_memories_quotas_credentials_and_database_forma
         assert json.loads(db.execute("SELECT value FROM settings WHERE key='usage.groq.synthetic-day'").fetchone()[0])["requests"] == 1
         assert json.loads(db.execute("SELECT value FROM settings WHERE key='provider.groq'").fetchone()[0])["enabled"] is True
     with sqlite3.connect(backup / "brain.sqlite3") as db:
-        assert db.execute("PRAGMA user_version").fetchone()[0] == 2
+        assert db.execute("PRAGMA user_version").fetchone()[0] in (2, 3)
         assert db.execute("SELECT content FROM profiles WHERE id=?", (record["id"],)).fetchone()[0] == record["content"]
     assert not (backup / "browser-token").exists() and not (backup / "events.log").exists()
 

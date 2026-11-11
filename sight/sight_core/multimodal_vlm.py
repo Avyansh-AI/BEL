@@ -125,7 +125,8 @@ class MultimodalVLM:
             if system_prompt:
                 payload["system"] = system_prompt
 
-            async with httpx.AsyncClient(timeout=timeout_sec) as client:
+            client_timeout = httpx.Timeout(timeout_sec, connect=0.5)
+            async with httpx.AsyncClient(timeout=client_timeout) as client:
                 res = await client.post(f"{self.ollama_url}/api/generate", json=payload)
                 if res.status_code == 200:
                     data = res.json()

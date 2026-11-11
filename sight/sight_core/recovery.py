@@ -9,7 +9,7 @@ from .security import canonical, private_directory, reject_links, safe_database,
 
 MAX_BYTES = 2 * 1024**3
 MAX_FILES = 10000
-DATABASES = {'sight.sqlite3': {1}, 'brain.sqlite3': {2}}
+DATABASES = {'sight.sqlite3': {1}, 'brain.sqlite3': {2, 3}}
 
 
 def checksum(path):

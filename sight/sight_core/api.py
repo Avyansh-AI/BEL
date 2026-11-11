@@ -72,6 +72,10 @@ from .multimodal_vlm import MultimodalVLM
 from .document_parser import DocumentParser
 from .acoustic_intelligence import AcousticIntelligence
 from .proactive_scheduler import ProactiveScheduler
+from .vault_dpapi import DPAPIVault
+from .crash_watchdog import CrashWatchdog
+from .integrity_audit import IntegrityAuditor
+from .backup_restore import BackupRestoreManager
 
 UI = Path(__file__).resolve().parents[1] / "apps/ui"
 BEL_UI = (Path(sys._MEIPASS) / 'frontend/dist' if getattr(sys, 'frozen', False)
@@ -304,6 +308,35 @@ class ProjectHealthApiRequest(StrictModel):
     project_path: str | None = None
 
 
+class VaultStoreApiRequest(StrictModel):
+    key: str
+    value: str
+
+
+class VaultRetrieveApiRequest(StrictModel):
+    key: str
+
+
+class VaultDeleteApiRequest(StrictModel):
+    key: str
+
+
+class WatchdogHeartbeatApiRequest(StrictModel):
+    source: str = "fastapi_core"
+
+
+class IntegrityVerifyApiRequest(StrictModel):
+    manifest: dict[str, str] | None = None
+
+
+class BackupCreateApiRequest(StrictModel):
+    output_path: str | None = None
+
+
+class BackupRestoreApiRequest(StrictModel):
+    archive_path: str
+
+
 def create_app(config: Config | None = None, provider=None, *, local_only=False):
     redact_transport_logs()
     config = config or Config.from_env()
@@ -354,6 +387,10 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
         proactive_service=capability_service.proactive,
         workspace_root=code_workspace,
     )
+    vault_service = DPAPIVault(vault_dir=config.data_dir / "vault")
+    watchdog_service = CrashWatchdog(watchdog_dir=config.data_dir / "watchdog")
+    integrity_auditor = IntegrityAuditor(root_dir=config.data_dir.parent)
+    backup_manager = BackupRestoreManager(data_dir=config.data_dir)
     speech_consents = {}
     speech_tasks = {}
     speech_task_ids = {}
@@ -429,6 +466,10 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     app.state.document_parser = document_parser
     app.state.acoustic = acoustic_intelligence
     app.state.scheduler = proactive_scheduler
+    app.state.vault = vault_service
+    app.state.watchdog = watchdog_service
+    app.state.integrity = integrity_auditor
+    app.state.backup = backup_manager
     capability_service.mount(app)
 
     async def broadcast(state, request_id=None, for_session=None):
@@ -1279,6 +1320,89 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
             raise
         except Exception as exc:
             raise HTTPException(400, f"Project health check failed: {exc}") from exc
+
+    # =========================================================================
+    # STAGE 9 — RELIABILITY, SECURITY & SYSTEM INTELLIGENCE
+    # =========================================================================
+
+    @app.post("/api/security/vault/store")
+    async def vault_store(body: VaultStoreApiRequest):
+        try:
+            app.state.vault.store_secret(body.key, body.value)
+            return {"stored": True, "key": body.key}
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(400, f"Vault storage failed: {exc}") from exc
+
+    @app.post("/api/security/vault/retrieve")
+    async def vault_retrieve(body: VaultRetrieveApiRequest):
+        try:
+            val = app.state.vault.retrieve_secret(body.key)
+            if val is None:
+                raise HTTPException(404, f"Secret key '{body.key}' not found in vault")
+            return {"key": body.key, "value": val}
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(400, f"Vault retrieval failed: {exc}") from exc
+
+    @app.get("/api/security/vault/list")
+    async def vault_list():
+        return {"keys": app.state.vault.list_keys()}
+
+    @app.post("/api/security/vault/delete")
+    async def vault_delete(body: VaultDeleteApiRequest):
+        deleted = app.state.vault.delete_secret(body.key)
+        return {"deleted": deleted, "key": body.key}
+
+    @app.get("/api/security/vault/status")
+    async def vault_status():
+        return app.state.vault.get_status().model_dump()
+
+    @app.post("/api/system/watchdog/heartbeat")
+    async def watchdog_heartbeat(body: WatchdogHeartbeatApiRequest | None = None):
+        source = body.source if body else "fastapi_core"
+        app.state.watchdog.record_heartbeat(source=source)
+        return {"heartbeat": "recorded", "source": source}
+
+    @app.get("/api/system/watchdog/status")
+    async def watchdog_status():
+        return app.state.watchdog.check_health().model_dump()
+
+    @app.post("/api/system/integrity/verify")
+    async def integrity_verify(body: IntegrityVerifyApiRequest | None = None):
+        try:
+            manifest = body.manifest if body else None
+            res = app.state.integrity.verify_integrity(expected_manifest=manifest)
+            return res.model_dump()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(500, f"Integrity verification failed: {exc}") from exc
+
+    @app.post("/api/system/backup/create")
+    async def backup_create(body: BackupCreateApiRequest | None = None):
+        try:
+            out_path = body.output_path if body else None
+            res = app.state.backup.create_backup(output_path=out_path)
+            return res.model_dump()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(500, f"Backup creation failed: {exc}") from exc
+
+    @app.post("/api/system/backup/restore")
+    async def backup_restore(body: BackupRestoreApiRequest):
+        try:
+            res = app.state.backup.restore_backup(body.archive_path)
+            if not res.success:
+                raise HTTPException(400, res.error or "Restoration failed")
+            return res.model_dump()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(400, f"Restore failed: {exc}") from exc
 
     @app.get("/api/voiceprint/{operation}")
     @app.post("/api/voiceprint/{operation}")
