@@ -45,6 +45,9 @@ from .cognitive import CognitiveOrchestrator, IntentType
 from .vision import VisionService, CaptureOptions, VisionUnavailable
 from .wake_detector import AcousticWakeDetector
 from .actuator import DesktopActuator, ActuatorActionType
+from .action_verifier import ActionVerifier
+from .ui_grounding import UIGroundingService
+from .browser_automation import BrowserAutomationService, BrowserSecurityError, BrowserOperationError
 
 UI = Path(__file__).resolve().parents[1] / "apps/ui"
 BEL_UI = (Path(sys._MEIPASS) / 'frontend/dist' if getattr(sys, 'frozen', False)
@@ -115,6 +118,37 @@ class ActuatorProposeRequest(StrictModel):
 
 class ActuatorExecuteRequest(StrictModel):
     approval_id: str
+    verify_visual: bool = False
+
+
+class BrowserNavigateRequest(StrictModel):
+    url: str
+    allow_localhost: bool = False
+
+
+class BrowserActionRequest(StrictModel):
+    action: Literal["click", "fill"]
+    selector: str
+    value: str | None = None
+
+
+class ActionVerifyRequest(StrictModel):
+    pre_image: str
+    post_image: str
+    roi_left: int | None = None
+    roi_top: int | None = None
+    roi_width: int | None = None
+    roi_height: int | None = None
+
+
+class UIGroundRequest(StrictModel):
+    x: int
+    y: int
+    parent_hwnd: int | None = None
+
+
+class UIControlsRequest(StrictModel):
+    parent_hwnd: int | None = None
 
 
 def create_app(config: Config | None = None, provider=None, *, local_only=False):
@@ -146,7 +180,14 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     tts_service = LocalTTS(config.local_tts)
     vision_service = VisionService(enabled=True)
     wake_detector = AcousticWakeDetector(wake_phrase=APP_NAME)
-    desktop_actuator = DesktopActuator(vision_service=vision_service, enabled=True)
+    action_verifier = ActionVerifier()
+    ui_grounding = UIGroundingService(vision_service=vision_service)
+    browser_automation = BrowserAutomationService(headless=True)
+    desktop_actuator = DesktopActuator(
+        vision_service=vision_service,
+        action_verifier=action_verifier,
+        enabled=True,
+    )
     speech_consents = {}
     speech_tasks = {}
     speech_task_ids = {}
@@ -189,6 +230,10 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
             await asyncio.gather(*speech_tasks.values(), return_exceptions=True)
         speech_consents.clear()
         speech_requests.clear()
+        try:
+            await browser_automation.close()
+        except Exception:
+            pass
         for handler in logger.handlers[:]:
             handler.close()
             logger.removeHandler(handler)
@@ -207,6 +252,9 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     app.state.vision = vision_service
     app.state.wake = wake_detector
     app.state.actuator = desktop_actuator
+    app.state.verifier = action_verifier
+    app.state.ui_grounding = ui_grounding
+    app.state.browser = browser_automation
     capability_service.mount(app)
 
     async def broadcast(state, request_id=None, for_session=None):
@@ -675,12 +723,90 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     @app.post("/api/actuator/execute")
     async def actuator_execute(body: ActuatorExecuteRequest):
         try:
-            result = app.state.actuator.execute_approved(body.approval_id)
+            result = app.state.actuator.execute_approved(body.approval_id, verify_visual=body.verify_visual)
             return result
         except ValueError as exc:
             raise HTTPException(400, str(exc)) from exc
         except Exception as exc:
             raise HTTPException(500, f"Actuation failed: {exc}") from exc
+
+    @app.post("/api/automation/browser/navigate")
+    async def browser_navigate(body: BrowserNavigateRequest):
+        try:
+            summary = await app.state.browser.navigate(body.url, allow_localhost=body.allow_localhost)
+            return summary.model_dump()
+        except BrowserSecurityError as exc:
+            raise HTTPException(403, str(exc)) from exc
+        except BrowserOperationError as exc:
+            raise HTTPException(502, str(exc)) from exc
+
+    @app.post("/api/automation/browser/action")
+    async def browser_action(body: BrowserActionRequest):
+        try:
+            if body.action == "click":
+                return await app.state.browser.click_element(body.selector)
+            elif body.action == "fill":
+                return await app.state.browser.fill_field(body.selector, body.value or "")
+            else:
+                raise HTTPException(400, f"Unsupported browser action: {body.action}")
+        except BrowserOperationError as exc:
+            raise HTTPException(502, str(exc)) from exc
+
+    @app.get("/api/automation/browser/extract")
+    async def browser_extract(max_chars: int = 16000):
+        try:
+            content = await app.state.browser.extract_content(max_chars=max_chars)
+            return content.model_dump()
+        except BrowserOperationError as exc:
+            raise HTTPException(502, str(exc)) from exc
+
+    @app.get("/api/automation/browser/elements")
+    async def browser_elements(max_elements: int = 40):
+        try:
+            elements = await app.state.browser.get_interactive_elements(max_elements=max_elements)
+            return {"elements": [e.model_dump() for e in elements]}
+        except BrowserOperationError as exc:
+            raise HTTPException(502, str(exc)) from exc
+
+    @app.get("/api/automation/browser/screenshot")
+    async def browser_screenshot(format: Literal["jpeg", "png"] = "jpeg"):
+        try:
+            shot_bytes = await app.state.browser.capture_screenshot(format=format)
+            mime = "image/png" if format == "png" else "image/jpeg"
+            return Response(content=shot_bytes, media_type=mime)
+        except BrowserOperationError as exc:
+            raise HTTPException(502, str(exc)) from exc
+
+    @app.post("/api/automation/ui/controls")
+    async def ui_controls(body: UIControlsRequest | None = None):
+        hwnd = body.parent_hwnd if body else None
+        controls = app.state.ui_grounding.enumerate_controls(parent_hwnd=hwnd)
+        return {"controls": [c.model_dump() for c in controls]}
+
+    @app.post("/api/automation/ui/ground")
+    async def ui_ground(body: UIGroundRequest):
+        control = app.state.ui_grounding.ground_coordinate(body.x, body.y, parent_hwnd=body.parent_hwnd)
+        if not control:
+            return {"found": False, "control": None}
+        return {"found": True, "control": control.model_dump()}
+
+    @app.post("/api/automation/action/verify")
+    async def action_verify(body: ActionVerifyRequest):
+        try:
+            pre_bytes = base64.b64decode(body.pre_image)
+            post_bytes = base64.b64decode(body.post_image)
+            roi = None
+            if body.roi_left is not None and body.roi_top is not None and body.roi_width and body.roi_height:
+                roi = BoundingBox(
+                    left=body.roi_left,
+                    top=body.roi_top,
+                    width=body.roi_width,
+                    height=body.roi_height,
+                )
+            delta = app.state.verifier.compare_images(pre_bytes, post_bytes, target_roi=roi)
+            return delta.model_dump()
+        except Exception as exc:
+            raise HTTPException(422, f"Visual verification failed: {exc}") from exc
 
     @app.get("/api/voiceprint/{operation}")
     @app.post("/api/voiceprint/{operation}")
