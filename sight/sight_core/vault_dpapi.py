@@ -174,6 +174,21 @@ class DPAPIVault:
             return None
         return self._decrypt_value(self._cache[key])
 
+    def get(self, key: str) -> str | None:
+        """Alias for retrieve_secret with fallback to OS Keyring."""
+        val = self.retrieve_secret(key)
+        if val is not None:
+            return val
+        try:
+            import keyring
+            return keyring.get_password("BEL", key) or keyring.get_password("SIGHT", key)
+        except Exception:
+            return None
+
+    def set(self, key: str, value: str) -> None:
+        """Alias for store_secret."""
+        self.store_secret(key, value)
+
     def delete_secret(self, key: str) -> bool:
         """Remove a secret from the vault."""
         if key in self._cache:

@@ -193,7 +193,7 @@ class Sessions:
 
 class Vault:
     """Use OS credential storage only; never fall back to a plaintext file."""
-    ALLOWED = {"groq", "gemini", "openrouter", "chatgpt"}
+    ALLOWED = {"groq", "gemini", "openrouter", "chatgpt", "token_harbor", "tokenharbor", "fish_audio"}
 
     def status(self):
         try:
@@ -208,13 +208,20 @@ class Vault:
         if provider not in self.ALLOWED or not self.status()["available"]:
             raise ValueError("A supported OS credential store is required")
         import keyring
-        keyring.set_password("SIGHT", provider, value)
+        keyring.set_password("BEL", provider, value)
+        try:
+            keyring.set_password("SIGHT", provider, value)
+        except Exception:
+            pass
 
     def get(self, provider):
         if provider not in self.ALLOWED or not self.status()["available"]:
             return None
         import keyring
         try:
+            val = keyring.get_password("BEL", provider)
+            if val:
+                return val
             return keyring.get_password("SIGHT", provider)
         except keyring.errors.KeyringError:
             return None

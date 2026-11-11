@@ -350,7 +350,8 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     # Owner-only file; the launch helper passes it in a URL fragment, never a query/log.
     atomic_private_write(token_file, bootstrap_token.encode('ascii'))
     local = provider or OllamaProvider(config)
-    router = ModelRouter(local, store, local_only=local_only)
+    vault_service = DPAPIVault(vault_dir=config.data_dir / "vault")
+    router = ModelRouter(local, store, local_only=local_only, vault=vault_service)
     chatgpt = ChatGPT(store,config)
     router.chatgpt = chatgpt
     learning_service = Learning(config, files, router)
@@ -388,7 +389,7 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
         proactive_service=capability_service.proactive,
         workspace_root=code_workspace,
     )
-    vault_service = DPAPIVault(vault_dir=config.data_dir / "vault")
+    # vault_service active
     watchdog_service = CrashWatchdog(watchdog_dir=config.data_dir / "watchdog")
     integrity_auditor = IntegrityAuditor(root_dir=config.data_dir.parent)
     backup_manager = BackupRestoreManager(data_dir=config.data_dir)
