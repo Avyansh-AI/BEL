@@ -17,6 +17,7 @@ frontend/*.tsbuildinfo
 build/
 dist/BEL/
 dist/BEL-worker/
+dist/BEL_V1_Portable/
 
 # Keep runtime state and raw server output local; retain audit summaries/manifests.
 audit-tests/**/server.log
