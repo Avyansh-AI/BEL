@@ -68,6 +68,10 @@ from .unreal_agent import (
     UnrealAgent,
     UnrealScriptRequest,
 )
+from .multimodal_vlm import MultimodalVLM
+from .document_parser import DocumentParser
+from .acoustic_intelligence import AcousticIntelligence
+from .proactive_scheduler import ProactiveScheduler
 
 UI = Path(__file__).resolve().parents[1] / "apps/ui"
 BEL_UI = (Path(sys._MEIPASS) / 'frontend/dist' if getattr(sys, 'frozen', False)
@@ -255,6 +259,51 @@ class UnrealScriptApiRequest(StrictModel):
     output_path: str | None = None
 
 
+class VLMQueryApiRequest(StrictModel):
+    prompt: str
+    image_base64: str
+    model: str | None = None
+
+
+class VLMChartApiRequest(StrictModel):
+    image_base64: str
+
+
+class VLMWireframeApiRequest(StrictModel):
+    image_base64: str
+
+
+class DocumentParseApiRequest(StrictModel):
+    file_path: str | None = None
+    content: str | None = None
+    format: str = "markdown"
+
+
+class AcousticClassifyApiRequest(StrictModel):
+    audio_base64: str
+    sample_rate: int = 16000
+
+
+class AcousticSummarizeApiRequest(StrictModel):
+    transcript: str
+
+
+class BriefingApiRequest(StrictModel):
+    briefing_type: str = "morning"
+    owner_name: str = "Sir"
+
+
+class ContextualReminderApiRequest(StrictModel):
+    title: str
+    due_epoch: float
+    interval_seconds: int = 0
+    reminder_id: str | None = None
+
+
+class ProjectHealthApiRequest(StrictModel):
+    project_path: str | None = None
+
+
 def create_app(config: Config | None = None, provider=None, *, local_only=False):
     redact_transport_logs()
     config = config or Config.from_env()
@@ -298,6 +347,13 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     blender_agent = BlenderAgent(workspace_root=config.data_dir / "creative/blender")
     godot_agent = GodotAgent(workspace_root=config.data_dir / "creative/godot")
     unreal_agent = UnrealAgent(workspace_root=config.data_dir / "creative/unreal")
+    vlm_service = MultimodalVLM(ollama_url=config.ollama_url, router=router)
+    document_parser = DocumentParser()
+    acoustic_intelligence = AcousticIntelligence()
+    proactive_scheduler = ProactiveScheduler(
+        proactive_service=capability_service.proactive,
+        workspace_root=code_workspace,
+    )
     speech_consents = {}
     speech_tasks = {}
     speech_task_ids = {}
@@ -369,6 +425,10 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     app.state.blender_agent = blender_agent
     app.state.godot_agent = godot_agent
     app.state.unreal_agent = unreal_agent
+    app.state.vlm = vlm_service
+    app.state.document_parser = document_parser
+    app.state.acoustic = acoustic_intelligence
+    app.state.scheduler = proactive_scheduler
     capability_service.mount(app)
 
     async def broadcast(state, request_id=None, for_session=None):
@@ -1099,8 +1159,126 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
             )
             res = app.state.unreal_agent.generate_script(req)
             return res.model_dump()
+        except HTTPException:
+            raise
         except Exception as exc:
             raise HTTPException(400, f"Unreal script generation failed: {exc}") from exc
+
+    # =========================================================================
+    # STAGE 8 — MULTIMODAL INTELLIGENCE & ADVANCED CAPABILITIES
+    # =========================================================================
+
+    @app.post("/api/multimodal/vlm/query")
+    async def vlm_query(body: VLMQueryApiRequest):
+        try:
+            raw_bytes = base64.b64decode(body.image_base64)
+            res = await app.state.vlm.query_image(raw_bytes, body.prompt, model=body.model)
+            return res.model_dump()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(400, f"VLM query failed: {exc}") from exc
+
+    @app.post("/api/multimodal/vlm/chart")
+    async def vlm_chart(body: VLMChartApiRequest):
+        try:
+            raw_bytes = base64.b64decode(body.image_base64)
+            analysis = await app.state.vlm.analyze_chart(raw_bytes)
+            return analysis.model_dump()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(400, f"Chart analysis failed: {exc}") from exc
+
+    @app.post("/api/multimodal/vlm/wireframe")
+    async def vlm_wireframe(body: VLMWireframeApiRequest):
+        try:
+            raw_bytes = base64.b64decode(body.image_base64)
+            wireframe = await app.state.vlm.analyze_wireframe(raw_bytes)
+            return wireframe.model_dump()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(400, f"Wireframe analysis failed: {exc}") from exc
+
+    @app.post("/api/multimodal/document/parse")
+    async def document_parse(body: DocumentParseApiRequest):
+        try:
+            if body.file_path:
+                doc = app.state.document_parser.parse_file(body.file_path)
+            elif body.content:
+                if body.format == "latex":
+                    doc = app.state.document_parser.parse_latex(body.content)
+                else:
+                    doc = app.state.document_parser.parse_markdown(body.content)
+            else:
+                raise HTTPException(422, "Either file_path or content must be provided")
+            return doc.model_dump()
+        except HTTPException:
+            raise
+        except FileNotFoundError as exc:
+            raise HTTPException(404, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(400, f"Document parsing failed: {exc}") from exc
+
+    @app.post("/api/multimodal/audio/classify")
+    async def audio_classify(body: AcousticClassifyApiRequest):
+        try:
+            pcm_bytes = base64.b64decode(body.audio_base64)
+            result = app.state.acoustic.classify_scene(pcm_bytes, sample_rate=body.sample_rate)
+            return result.model_dump()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(400, f"Audio classification failed: {exc}") from exc
+
+    @app.post("/api/multimodal/audio/summarize")
+    async def audio_summarize(body: AcousticSummarizeApiRequest):
+        try:
+            summary = app.state.acoustic.summarize_meeting(body.transcript)
+            return summary.model_dump()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(400, f"Audio summarization failed: {exc}") from exc
+
+    @app.post("/api/proactive/briefing")
+    async def proactive_briefing(body: BriefingApiRequest):
+        try:
+            briefing = app.state.scheduler.generate_briefing(
+                briefing_type=body.briefing_type,
+                owner_name=body.owner_name,
+            )
+            return briefing.model_dump()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(500, f"Briefing generation failed: {exc}") from exc
+
+    @app.post("/api/proactive/reminders")
+    async def proactive_reminder(body: ContextualReminderApiRequest):
+        try:
+            res = app.state.scheduler.schedule_contextual_reminder(
+                title=body.title,
+                due_epoch=body.due_epoch,
+                interval_seconds=body.interval_seconds,
+                reminder_id=body.reminder_id,
+            )
+            return res
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(400, f"Scheduling reminder failed: {exc}") from exc
+
+    @app.post("/api/proactive/health_check")
+    async def proactive_health_check(body: ProjectHealthApiRequest):
+        try:
+            res = app.state.scheduler.audit_project_health(body.project_path)
+            return res.model_dump()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(400, f"Project health check failed: {exc}") from exc
 
     @app.get("/api/voiceprint/{operation}")
     @app.post("/api/voiceprint/{operation}")
