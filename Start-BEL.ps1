@@ -16,4 +16,12 @@ $belArguments = @(('"' + $belEntry + '"'), '--data-directory', ('"' + $DataDirec
 if ($Background) { $belArguments += '--background' }
 if ($LocalDictation) { $belArguments += '--local-dictation' }
 if ($LocalTTS) { $belArguments += '--local-tts' }
-Start-Process -FilePath $belPython -ArgumentList $belArguments -WorkingDirectory $PSScriptRoot -WindowStyle Hidden | Out-Null
+Get-CimInstance Win32_Process -Filter "Name = 'python.exe' OR Name = 'pythonw.exe'" -ErrorAction SilentlyContinue |
+    Where-Object { $_.CommandLine -like '*bel_desktop.py*' } |
+    ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+Start-Sleep -Milliseconds 400
+if ($Background) {
+    Start-Process -FilePath $belPython -ArgumentList $belArguments -WorkingDirectory $PSScriptRoot -WindowStyle Hidden | Out-Null
+} else {
+    Start-Process -FilePath $belPython -ArgumentList $belArguments -WorkingDirectory $PSScriptRoot -WindowStyle Normal | Out-Null
+}

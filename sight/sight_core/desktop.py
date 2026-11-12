@@ -361,6 +361,17 @@ def main(argv=None):
                     if controller.tray_ready.wait(3):
                         controller.set_mode("background")
                 controller.window.events.loaded += hide_after_load
+            else:
+                def focus_after_load():
+                    try:
+                        controller.set_mode("active")
+                        import ctypes
+                        hwnd = controller.window.native.Handle.ToInt64()
+                        ctypes.windll.user32.ShowWindow(hwnd, 9)  # SW_RESTORE
+                        ctypes.windll.user32.SetForegroundWindow(hwnd)
+                    except Exception:
+                        pass
+                controller.window.events.loaded += focus_after_load
             logger.info("desktop.start; dictation=%s; microphone requires session consent; wake model unavailable", config.local_stt)
             try:
                 webview.start(gui="edgechromium", debug=False, private_mode=True)
