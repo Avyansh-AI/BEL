@@ -100,7 +100,8 @@ def run_golden_suite(output_manifest: Path | str | None = None) -> dict[str, Any
     """Execute complete Golden validation and write release manifest."""
     t0 = time.time()
     workspace_root = Path(__file__).resolve().parents[1]
-    repo_root = workspace_root.parents[1]
+    repo_root = workspace_root.parents[0]
+    project_root = workspace_root.parents[2] if len(workspace_root.parents) > 2 else repo_root
 
     print("================================================================================")
     print("BEL V1 MASTER GOLDEN VALIDATION & CONVERGENCE SUITE")
@@ -164,6 +165,11 @@ def run_golden_suite(output_manifest: Path | str | None = None) -> dict[str, Any
 
     manifest_file = Path(output_manifest).resolve() if output_manifest else repo_root / "BEL_V1_VALIDATION_MANIFEST.json"
     manifest_file.write_text(json.dumps(manifest_data, indent=2), encoding="utf-8")
+    if project_root != repo_root and (project_root / "START_HERE.md").exists():
+        try:
+            (project_root / "BEL_V1_VALIDATION_MANIFEST.json").write_text(json.dumps(manifest_data, indent=2), encoding="utf-8")
+        except Exception:
+            pass
     print("--------------------------------------------------------------------------------")
     print(f"GOLDEN RELEASE SIGN-OFF: CERTIFIED in {duration}s")
     print(f"Manifest written to: {manifest_file}")

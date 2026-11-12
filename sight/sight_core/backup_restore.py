@@ -63,20 +63,34 @@ class BackupRestoreManager:
 
         # Collect files: SQLite databases, json settings, memory vectors
         files_to_backup = []
+        allowed_exts = (".db", ".sqlite", ".sqlite3", ".json", ".log", ".enc", ".wal", ".shm")
         for root, dirs, files in os.walk(self.data_dir):
             if "backups" in Path(root).parts:
                 continue
             for f in files:
                 ext = Path(f).suffix.lower()
-                if ext in (".db", ".sqlite", ".json", ".log", ".enc", ".wal"):
+                if ext in allowed_exts or f.lower().endswith((".sqlite3-wal", ".sqlite3-shm", ".db-wal", ".db-shm")):
                     files_to_backup.append(Path(root) / f)
 
         with zipfile.ZipFile(zip_buf, "w", compression=zipfile.ZIP_DEFLATED) as zf:
             for fpath in files_to_backup:
                 rel = str(fpath.relative_to(self.data_dir)).replace("\\", "/")
-                # For SQLite db, vacuum / flush or read safely
                 try:
-                    data = fpath.read_bytes()
+                    if fpath.suffix.lower() in (".db", ".sqlite", ".sqlite3"):
+                        import contextlib
+                        import tempfile
+                        with tempfile.NamedTemporaryFile(suffix=fpath.suffix, delete=False) as tf:
+                            tmp_db = Path(tf.name)
+                        try:
+                            with contextlib.closing(sqlite3.connect(fpath)) as src_conn, contextlib.closing(sqlite3.connect(tmp_db)) as dst_conn:
+                                src_conn.backup(dst_conn)
+                            data = tmp_db.read_bytes()
+                        except sqlite3.DatabaseError:
+                            data = fpath.read_bytes()
+                        finally:
+                            tmp_db.unlink(missing_ok=True)
+                    else:
+                        data = fpath.read_bytes()
                     zf.writestr(rel, data)
                     total_files += 1
                     uncompressed_size += len(data)
@@ -122,10 +136,32 @@ class BackupRestoreManager:
             return RestoreResult(success=False, error=f"Decryption failed: {exc}")
 
         restored_files: list[str] = []
+        base_dir = self.data_dir.resolve()
         try:
             with zipfile.ZipFile(io.BytesIO(zip_bytes), "r") as zf:
-                for member in zf.namelist():
-                    dest = self.data_dir / member
+                members = zf.namelist()
+                # First pass: validate all member paths against Zip-Slip path traversal
+                validated_targets: list[tuple[str, Path]] = []
+                for member in members:
+                    norm = member.replace("\\", "/")
+                    parts = [p for p in norm.split("/") if p]
+                    if not parts or any(p in (".", "..") or ":" in p for p in parts) or norm.startswith("/"):
+                        return RestoreResult(
+                            success=False,
+                            error=f"Security violation: unsafe archive path '{member}' rejected.",
+                        )
+                    dest = (base_dir / Path(*parts)).resolve()
+                    try:
+                        dest.relative_to(base_dir)
+                    except ValueError:
+                        return RestoreResult(
+                            success=False,
+                            error=f"Security violation: archive member '{member}' escapes data_dir.",
+                        )
+                    validated_targets.append((member, dest))
+
+                # Second pass: extract verified members
+                for member, dest in validated_targets:
                     dest.parent.mkdir(parents=True, exist_ok=True)
                     dest.write_bytes(zf.read(member))
                     restored_files.append(member)

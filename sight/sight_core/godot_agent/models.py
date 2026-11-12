@@ -50,3 +50,13 @@ class GodotInspectResult(BaseModel):
     scenes: list[str] = Field(default_factory=list)
     scripts: list[str] = Field(default_factory=list)
     godot_version: str = "4.x"
+
+
+class GodotRunResult(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    success: bool = False
+    project_path: str
+    exit_code: int | None = None
+    stdout: str = ""
+    stderr: str = ""
+    error: str | None = None

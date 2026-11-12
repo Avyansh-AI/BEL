@@ -16,6 +16,7 @@ from .models import (
     GodotInspectResult,
     GodotProjectInfo,
     GodotProjectRequest,
+    GodotRunResult,
     GodotSceneRequest,
     GodotSceneResult,
     GodotStatus,
@@ -42,9 +43,16 @@ class GodotAgent:
                 return Path(which)
 
         if os.name == "nt":
-            candidates = glob.glob(r"C:\Program Files\Godot\*.exe")
-            if candidates:
-                return Path(candidates[0])
+            standard_patterns = [
+                r"C:\Program Files\Godot\*.exe",
+                r"C:\Program Files (x86)\Godot\*.exe",
+                r"C:\Godot\*.exe",
+                r"C:\Godot4\*.exe",
+            ]
+            for pat in standard_patterns:
+                candidates = glob.glob(pat)
+                if candidates:
+                    return Path(candidates[0])
         return None
 
     def get_status(self) -> GodotStatus:
@@ -199,3 +207,62 @@ renderer/rendering_method="{request.renderer}"
             scripts=sorted(scripts),
             godot_version="4.x",
         )
+
+    def run_project(
+        self,
+        project_dir: Path | str,
+        headless: bool = True,
+        timeout_sec: int = 15,
+    ) -> GodotRunResult:
+        """Execute a Godot 4.x project using the discovered Godot executable."""
+        proj_dir = Path(project_dir)
+        if not proj_dir.is_absolute():
+            proj_dir = self.workspace_root / proj_dir
+
+        if not (proj_dir / "project.godot").exists():
+            return GodotRunResult(
+                success=False,
+                project_path=str(proj_dir),
+                error=f"Invalid Godot project (missing project.godot): '{proj_dir}'",
+            )
+
+        if not self._executable or not self._executable.exists():
+            return GodotRunResult(
+                success=False,
+                project_path=str(proj_dir),
+                error="Godot 4 executable not found on host (set GODOT_BIN or install Godot 4).",
+            )
+
+        cmd = [str(self._executable), "--path", str(proj_dir)]
+        if headless:
+            cmd.extend(["--headless", "--quit"])
+
+        try:
+            proc = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout_sec,
+            )
+            return GodotRunResult(
+                success=proc.returncode == 0,
+                project_path=str(proj_dir),
+                exit_code=proc.returncode,
+                stdout=proc.stdout[-4000:],
+                stderr=proc.stderr[-4000:],
+                error=None if proc.returncode == 0 else f"Godot exited with code {proc.returncode}",
+            )
+        except subprocess.TimeoutExpired as exc:
+            return GodotRunResult(
+                success=False,
+                project_path=str(proj_dir),
+                stdout=(exc.stdout or "")[-4000:] if isinstance(exc.stdout, str) else "",
+                stderr=(exc.stderr or "")[-4000:] if isinstance(exc.stderr, str) else "",
+                error=f"Godot execution timed out after {timeout_sec}s",
+            )
+        except Exception as exc:
+            return GodotRunResult(
+                success=False,
+                project_path=str(proj_dir),
+                error=str(exc),
+            )

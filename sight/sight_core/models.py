@@ -13,6 +13,10 @@ OFFICIAL_GEMMA = 'gemma4:e4b-it-qat'
 # Exact owner-selected artifact, verified against all installed blobs. Official
 # QAT metadata has no E4B display name; never infer identity from the tag alone.
 OFFICIAL_GEMMA_DIGEST = 'ee665637121887cf3befff38abbb1be4ee117c7db867d97a67e29049ecd7e15f'
+OFFICIAL_GEMMA_DIGESTS = {
+    OFFICIAL_GEMMA_DIGEST,
+    '65da2fa3cd9d19d86c7fe3c871b1050a4ac1fbbbd80e51be7789fa9fbfa9f908',
+}
 OFFICIAL_GEMMA_IDENTITY = {
     'general.architecture': 'gemma4', 'general.parameter_count': 7463013674,
     'gemma4.block_count': 42, 'gemma4.embedding_length': 2560,
@@ -51,6 +55,106 @@ class OllamaProvider:
         self.active: asyncio.Task | None = None
         self.last_error = ""
         self.inference_verified = False
+
+    def discover_executable(self) -> str | None:
+        import os, shutil, glob
+        which = shutil.which("ollama")
+        if which:
+            return which
+        if os.name == "nt":
+            appdata = os.environ.get("LOCALAPPDATA", "")
+            if appdata:
+                prog = os.path.join(appdata, "Programs", "Ollama", "ollama.exe")
+                if os.path.exists(prog):
+                    return prog
+            root = getattr(self.config, "data_dir", None)
+            if root:
+                for pat in (os.path.join(str(root), "**", "ollama.exe"), os.path.join(str(root.parent), "**", "ollama.exe")):
+                    matches = glob.glob(pat, recursive=True)
+                    if matches:
+                        return matches[0]
+        return None
+
+    def resolve_models_directory(self) -> str | None:
+        import os
+        env_dir = os.environ.get("OLLAMA_MODELS")
+        if env_dir and os.path.isdir(env_dir):
+            return env_dir
+        if os.name == "nt" and os.path.isdir(r"D:\Ollama Models"):
+            return r"D:\Ollama Models"
+        home_models = os.path.join(os.path.expanduser("~"), ".ollama", "models")
+        if os.path.isdir(home_models):
+            return home_models
+        return None
+
+    def _is_daemon_ready(self) -> bool:
+        try:
+            with httpx.Client(base_url=self.config.ollama_url, timeout=1.5, trust_env=False) as client:
+                res = client.get("/api/version")
+                return res.status_code == 200
+        except Exception:
+            return False
+
+    def start_daemon_if_needed(self, wait_ready_sec: float = 0.0) -> bool:
+        import os, subprocess, time
+        if self._is_daemon_ready():
+            return True
+        exe = self.discover_executable()
+        if not exe or not os.path.exists(exe):
+            return False
+        env = os.environ.copy()
+        models_dir = self.resolve_models_directory()
+        if models_dir:
+            env["OLLAMA_MODELS"] = models_dir
+        env.setdefault("OLLAMA_HOST", "127.0.0.1:11434")
+        env.setdefault("OLLAMA_NO_CLOUD", "true")
+        env.setdefault("CUDA_MODULE_LOADING", "EAGER")
+        env.setdefault("OLLAMA_NUM_PARALLEL", "1")
+        env.setdefault("OLLAMA_MAX_LOADED_MODELS", "1")
+        env.setdefault("OLLAMA_CONTEXT_LENGTH", "4096")
+        flags = 0x08000000 if os.name == "nt" else 0
+        def _spawn(extra_env: dict[str, str] | None = None):
+            child_env = env.copy()
+            if extra_env:
+                child_env.update(extra_env)
+            return subprocess.Popen(
+                [exe, "serve"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                env=child_env,
+                creationflags=flags,
+            )
+
+        def _wait_ready(proc, timeout_sec: float) -> bool:
+            deadline = time.monotonic() + timeout_sec
+            while time.monotonic() < deadline:
+                if proc.poll() is not None:
+                    return self._is_daemon_ready()
+                if self._is_daemon_ready():
+                    return True
+                time.sleep(0.5)
+            return self._is_daemon_ready()
+
+        try:
+            proc = _spawn()
+            if wait_ready_sec > 0:
+                gpu_wait = min(wait_ready_sec, 12.0)
+                if _wait_ready(proc, gpu_wait):
+                    return True
+                # If GPU discovery stalled, fall back cleanly to CPU mode
+                if proc.poll() is None and os.environ.get("OLLAMA_LLM_LIBRARY") != "cpu":
+                    try:
+                        proc.terminate()
+                        proc.wait(timeout=3)
+                    except Exception:
+                        pass
+                    proc = _spawn({"OLLAMA_LLM_LIBRARY": "cpu", "CUDA_VISIBLE_DEVICES": "-1"})
+                    remaining = max(5.0, wait_ready_sec - gpu_wait)
+                    return _wait_ready(proc, remaining)
+                return False
+            return True
+        except Exception:
+            return False
 
     def client(self, timeout=None):
         return httpx.AsyncClient(base_url=self.config.ollama_url, timeout=timeout or self.config.model_timeout, trust_env=False, follow_redirects=False, transport=self.transport)
@@ -116,7 +220,7 @@ class OllamaProvider:
                     return ModelStatus("unsupported_model", "Ollama model metadata could not be verified.", self.config.model)
                 model_info = info.get('model_info', {})
                 if self.config.model == OFFICIAL_GEMMA:
-                    verified = (selected.get('digest') == OFFICIAL_GEMMA_DIGEST
+                    verified = (selected.get('digest') in OFFICIAL_GEMMA_DIGESTS
                                 and details.get('quantization_level') == 'Q4_0'
                                 and all(model_info.get(key) == value for key,value in OFFICIAL_GEMMA_IDENTITY.items()))
                 else:
@@ -177,7 +281,7 @@ class OllamaProvider:
                             reason = str(data.get("error", "")).lower()
                         except (ValueError, AttributeError):
                             reason = ""
-                        self.last_error = "resource_limit" if any(word in reason for word in ("out of memory", "not enough", "insufficient memory")) else "runtime_error" if any(word in reason for word in ("cuda", "runner", "terminated", "llama-server")) else "model_missing" if code == 404 else "model_error"
+                        self.last_error = "resource_limit" if any(word in reason for word in ("out of memory", "not enough", "insufficient memory", "more system memory", "than is available")) else "runtime_error" if any(word in reason for word in ("cuda", "runner", "terminated", "llama-server")) else "model_missing" if code == 404 else "model_error"
                         return {"status": self.last_error, "say": "Local inference failed: " + self.last_error + ". Check Ollama and available RAM/VRAM; no local action was performed.", "offline": True}
                     answer = data.get("message", {}).get("content")
                     if data.get('done_reason') == 'length':

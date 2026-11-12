@@ -32,6 +32,10 @@ class BlenderAgent:
         self._executable: Path | None = self._discover_blender()
 
     def _discover_blender(self) -> Path | None:
+        env_path = os.environ.get("BLENDER_BIN")
+        if env_path and Path(env_path).exists():
+            return Path(env_path)
+
         # Check PATH
         which_path = shutil.which("blender")
         if which_path:
@@ -39,9 +43,15 @@ class BlenderAgent:
 
         # Check standard Windows paths
         if os.name == "nt":
-            candidates = glob.glob(r"C:\Program Files\Blender Foundation\Blender *\blender.exe")
-            if candidates:
-                return Path(candidates[-1])  # Latest version
+            patterns = [
+                r"C:\Program Files\Blender Foundation\Blender *\blender.exe",
+                r"C:\Program Files (x86)\Blender Foundation\Blender *\blender.exe",
+                r"D:\Program Files\Blender Foundation\Blender *\blender.exe",
+            ]
+            for pat in patterns:
+                candidates = sorted(glob.glob(pat))
+                if candidates:
+                    return Path(candidates[-1])  # Latest version
         return None
 
     def get_status(self) -> BlenderStatus:

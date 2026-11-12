@@ -77,6 +77,52 @@ from .crash_watchdog import CrashWatchdog
 from .integrity_audit import IntegrityAuditor
 from .backup_restore import BackupRestoreManager
 from .tray_service import TrayService
+from .autonomous_engine import (
+    AutonomousExecutionEngine,
+    AutonomousStepSpec,
+    AutonomousTaskRequest,
+    AutonomyLevel,
+)
+from .multi_agent import (
+    AgentRole,
+    AgentSubtask,
+    MultiAgentOrchestrator,
+)
+from .computer_use import (
+    ComputerUseOrchestrator,
+    RecordedWorkflow,
+    WorkflowAction,
+)
+from .multimodal_unified import (
+    CameraContextService,
+    ImageComparator,
+    SpeakerIdentifier,
+    UnifiedMultimodalReasoner,
+    VideoAnalyzer,
+)
+from .web_intelligence import (
+    ConnectorPermission,
+    IntegrationHub,
+    WebResearchEngine,
+)
+from .bel_code import BELCodeAgent
+from .creative_studio import CreativeStudio
+from .personal_ecosystem import (
+    ConnectedDevice,
+    DeviceEcosystem,
+    MemoryEntry,
+    NotificationPolicy,
+    PersonalMemoryManager,
+    ProactiveIntelligence,
+    VoiceExperienceManager,
+)
+from .production_hardening import (
+    APIKeyRotationManager,
+    NetworkEgressGuard,
+    PermissionManager,
+    SignedUpdateVerifier,
+    TamperEvidentAuditLog,
+)
 
 UI = Path(__file__).resolve().parents[1] / "apps/ui"
 BEL_UI = (Path(sys._MEIPASS) / 'frontend/dist' if getattr(sys, 'frozen', False)
@@ -338,6 +384,170 @@ class BackupRestoreApiRequest(StrictModel):
     archive_path: str
 
 
+class AutonomousTaskSubmitApiRequest(StrictModel):
+    goal: str
+    priority: int = 5
+    nodes: list[dict] = Field(default_factory=list)
+    run_immediately: bool = False
+
+
+class AutonomousTaskApproveApiRequest(StrictModel):
+    node_id: str | None = None
+    approved: bool = True
+    run_after_approval: bool = True
+
+
+class MultiAgentExecuteApiRequest(StrictModel):
+    goal: str
+    subtasks: list[dict]
+    project_id: str | None = None
+
+
+class WorkflowSaveApiRequest(StrictModel):
+    name: str
+    steps: list[dict]
+    workflow_id: str | None = None
+
+
+class DeviceDiscoverApiRequest(StrictModel):
+    devices: list[dict] = Field(default_factory=list)
+
+
+class DeviceAuthApiRequest(StrictModel):
+    device_id: str
+    command: str
+    signature: str
+
+
+class DeviceCommandApiRequest(StrictModel):
+    device_id: str
+    command: str
+    params: dict = Field(default_factory=dict)
+    signature: str = ""
+    confirmed: bool = False
+
+
+class ImageCompareApiRequest(StrictModel):
+    image_a_base64: str
+    image_b_base64: str
+    threshold: int = 12
+
+
+class VideoAnalyzeApiRequest(StrictModel):
+    frames_base64: list[str]
+    scene_threshold: float = 0.08
+
+
+class CameraConsentApiRequest(StrictModel):
+    granted: bool
+
+
+class CameraIngestApiRequest(StrictModel):
+    frame_base64: str
+
+
+class MultimodalReasonApiRequest(StrictModel):
+    query: str
+    evidence: dict = Field(default_factory=dict)
+
+
+class SpeakerEnrollApiRequest(StrictModel):
+    speaker_id: str
+    audio_base64: str
+
+
+class SpeakerIdentifyApiRequest(StrictModel):
+    audio_base64: str
+    threshold: float = 0.72
+
+
+class SpeakerPurgeApiRequest(StrictModel):
+    speaker_id: str | None = None
+
+
+class SpeechStreamChunksApiRequest(StrictModel):
+    text: str
+
+
+class WebResearchQueryApiRequest(StrictModel):
+    query: str
+    sources: list[dict] = Field(default_factory=list)
+
+
+class ConnectorConfigureApiRequest(StrictModel):
+    connector: str
+    granted: bool = True
+    config: dict = Field(default_factory=dict)
+
+
+class ConnectorInvokeApiRequest(StrictModel):
+    connector: str
+    action: str
+    payload: dict = Field(default_factory=dict)
+    timeout_sec: float = 10.0
+
+
+class BelCodeScanApiRequest(StrictModel):
+    rel_path: str = "."
+
+
+class BelCodeDeliverApiRequest(StrictModel):
+    feature_name: str
+    target_rel_path: str
+    new_code: str
+    test_rel_path: str | None = None
+    test_code: str | None = None
+
+
+class BelCodePackageApiRequest(StrictModel):
+    output_zip_name: str = "project_bundle.zip"
+
+
+class CreativeBlenderInspectApiRequest(StrictModel):
+    image_base64: str
+    auto_correct: bool = True
+
+
+class CreativeGodotPackageApiRequest(StrictModel):
+    project_name: str
+    validate_gdscript: str | None = None
+
+
+class CreativeUnrealScaffoldApiRequest(StrictModel):
+    project_name: str
+    actor_name: str = "ABelSmartActor"
+
+
+class PersonalMemoryAddApiRequest(StrictModel):
+    content: str
+    kind: str = "fact"
+    subject: str = ""
+    predicate: str = ""
+    object_val: str = ""
+    importance: float = 0.5
+    confidence: float = 0.9
+    tags: list[str] = Field(default_factory=list)
+    ttl_days: int | None = None
+
+
+class PersonalMemoryRestoreApiRequest(StrictModel):
+    entries: list[dict]
+
+
+class EgressCheckApiRequest(StrictModel):
+    url: str
+
+
+class PermissionGrantApiRequest(StrictModel):
+    scope: str
+    granted: bool = True
+
+
+class KeyRotateApiRequest(StrictModel):
+    provider: str
+    new_key: str
+
+
 def create_app(config: Config | None = None, provider=None, *, local_only=False):
     redact_transport_logs()
     config = config or Config.from_env()
@@ -394,6 +604,60 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     integrity_auditor = IntegrityAuditor(root_dir=config.data_dir.parent)
     backup_manager = BackupRestoreManager(data_dir=config.data_dir)
     tray_service = TrayService(backend_url=f"http://127.0.0.1:{config.port}")
+    autonomous_engine = AutonomousExecutionEngine(config.data_dir / "autonomous")
+    multi_agent = MultiAgentOrchestrator()
+    computer_use = ComputerUseOrchestrator(
+        config.data_dir / "computer_use",
+        grounding=ui_grounding,
+        verifier=action_verifier,
+        actuator=desktop_actuator,
+    )
+    image_comparator = ImageComparator()
+    video_analyzer = VideoAnalyzer(comparator=image_comparator)
+    camera_context = CameraContextService(consent_granted=False)
+    speaker_identifier = SpeakerIdentifier(enabled=False)
+    multimodal_reasoner = UnifiedMultimodalReasoner(
+        vlm=vlm_service,
+        acoustic=acoustic_intelligence,
+        video=video_analyzer,
+    )
+    web_research = WebResearchEngine()
+    integration_hub = IntegrationHub()
+    bel_code_agent = BELCodeAgent(workspace_root=code_workspace)
+    creative_studio = CreativeStudio(workspace_root=config.data_dir / "creative")
+    personal_memory = PersonalMemoryManager(db_path=config.data_dir / "personal_memory.sqlite3")
+    proactive_intelligence = ProactiveIntelligence()
+    device_ecosystem = DeviceEcosystem(discovery_permitted=False)
+    voice_experience = VoiceExperienceManager()
+    permission_manager = PermissionManager()
+    egress_guard = NetworkEgressGuard(
+        allowed_hosts={
+            "api.groq.com",
+            "generativelanguage.googleapis.com",
+            "openrouter.ai",
+            "api.tokenharbor.com",
+            "api.duckduckgo.com",
+        },
+        allow_loopback=True,
+    )
+    tamper_audit_log = TamperEvidentAuditLog(config.data_dir / "tamper_audit.jsonl")
+    update_verifier = SignedUpdateVerifier(signing_key=b"BEL_V1_SOVEREIGN_UPDATE_SIGN_KEY")
+    key_rotation = APIKeyRotationManager(max_age_days=90)
+
+    multi_agent.bind_services(
+        bel_code=bel_code_agent,
+        web_research=web_research,
+        personal_memory=personal_memory,
+        creative_studio=creative_studio,
+        router=router,
+    )
+    autonomous_engine.bind_subsystems(
+        bel_code=bel_code_agent,
+        web_research=web_research,
+        personal_memory=personal_memory,
+        document_parser=document_parser,
+        multi_agent=multi_agent,
+    )
     speech_consents = {}
     speech_tasks = {}
     speech_task_ids = {}
@@ -415,15 +679,24 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
         safe = redact(payload or {})
         store.event(kind, safe, task)
         logger.info(json.dumps({"type": kind, "task": task, "data": safe}))
+        try:
+            tamper_audit_log.append("system", kind, {"task": task, "data": safe})
+        except Exception:
+            pass
 
     @asynccontextmanager
     async def lifespan(app):
         store.recover_interrupted()
         bel.recover()
+        autonomous_engine.recover_interrupted()
         if learning_service.jobs:await learning_service.jobs.start()
         await capability_service.proactive.start()
         audit("service.started", {"phase": 4, "release": "partial"})
         yield
+        try:
+            await autonomous_engine.stop()
+        except Exception:
+            pass
         if learning_service.jobs:await learning_service.jobs.stop()
         await capability_service.proactive.stop()
         for task in list(active.values()):
@@ -453,6 +726,7 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     learning_service.mount(app)
     app.state.capabilities = capability_service
     app.state.bel = bel
+    app.state.cognitive = cognitive
     app.state.speech = speech_service
     app.state.tts = tts_service
     app.state.vision = vision_service
@@ -474,6 +748,27 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
     app.state.integrity = integrity_auditor
     app.state.backup = backup_manager
     app.state.tray = tray_service
+    app.state.autonomous_engine = autonomous_engine
+    app.state.multi_agent = multi_agent
+    app.state.computer_use = computer_use
+    app.state.image_comparator = image_comparator
+    app.state.video_analyzer = video_analyzer
+    app.state.camera_context = camera_context
+    app.state.speaker_identifier = speaker_identifier
+    app.state.multimodal_reasoner = multimodal_reasoner
+    app.state.web_research = web_research
+    app.state.integration_hub = integration_hub
+    app.state.bel_code = bel_code_agent
+    app.state.creative_studio = creative_studio
+    app.state.personal_memory = personal_memory
+    app.state.proactive_intelligence = proactive_intelligence
+    app.state.device_ecosystem = device_ecosystem
+    app.state.voice_experience = voice_experience
+    app.state.permission_manager = permission_manager
+    app.state.egress_guard = egress_guard
+    app.state.tamper_audit_log = tamper_audit_log
+    app.state.update_verifier = update_verifier
+    app.state.key_rotation = key_rotation
     capability_service.mount(app)
 
     async def broadcast(state, request_id=None, for_session=None):
@@ -1444,8 +1739,461 @@ def create_app(config: Config | None = None, provider=None, *, local_only=False)
                 "multimodal_vlm": True,
                 "vault_watchdog": True,
                 "tray_service": True,
+                "autonomous_engine": True,
+                "multi_agent": True,
+                "computer_use": True,
+                "multimodal_unified": True,
+                "web_intelligence": True,
+                "bel_code": True,
+                "creative_studio": True,
+                "personal_ecosystem": True,
+                "production_hardening": True,
             },
         }
+
+    # =========================================================================
+    # STAGE 11 — EXTENDED BEL V1 SUBSYSTEM ENDPOINTS
+    # =========================================================================
+
+    @app.post("/api/autonomous/tasks")
+    async def autonomous_submit_task(body: AutonomousTaskSubmitApiRequest):
+        try:
+            steps = None
+            if body.nodes:
+                steps = [AutonomousStepSpec.model_validate(n) for n in body.nodes]
+            req = AutonomousTaskRequest(
+                goal=body.goal,
+                priority=body.priority,
+                steps=steps,
+                autonomy_level=AutonomyLevel.SUPERVISED,
+            )
+            prog = app.state.autonomous_engine.submit_task(req)
+            if body.run_immediately:
+                prog = await app.state.autonomous_engine.run_task(prog.task_id)
+            audit("autonomous.task_submitted", {"task_id": prog.task_id, "goal": body.goal})
+            return prog.model_dump()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(400, f"Autonomous task submission failed: {exc}") from exc
+
+    @app.get("/api/autonomous/tasks/{task_id}")
+    async def autonomous_get_task(task_id: str):
+        try:
+            return app.state.autonomous_engine.get_progress(task_id).model_dump()
+        except ValueError as exc:
+            raise HTTPException(404, str(exc)) from exc
+
+    @app.post("/api/autonomous/tasks/{task_id}/run")
+    async def autonomous_run_task(task_id: str):
+        try:
+            prog = await app.state.autonomous_engine.run_task(task_id)
+            return prog.model_dump()
+        except ValueError as exc:
+            raise HTTPException(404, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(400, f"Autonomous task run failed: {exc}") from exc
+
+    @app.post("/api/autonomous/tasks/{task_id}/approve")
+    async def autonomous_approve_task(task_id: str, body: AutonomousTaskApproveApiRequest):
+        try:
+            if not body.approved:
+                prog = app.state.autonomous_engine.cancel_task(task_id)
+                return prog.model_dump()
+            if body.node_id:
+                prog = app.state.autonomous_engine.approve_step(task_id, body.node_id)
+            else:
+                prog = app.state.autonomous_engine.approve_task(task_id)
+            if body.run_after_approval:
+                prog = await app.state.autonomous_engine.run_task(task_id)
+            audit("autonomous.task_approved", {"task_id": task_id, "step_id": body.node_id})
+            return prog.model_dump()
+        except ValueError as exc:
+            raise HTTPException(404, str(exc)) from exc
+
+    @app.post("/api/autonomous/tasks/{task_id}/cancel")
+    async def autonomous_cancel_task(task_id: str):
+        try:
+            prog = app.state.autonomous_engine.cancel_task(task_id)
+            audit("autonomous.task_cancelled", {"task_id": task_id})
+            return prog.model_dump()
+        except ValueError as exc:
+            raise HTTPException(404, str(exc)) from exc
+
+    @app.get("/api/autonomous/notifications")
+    async def autonomous_notifications(task_id: str | None = None, unread_only: bool = False):
+        return {"items": app.state.autonomous_engine.get_notifications(task_id=task_id, unread_only=unread_only)}
+
+    @app.get("/api/agents/roles")
+    async def multi_agent_roles():
+        return {"items": [p.model_dump() for p in app.state.multi_agent.registry.list_all()]}
+
+    @app.post("/api/agents/execute")
+    async def multi_agent_execute(body: MultiAgentExecuteApiRequest):
+        try:
+            subtasks = [AgentSubtask.model_validate(s) for s in body.subtasks]
+            state = await app.state.multi_agent.execute_project(
+                body.goal,
+                subtasks,
+                project_id=body.project_id,
+            )
+            audit("multi_agent.executed", {"project_id": state.project_id, "status": state.status})
+            return state.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Multi-agent execution failed: {exc}") from exc
+
+    @app.get("/api/agents/messages")
+    async def multi_agent_messages():
+        return {"items": [m.model_dump() for m in app.state.multi_agent.bus.all_messages()]}
+
+    @app.post("/api/automation/workflows/save")
+    async def workflow_save(body: WorkflowSaveApiRequest):
+        try:
+            wf_id = body.workflow_id or f"wf-{uuid.uuid4().hex[:8]}"
+            actions = [WorkflowAction.model_validate(s) for s in body.steps]
+            wf = RecordedWorkflow(workflow_id=wf_id, name=body.name, actions=actions)
+            path = app.state.computer_use.recorder.save(wf)
+            audit("workflow.saved", {"workflow_id": wf_id})
+            return {"saved": True, "workflow_id": wf_id, "path": str(path)}
+        except (ValueError, PermissionError) as exc:
+            raise HTTPException(403, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(400, f"Workflow save failed: {exc}") from exc
+
+    @app.get("/api/automation/workflows")
+    async def workflow_list():
+        return {"items": app.state.computer_use.recorder.list_workflows()}
+
+    @app.post("/api/automation/workflows/{workflow_id}/replay")
+    async def workflow_replay(workflow_id: str, approved: bool = False):
+        try:
+            reports = app.state.computer_use.replay_workflow(workflow_id, approved_consequential=approved)
+            return {"workflow_id": workflow_id, "reports": [r.model_dump() for r in reports]}
+        except (ValueError, PermissionError) as exc:
+            raise HTTPException(403, str(exc)) from exc
+        except FileNotFoundError as exc:
+            raise HTTPException(404, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(400, f"Workflow replay failed: {exc}") from exc
+
+    @app.post("/api/devices/discover")
+    async def devices_discover(body: DeviceDiscoverApiRequest, permitted: bool = True):
+        try:
+            app.state.device_ecosystem.discovery_permitted = permitted
+            candidates = [ConnectedDevice.model_validate(d) for d in body.devices]
+            found = app.state.device_ecosystem.discover_devices(candidates)
+            return {"items": [d.model_dump() for d in found]}
+        except PermissionError as exc:
+            raise HTTPException(403, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(400, f"Device discovery failed: {exc}") from exc
+
+    @app.post("/api/devices/authenticate")
+    async def devices_authenticate(body: DeviceAuthApiRequest):
+        try:
+            token = app.state.device_ecosystem.authenticate_device(body.device_id)
+            return {"device_id": body.device_id, "authenticated": True, "token": token}
+        except KeyError as exc:
+            raise HTTPException(404, str(exc)) from exc
+
+    @app.post("/api/devices/command")
+    async def devices_command(body: DeviceCommandApiRequest):
+        try:
+            cmd = {"command": body.command, **body.params}
+            res = app.state.device_ecosystem.send_command(body.device_id, body.signature, cmd)
+            audit("device.command", {"device_id": body.device_id, "command": body.command})
+            return res
+        except KeyError as exc:
+            raise HTTPException(404, str(exc)) from exc
+        except PermissionError as exc:
+            raise HTTPException(403, str(exc)) from exc
+
+    @app.post("/api/multimodal/image/compare")
+    async def multimodal_image_compare(body: ImageCompareApiRequest):
+        try:
+            img_a = base64.b64decode(body.image_a_base64)
+            img_b = base64.b64decode(body.image_b_base64)
+            thresh = max(0.001, min(1.0, body.threshold / 255.0))
+            res = app.state.image_comparator.compare(img_a, img_b, threshold=thresh)
+            return res.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Image comparison failed: {exc}") from exc
+
+    @app.post("/api/multimodal/video/analyze")
+    async def multimodal_video_analyze(body: VideoAnalyzeApiRequest):
+        try:
+            frames = [base64.b64decode(f) for f in body.frames_base64]
+            res = app.state.video_analyzer.analyze_frames(frames, scene_threshold=body.scene_threshold)
+            return res.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Video analysis failed: {exc}") from exc
+
+    @app.post("/api/multimodal/camera/consent")
+    async def multimodal_camera_consent(body: CameraConsentApiRequest):
+        app.state.camera_context.set_consent(body.granted)
+        audit("camera.consent", {"granted": body.granted})
+        return {"consent_granted": app.state.camera_context.consent_granted}
+
+    @app.post("/api/multimodal/camera/ingest")
+    async def multimodal_camera_ingest(body: CameraIngestApiRequest):
+        try:
+            raw = base64.b64decode(body.frame_base64)
+            frame = app.state.camera_context.ingest_frame(raw)
+            return frame.model_dump()
+        except PermissionError as exc:
+            raise HTTPException(403, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(400, f"Camera frame ingest failed: {exc}") from exc
+
+    @app.post("/api/multimodal/reason")
+    async def multimodal_reason(body: MultimodalReasonApiRequest):
+        try:
+            text_ctx = str(body.evidence.get("text", "")) or None
+            images_b64 = body.evidence.get("images_base64") or []
+            images = [base64.b64decode(b) for b in images_b64] if images_b64 else None
+            res = app.state.multimodal_reasoner.reason(body.query, text_context=text_ctx, images=images)
+            return res.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Multimodal reasoning failed: {exc}") from exc
+
+    @app.post("/api/speech/speaker/enroll")
+    async def speaker_enroll(body: SpeakerEnrollApiRequest, opt_in: bool = True):
+        try:
+            app.state.speaker_identifier.enabled = opt_in
+            pcm = base64.b64decode(body.audio_base64)
+            app.state.speaker_identifier.enroll(body.speaker_id, pcm)
+            return {"enrolled": True, "speaker_id": body.speaker_id}
+        except PermissionError as exc:
+            raise HTTPException(403, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(400, f"Speaker enrollment failed: {exc}") from exc
+
+    @app.post("/api/speech/speaker/identify")
+    async def speaker_identify(body: SpeakerIdentifyApiRequest):
+        try:
+            pcm = base64.b64decode(body.audio_base64)
+            sid = app.state.speaker_identifier.identify(pcm)
+            return {"speaker_id": sid, "identified": sid is not None}
+        except Exception as exc:
+            raise HTTPException(400, f"Speaker identification failed: {exc}") from exc
+
+    @app.post("/api/speech/speaker/purge")
+    async def speaker_purge(body: SpeakerPurgeApiRequest):
+        app.state.speaker_identifier.purge(body.speaker_id)
+        audit("speaker.purged", {"speaker_id": body.speaker_id})
+        return {"purged": True, "speaker_id": body.speaker_id}
+
+    @app.get("/api/speech/profiles")
+    async def speech_profiles():
+        return {"items": [p.model_dump() for p in app.state.voice_experience.profiles.values()]}
+
+    @app.post("/api/speech/stream_chunks")
+    async def speech_stream_chunks(body: SpeechStreamChunksApiRequest, profile_id: str = "en_bel"):
+        try:
+            chunks = list(app.state.voice_experience.stream_speech_chunks(body.text, profile_id=profile_id))
+            return {"chunks": chunks}
+        except KeyError as exc:
+            raise HTTPException(404, f"Unknown voice profile: {profile_id}") from exc
+
+    @app.post("/api/research/query")
+    async def research_query(body: WebResearchQueryApiRequest):
+        try:
+            for s in body.sources:
+                url = s.get("url", "")
+                if url and not app.state.web_research.is_safe_url(url):
+                    raise HTTPException(403, f"Blocked unsafe or SSRF research URL: {url}")
+            if body.sources:
+                orig_fn = app.state.web_research._search_fn
+                app.state.web_research._search_fn = lambda _q: body.sources
+                try:
+                    rep = await app.state.web_research.research(body.query)
+                finally:
+                    app.state.web_research._search_fn = orig_fn
+            else:
+                rep = await app.state.web_research.research(body.query)
+            return rep.model_dump()
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(400, f"Web research failed: {exc}") from exc
+
+    @app.get("/api/integrations/connectors")
+    async def integrations_connectors():
+        return {"items": [p.model_dump() for p in app.state.integration_hub.list_permissions()]}
+
+    @app.post("/api/integrations/configure")
+    async def integrations_configure(body: ConnectorConfigureApiRequest):
+        scopes = body.config.get("allowed_scopes", ["read", "write"] if body.granted else [])
+        perm = ConnectorPermission(
+            connector_id=body.connector,
+            enabled=body.granted,
+            allowed_scopes=scopes,
+            require_approval_for_write=body.config.get("require_approval_for_write", True),
+        )
+        app.state.integration_hub.configure_permission(perm)
+        audit("integration.configured", {"connector": body.connector, "enabled": body.granted})
+        return perm.model_dump()
+
+    @app.post("/api/integrations/invoke")
+    async def integrations_invoke(body: ConnectorInvokeApiRequest, approved: bool = False):
+        res = await app.state.integration_hub.invoke(
+            body.connector,
+            body.action,
+            body.payload,
+            approved=approved,
+            timeout_sec=body.timeout_sec,
+        )
+        return res.model_dump()
+
+    @app.get("/api/coding/bel_code/inspect")
+    async def bel_code_inspect():
+        return app.state.bel_code.inspect_repository().model_dump()
+
+    @app.post("/api/coding/bel_code/scan")
+    async def bel_code_scan(body: BelCodeScanApiRequest):
+        try:
+            rel_paths = None if body.rel_path in (".", "", "*") else [body.rel_path]
+            rep = app.state.bel_code.scan_vulnerabilities(rel_paths=rel_paths)
+            return rep.model_dump()
+        except PermissionError as exc:
+            raise HTTPException(403, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(400, f"BEL Code scan failed: {exc}") from exc
+
+    @app.post("/api/coding/bel_code/deliver")
+    async def bel_code_deliver(body: BelCodeDeliverApiRequest):
+        try:
+            from .code_agent.models import FileEdit
+            edits = [FileEdit(path=body.target_rel_path, new_content=body.new_code)]
+            if body.test_rel_path and body.test_code is not None:
+                edits.append(FileEdit(path=body.test_rel_path, new_content=body.test_code))
+            session, test_res, review = app.state.bel_code.deliver_feature(
+                body.feature_name,
+                edits,
+                run_pytest=False,
+            )
+            audit("bel_code.delivered", {"session_id": session.session_id, "feature": body.feature_name})
+            return {
+                "session": session.model_dump(),
+                "test_result": test_res.model_dump() if test_res else None,
+                "review": review.model_dump(),
+            }
+        except PermissionError as exc:
+            raise HTTPException(403, str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(400, f"BEL Code delivery failed: {exc}") from exc
+
+    @app.post("/api/coding/bel_code/package")
+    async def bel_code_package(body: BelCodePackageApiRequest):
+        try:
+            clean_name = Path(body.output_zip_name).name
+            out_zip = app.state.bel_code.workspace_root / clean_name
+            pkg = app.state.bel_code.package_project(out_zip)
+            return {"packaged": True, "zip_path": str(pkg)}
+        except Exception as exc:
+            raise HTTPException(400, f"BEL Code packaging failed: {exc}") from exc
+
+    @app.post("/api/creative/studio/blender_inspect")
+    async def creative_studio_blender_inspect(body: CreativeBlenderInspectApiRequest):
+        try:
+            raw = base64.b64decode(body.image_base64)
+            tmp_img = app.state.creative_studio.workspace_root / "inspect_input.png"
+            tmp_img.parent.mkdir(parents=True, exist_ok=True)
+            tmp_img.write_bytes(raw)
+            mean_b, is_blank = app.state.creative_studio.inspect_render(tmp_img)
+            return {"mean_brightness": mean_b, "is_blank": is_blank, "passed": not is_blank}
+        except Exception as exc:
+            raise HTTPException(400, f"Blender render inspection failed: {exc}") from exc
+
+    @app.post("/api/creative/studio/godot_package")
+    async def creative_studio_godot_package(body: CreativeGodotPackageApiRequest):
+        try:
+            rep = app.state.creative_studio.godot_create_and_package(body.project_name)
+            return rep.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Godot studio packaging failed: {exc}") from exc
+
+    @app.post("/api/creative/studio/unreal_scaffold")
+    async def creative_studio_unreal_scaffold(body: CreativeUnrealScaffoldApiRequest):
+        try:
+            rep = app.state.creative_studio.unreal_scaffold_project(body.project_name)
+            return rep.model_dump()
+        except Exception as exc:
+            raise HTTPException(400, f"Unreal studio scaffolding failed: {exc}") from exc
+
+    @app.post("/api/personal/memory/add")
+    async def personal_memory_add(body: PersonalMemoryAddApiRequest):
+        key = body.subject or body.predicate or body.kind or "general"
+        ttl_sec = body.ttl_days * 86400 if body.ttl_days is not None else None
+        entry = MemoryEntry(
+            key=key,
+            content=body.content,
+            kind=body.kind,
+            importance=body.importance,
+            ttl_seconds=ttl_sec,
+        )
+        saved = app.state.personal_memory.add(entry)
+        return saved.model_dump()
+
+    @app.get("/api/personal/memory")
+    async def personal_memory_list(query: str | None = None, kind: str | None = None):
+        if query:
+            items = app.state.personal_memory.retrieve(query, kind=kind)
+        else:
+            items = app.state.personal_memory.list_entries()
+            if kind:
+                items = [e for e in items if e.kind == kind]
+        return {"items": [e.model_dump() for e in items]}
+
+    @app.get("/api/personal/memory/contradictions")
+    async def personal_memory_contradictions():
+        pairs = app.state.personal_memory.detect_contradictions()
+        return {
+            "contradictions": [
+                {"entry_a": a.model_dump(), "entry_b": b.model_dump()}
+                for a, b in pairs
+            ]
+        }
+
+    @app.post("/api/personal/memory/export")
+    async def personal_memory_export():
+        payload = app.state.personal_memory.export_json()
+        return {"entries": json.loads(payload), "raw_json": payload}
+
+    @app.post("/api/personal/memory/restore")
+    async def personal_memory_restore(body: PersonalMemoryRestoreApiRequest):
+        count = app.state.personal_memory.restore_json(json.dumps(body.entries))
+        return {"restored": count}
+
+    @app.get("/api/security/audit_chain/verify")
+    async def security_audit_chain_verify():
+        valid, error = app.state.tamper_audit_log.verify_chain()
+        return {"valid": valid, "error": error}
+
+    @app.post("/api/security/egress/check")
+    async def security_egress_check(body: EgressCheckApiRequest):
+        allowed, reason = app.state.egress_guard.is_allowed(body.url)
+        return {"url": body.url, "allowed": allowed, "reason": reason}
+
+    @app.post("/api/security/permissions/grant")
+    async def security_permissions_grant(body: PermissionGrantApiRequest, subject: str = "owner"):
+        if body.granted:
+            app.state.permission_manager.grant(subject, body.scope)
+        else:
+            app.state.permission_manager.revoke(subject, body.scope)
+        audit("permission.updated", {"subject": subject, "scope": body.scope, "granted": body.granted})
+        return {"subject": subject, "scope": body.scope, "granted": app.state.permission_manager.check(subject, body.scope)}
+
+    @app.get("/api/security/permissions/check")
+    async def security_permissions_check(scope: str, subject: str = "owner"):
+        return {"subject": subject, "scope": scope, "granted": app.state.permission_manager.check(subject, scope)}
+
+    @app.post("/api/security/keys/rotate")
+    async def security_keys_rotate(body: KeyRotateApiRequest):
+        fp = hashlib.sha256(body.new_key.encode("utf-8")).hexdigest()[:16]
+        meta = app.state.key_rotation.rotate(body.provider, fp)
+        audit("security.key_rotated", {"provider": body.provider, "fingerprint": fp})
+        return {"provider": body.provider, **meta}
 
     @app.get("/api/voiceprint/{operation}")
     @app.post("/api/voiceprint/{operation}")
