@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from .auto_heal import AutoHealEngine
 from .boundaries import (
+    ALLOWED_SKILL_IMPORTS,
     PROTECTED_CORE_FILES,
     assert_safe_modification,
     audit_code_safety,
@@ -25,11 +26,13 @@ from .types import (
     CapabilityGap,
     DiagnosticReport,
     GapType,
+    SkillQualityReport,
     TestCase,
     TestExecutionResult,
 )
 
 __all__ = [
+    "ALLOWED_SKILL_IMPORTS",
     "AutoHealEngine",
     "AutoHealResult",
     "CandidateSkill",
@@ -39,6 +42,7 @@ __all__ = [
     "GapType",
     "PROTECTED_CORE_FILES",
     "RecursiveSelfImprovementEngine",
+    "SkillQualityReport",
     "TestCase",
     "TestExecutionResult",
     "ToolSynthesizer",

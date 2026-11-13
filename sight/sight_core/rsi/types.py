@@ -85,7 +85,25 @@ class AutoHealResult(StrictModel):
     target_component: str
     original_digest: str | None = None
     patched_digest: str | None = None
+    repaired_code: str | None = None
     diff: str | None = None
     rollback_journal_id: str | None = None
     tests_passed: bool = False
     reason: str
+
+
+class SkillQualityReport(StrictModel):
+    """Comprehensive 14-stage skill forging quality, security, and reliability report."""
+    skill_id: str
+    version: int = 1
+    digest: str
+    functional_pass_rate: float = Field(ge=0.0, le=1.0)
+    security_audit_passed: bool
+    dependencies_verified: bool
+    dependencies: list[str] = Field(default_factory=list)
+    permissions: list[str] = Field(default_factory=list)
+    execution_latency_ms: float = 0.0
+    reliability_score: float = Field(ge=0.0, le=1.0)
+    owner_approval_required: bool = True
+    ready_for_promotion: bool = False
+    recommendation: str = ""

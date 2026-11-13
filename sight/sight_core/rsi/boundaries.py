@@ -47,24 +47,82 @@ def assert_safe_modification(file_path: str | Path) -> None:
         )
 
 
+# Allowed standard library modules for synthesized RSI skills
+ALLOWED_SKILL_IMPORTS: set[str] = {
+    "math",
+    "json",
+    "re",
+    "hashlib",
+    "datetime",
+    "time",
+    "uuid",
+    "collections",
+    "itertools",
+    "functools",
+    "statistics",
+    "string",
+    "decimal",
+    "fractions",
+    "typing",
+    "dataclasses",
+    "base64",
+    "csv",
+    "io",
+}
+
+PROHIBITED_SKILL_IMPORTS: set[str] = {
+    "subprocess",
+    "socket",
+    "shutil",
+    "ctypes",
+    "winreg",
+    "urllib",
+    "http",
+    "ftplib",
+    "telnetlib",
+    "multiprocessing",
+    "pty",
+    " marshal",
+    "pickle",
+    "importlib",
+}
+
+
 class ASTSecurityAuditor(ast.NodeVisitor):
     """AST visitor that checks for disallowed, dangerous, or evasive constructs in synthesized skills."""
 
     def __init__(self) -> None:
         self.violations: list[str] = []
+        self.imported_modules: list[str] = []
+
+    def visit_Import(self, node: ast.Import) -> None:
+        for alias in node.names:
+            root_mod = alias.name.split(".")[0]
+            self.imported_modules.append(root_mod)
+            if root_mod in PROHIBITED_SKILL_IMPORTS or root_mod in ("os", "sys"):
+                self.violations.append(f"Prohibited module import: '{root_mod}'")
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
+        if node.module:
+            root_mod = node.module.split(".")[0]
+            self.imported_modules.append(root_mod)
+            if root_mod in PROHIBITED_SKILL_IMPORTS or root_mod in ("os", "sys"):
+                self.violations.append(f"Prohibited module import: 'from {root_mod} import ...'")
+        self.generic_visit(node)
 
     def visit_Call(self, node: ast.Call) -> None:
-        # Disallow eval(), exec()
+        # Disallow eval(), exec(), open(), compile(), __import__()
         if isinstance(node.func, ast.Name):
-            if node.func.id in ("eval", "exec", "__import__"):
-                self.violations.append(f"Prohibited dynamic evaluation builtin: '{node.func.id}()'")
+            if node.func.id in ("eval", "exec", "__import__", "compile", "open"):
+                self.violations.append(f"Prohibited dynamic/IO builtin: '{node.func.id}()'")
 
         # Disallow dangerous attribute calls: os.system, ctypes, etc.
         elif isinstance(node.func, ast.Attribute):
             attr_name = node.func.attr
-            if attr_name in ("system", "popen", "spawn", "ptr", "addressof"):
+            if attr_name in ("system", "popen", "spawn", "ptr", "addressof", "rmtree", "remove", "unlink"):
                 if isinstance(node.func.value, ast.Name):
-                    if node.func.value.id in ("os", "ctypes", "sys"):
+                    if node.func.value.id in ("os", "ctypes", "sys", "shutil"):
                         self.violations.append(f"Prohibited system call: '{node.func.value.id}.{attr_name}()'")
 
         self.generic_visit(node)

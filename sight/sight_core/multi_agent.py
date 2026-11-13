@@ -64,6 +64,7 @@ class AgentSubtask(BaseModel):
     depends_on: list[str] = Field(default_factory=list)
     required_tool: str | None = None
     estimated_tokens: int = Field(default=256, ge=0)
+    timeout_seconds: float = Field(default=10.0, gt=0.0, le=120.0)
     verify_by_role: AgentRole | None = None
     fallback_role: AgentRole | None = None
 
@@ -92,6 +93,8 @@ class SharedProjectState(BaseModel):
     results: dict[str, AgentResult] = Field(default_factory=dict)
     conflicts: list[dict[str, Any]] = Field(default_factory=list)
     failed_agents: list[str] = Field(default_factory=list)
+    deduplicated_subtasks: list[str] = Field(default_factory=list)
+    final_synthesis: str = ""
     total_tokens_used: int = 0
     quality_score: float = 0.0
     updated_at: float = Field(default_factory=time.time)
@@ -307,7 +310,7 @@ class MultiAgentOrchestrator:
         try:
             raw = handler(subtask, ctx, state)
             if asyncio.iscoroutine(raw) or isinstance(raw, Awaitable):
-                raw = await raw
+                raw = await asyncio.wait_for(raw, timeout=subtask.timeout_seconds)
             output = raw if isinstance(raw, dict) else {"result": raw}
             tokens_used = int(output.get("tokens_used", subtask.estimated_tokens))
             ctx.tokens_consumed += tokens_used
@@ -403,6 +406,7 @@ class MultiAgentOrchestrator:
         pid = project_id or f"proj-{uuid.uuid4().hex[:8]}"
         state = SharedProjectState(project_id=pid, goal=goal)
         pending = {s.id: s for s in subtasks}
+        work_cache: dict[tuple[str, str, str], AgentResult] = {}
 
         while pending:
             completed_ids = {sid for sid, r in state.results.items() if r.success}
@@ -420,6 +424,20 @@ class MultiAgentOrchestrator:
                 break
 
             async def _process_one(sub: AgentSubtask) -> tuple[str, AgentResult]:
+                sig = (sub.role.value, sub.capability, sub.description.strip().lower())
+                if sig in work_cache and work_cache[sig].success and not sub.payload:
+                    cached = work_cache[sig]
+                    state.deduplicated_subtasks.append(sub.id)
+                    return sub.id, AgentResult(
+                        subtask_id=sub.id,
+                        agent_id=cached.agent_id,
+                        role=cached.role,
+                        success=True,
+                        output=dict(cached.output) | {"deduplicated_from": cached.subtask_id},
+                        tokens_used=0,
+                        confidence=cached.confidence,
+                        verified=cached.verified,
+                    )
                 agent = self._select_agent(sub)
                 if not agent:
                     return sub.id, AgentResult(
@@ -436,6 +454,8 @@ class MultiAgentOrchestrator:
                         res = await self._run_subtask(sub, state, fb_candidates[0])
                 if res.success and sub.verify_by_role:
                     res = await self._verify_and_challenge(sub, res, state)
+                if res.success:
+                    work_cache[sig] = res
                 return sub.id, res
 
             batch_results = await asyncio.gather(*(_process_one(s) for s in ready))
@@ -448,5 +468,14 @@ class MultiAgentOrchestrator:
         verified_count = sum(1 for r in all_results if r.success and r.verified)
         state.quality_score = round(verified_count / len(all_results), 3) if all_results else 0.0
         state.status = "complete" if all(r.success for r in all_results) else "completed_with_degradation"
+        summaries = [
+            str(r.output.get("summary") or f"{r.role.value}:{r.subtask_id}")
+            for r in all_results if r.success
+        ]
+        state.final_synthesis = (
+            f"Manager synthesis for '{goal}': {len(summaries)}/{len(all_results)} subtasks succeeded "
+            f"({verified_count} verified, {len(state.conflicts)} conflicts arbitrated). "
+            + ("; ".join(summaries[:5]) if summaries else "No subtasks succeeded.")
+        )
         state.updated_at = time.time()
         return state

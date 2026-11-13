@@ -164,6 +164,7 @@ class AutoHealEngine:
             target_component=skill_id,
             original_digest=orig_digest,
             patched_digest=patched_digest,
+            repaired_code=repaired_code,
             diff=diff_text,
             rollback_journal_id=journal_id,
             tests_passed=True,

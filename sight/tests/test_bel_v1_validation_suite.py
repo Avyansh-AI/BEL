@@ -565,3 +565,128 @@ def test_comprehensive_failure_injection_suite(tmp_path: Path):
     assert conn_res.success is False
     assert "timeout" in (conn_res.error or "").lower() or "deadline" in (conn_res.error or "").lower()
 
+
+def test_phase1_core_intelligence_contradictions_and_depth():
+    """Verify contradiction detection, reasoning depth selection, and expanded reference resolution."""
+    from sight_core.cognitive.understanding import InputUnderstanding
+
+    u = InputUnderstanding()
+
+    # 1. Contradictory instructions on same file are flagged ambiguous
+    contradict = u.parse("create report.txt and delete report.txt")
+    assert contradict.is_ambiguous is True
+    assert "contradictory" in (contradict.ambiguity_reason or "").lower()
+
+    # 2. Reasoning depth selection
+    fast_q = u.parse("status")
+    assert fast_q.reasoning_depth == "fast"
+    deep_q = u.parse("Use serious mode to analyze the Q4 architecture migration")
+    assert deep_q.reasoning_depth == "deep"
+
+    # 3. Expanded anaphoric reference resolution (application + plural files)
+    resolved_app = u.parse("open that app", context_entities={"application": "calculator"})
+    assert resolved_app.entities.get("application") == "calculator"
+    assert resolved_app.entities.get("anaphoric_resolved") is True
+
+    resolved_files = u.parse("compare both files", context_entities={"files": ["a.py", "b.py"]})
+    assert resolved_files.entities.get("files") == ["a.py", "b.py"]
+
+
+def test_phase3_complete_14_step_skill_forging_and_rsi_lifecycle(tmp_path: Path):
+    """Verify the complete 14-step Skill Forging & RSI lifecycle, AST import boundaries, and monitoring."""
+    from sight_core.brain_store import BrainStore
+    from sight_core.rsi import (
+        RecursiveSelfImprovementEngine,
+        TestCase,
+        audit_code_safety,
+    )
+
+    store = BrainStore(tmp_path / "rsi_lifecycle.sqlite3")
+    rsi = RecursiveSelfImprovementEngine(store=store)
+
+    # Steps 1-3: Detect gap, identify existing skills, research capability
+    gap, candidate, test_res = rsi.process_request_for_extensions(
+        "Please convert 100 celsius to fahrenheit",
+        detected_intent="tool_action",
+    )
+    assert gap is not None
+    assert candidate is not None
+    assert test_res is not None and test_res.passed is True
+
+    research = rsi.research_capability(gap)
+    assert research["suggested_tool_name"] == "temperature_converter"
+    assert "math" in research["allowed_imports"]
+
+    # Step 5 & 8: Prohibited imports (subprocess, socket, open) must be rejected by ASTSecurityAuditor
+    safe_ok, err_msg = audit_code_safety("import subprocess\ndef execute_tool(): return 1")
+    assert safe_ok is False
+    assert "subprocess" in (err_msg or "")
+
+    deps_ok, deps, dep_err = rsi.validate_dependencies_and_permissions(candidate)
+    assert deps_ok is True
+    assert dep_err is None
+
+    # Steps 9-10: SkillQualityReport generation
+    quality = rsi.evaluate_quality(candidate, test_res)
+    assert quality.ready_for_promotion is True
+    assert quality.security_audit_passed is True
+    assert quality.functional_pass_rate == 1.0
+    assert quality.owner_approval_required is True
+
+    # Find saved candidate_id in store
+    with store.connect() as db:
+        row = db.execute("SELECT id, digest FROM candidates ORDER BY created_at DESC LIMIT 1").fetchone()
+    assert row is not None
+
+    # Step 11: Promotion without owner approval must fail closed
+    with pytest.raises(PermissionError, match="Owner approval"):
+        rsi.promote_candidate(row["id"], row["digest"], owner_approved=False)
+
+    # Step 12: Promote with owner approval
+    promoted = rsi.promote_candidate(row["id"], row["digest"], owner_approved=True)
+    assert promoted["status"] == "active"
+    assert promoted["version"] == 1
+
+    # Step 14: Monitor post-promotion skill execution
+    mon = rsi.record_skill_execution(promoted["skill_id"], success=True, latency_ms=4.2)
+    assert mon["invoked"] == 1
+    assert mon["healthy"] is True
+
+
+def test_phase4_multi_agent_deduplication_timeouts_and_synthesis():
+    """Verify multi-agent duplicate work deduplication, subtask timeouts, and Manager final synthesis."""
+    import asyncio
+    from sight_core.multi_agent import AgentProfile, AgentRole, AgentSubtask, MultiAgentOrchestrator
+
+    orch = MultiAgentOrchestrator()
+
+    # 1. Duplicate work deduplication + Manager final synthesis
+    subtasks = [
+        AgentSubtask(id="s1", role=AgentRole.RESEARCH, capability="web_research", description="Analyze local cache architecture"),
+        AgentSubtask(id="s2", role=AgentRole.RESEARCH, capability="web_research", description="Analyze local cache architecture", depends_on=["s1"]),
+    ]
+    state = asyncio.run(orch.execute_project("Architecture Review", subtasks))
+    assert state.status == "complete"
+    assert "s2" in state.deduplicated_subtasks
+    assert state.results["s2"].tokens_used == 0
+    assert "Manager synthesis" in state.final_synthesis
+
+    # 2. Subtask timeout enforcement
+    async def slow_agent(_sub, _ctx, _st):
+        await asyncio.sleep(1.0)
+        return {"summary": "Too slow"}
+
+    orch.register_agent(
+        AgentProfile(agent_id="analyst_agent", role=AgentRole.ANALYST, capabilities=["data_analysis"]),
+        slow_agent,
+    )
+    timeout_state = asyncio.run(
+        orch.execute_project(
+            "Timeout Check",
+            [AgentSubtask(id="slow_1", role=AgentRole.ANALYST, capability="data_analysis", description="Slow task", timeout_seconds=0.05)],
+        )
+    )
+    assert timeout_state.results["slow_1"].success is False
+    assert "TimeoutError" in (timeout_state.results["slow_1"].error or "")
+
+

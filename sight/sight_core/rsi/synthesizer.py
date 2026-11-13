@@ -117,7 +117,7 @@ print(json.dumps(output))
 
             try:
                 proc = subprocess.run(
-                    [sys.executable, script_path],
+                    [sys.executable, "-I", script_path],
                     capture_output=True,
                     text=True,
                     encoding="utf-8",

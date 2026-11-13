@@ -31,6 +31,7 @@ class ParsedInput(StrictModel):
     ambiguity_reason: str | None = None
     clarification_prompt: str | None = None
     is_serious_mode_requested: bool = False
+    reasoning_depth: str = "standard"
     sub_instructions: list[str] = Field(default_factory=list)
 
 
@@ -76,10 +77,12 @@ class InputUnderstanding:
         if files:
             entities["files"] = files
             entities["primary_file"] = files[0]
-        elif "primary_file" in context_entities:
-            # Check for anaphoric references: "that file", "the file", "it"
-            if re.search(r"\b(that file|the file|it)\b", text_clean, re.IGNORECASE):
+        else:
+            if "primary_file" in context_entities and re.search(r"\b(that file|the file|it)\b", text_clean, re.IGNORECASE):
                 entities["primary_file"] = context_entities["primary_file"]
+                entities["anaphoric_resolved"] = True
+            if "files" in context_entities and re.search(r"\b(those files|both files|them)\b", text_clean, re.IGNORECASE):
+                entities["files"] = context_entities["files"]
                 entities["anaphoric_resolved"] = True
 
         app_match = self.APP_PATTERN.search(text_clean)
@@ -88,6 +91,9 @@ class InputUnderstanding:
             if app_name == "calc":
                 app_name = "calculator"
             entities["application"] = app_name
+        elif "application" in context_entities and re.search(r"\b(that app|the app|that application)\b", text_clean, re.IGNORECASE):
+            entities["application"] = context_entities["application"]
+            entities["anaphoric_resolved"] = True
 
         # 3. Detect Multi-part instructions
         sub_parts = [p.strip() for p in self.MULTI_STEP_CONJUNCTIONS.split(text_clean) if p.strip()]
@@ -117,8 +123,18 @@ class InputUnderstanding:
             intent = IntentType.CONVERSATION
             confidence = 0.85
 
-        # 5. Ambiguity Detection
+        # 5. Ambiguity & Contradiction Detection
         is_ambiguous, reason, prompt = self._detect_ambiguity(text_clean, intent, entities)
+
+        # 6. Reasoning Depth Selection (avoid unnecessary deep deliberation for fast/direct queries)
+        if is_serious:
+            reasoning_depth = "deep"
+        elif intent in (IntentType.SYSTEM_QUERY, IntentType.TOOL_ACTION) and len(sub_instructions) == 1:
+            reasoning_depth = "fast"
+        elif intent == IntentType.TASK_PLAN or len(sub_instructions) > 1:
+            reasoning_depth = "deep"
+        else:
+            reasoning_depth = "standard"
 
         return ParsedInput(
             raw_text=text_clean,
@@ -129,6 +145,7 @@ class InputUnderstanding:
             ambiguity_reason=reason,
             clarification_prompt=prompt,
             is_serious_mode_requested=is_serious,
+            reasoning_depth=reasoning_depth,
             sub_instructions=sub_instructions,
         )
 
@@ -147,6 +164,16 @@ class InputUnderstanding:
         self, text: str, intent: IntentType, entities: dict[str, Any]
     ) -> tuple[bool, str | None, str | None]:
         low = text.lower()
+
+        # Contradictory instructions check (e.g. create and delete the same single target in one prompt)
+        files = entities.get("files") or []
+        if len(files) == 1 or (len(files) > 1 and len(set(f.lower() for f in files)) == 1):
+            if any(w in low for w in ("create ", "write ")) and any(w in low for w in ("delete ", "remove ")):
+                return (
+                    True,
+                    "Contradictory file operations requested on the same file.",
+                    f"You asked to both create and delete '{files[0]}'. Which action should I perform?",
+                )
 
         # Action without target
         if intent == IntentType.TOOL_ACTION:

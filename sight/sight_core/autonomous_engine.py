@@ -696,7 +696,14 @@ class AutonomousExecutionEngine:
         args = json.loads(step_row["arguments_json"])
         tool = self._tools.get(tool_name)
 
+        # Idempotent duplicate execution guard: never re-run an already verified completed step
         with self._connect() as db:
+            current = db.execute(
+                "SELECT state, evidence_json FROM autonomous_steps WHERE task_id = ? AND step_id = ?",
+                (task_id, step_id),
+            ).fetchone()
+            if current and current["state"] == "complete" and current["evidence_json"]:
+                return step_id, True, None
             db.execute(
                 "UPDATE autonomous_steps SET state = 'running', attempts = attempts + 1, updated_at = ? WHERE task_id = ? AND step_id = ?",
                 (time.time(), task_id, step_id),
@@ -733,7 +740,10 @@ class AutonomousExecutionEngine:
                 "step_id": step_id,
                 "tool": tool_name,
                 "duration_ms": duration_ms,
+                "attempted": True,
+                "executed": True,
                 "verified": True,
+                "outcome_stage": "verified",
                 "keys": sorted(output.keys()),
             }
             with self._connect() as db:
